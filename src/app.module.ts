@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
-import { SongsModule } from './modules/songs/songs.module';
+import { SongModule } from './modules/songs/songs.module';
 import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
@@ -11,7 +11,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     MongooseModule.forRoot('mongodb://localhost/choir-app'),
     AuthModule, 
     UsersModule, 
-    SongsModule,
+    SongModule,
   ],
   controllers: [AppController],
   providers: [AppService],
