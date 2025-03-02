@@ -11,7 +11,8 @@ import { MongooseModule } from '@nestjs/mongoose';
     MongooseModule.forRoot('mongodb://localhost/choir-app'),
     AuthModule, 
     UsersModule, 
-    SongModule,
+    SongModule, 
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -23,6 +24,7 @@ export class AppModule {}
 // import { APP_GUARD } from '@nestjs/core';
 // import { JwtAuthGuard } from './modules/auth/jwt.guard';
 // import { RolesGuard } from './modules/auth/roles.guard';
+import { CategoryModule } from './modules/category/category.module';
 
 // @Module({
 //   providers: [

@@ -11,9 +11,11 @@ export class Song {
   @Prop({ required: true })
   artist: string;
 
-  @Prop()
-  category: string; // e.g., "Worship", "Praise", "Hymn"
-
+//   @Prop()
+//   category: string; // e.g., "Worship", "Praise", "Hymn"
+  @Prop({ required: true, ref: 'Category' })  
+  category: string; // Reference to Category Schema
+  
   @Prop()
   audioUrl: string; // Optional: link to an audio file
 

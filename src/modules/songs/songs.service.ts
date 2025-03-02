@@ -2,13 +2,19 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Song, SongDocument } from './schema/song.schema';
+import { Category, CategoryDocument } from '../category/schema/category.schema';
 
 @Injectable()
 export class SongService {
-  constructor(@InjectModel(Song.name) private songModel: Model<SongDocument>) {}
+  constructor(
+    @InjectModel(Category.name) private categoryModel: Model<CategoryDocument>,
+    @InjectModel(Song.name) private songModel: Model<SongDocument>
+  ) {}
 
   // Suggest a new song (Default: Pending)
   async suggestSong(title: string, artist: string, category: string, userId: string) {
+    const existingCategory = await this.categoryModel.findOne({ name: category });
+    if (!existingCategory) throw new NotFoundException('Category does not exist');
     const newSong = new this.songModel({ title, artist, category, suggestedBy: userId });
     return await newSong.save();
   }
