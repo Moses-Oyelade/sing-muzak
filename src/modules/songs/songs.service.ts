@@ -3,12 +3,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Song, SongDocument } from './schema/song.schema';
 import { Category, CategoryDocument } from '../category/schema/category.schema';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class SongService {
   constructor(
     @InjectModel(Category.name) private categoryModel: Model<CategoryDocument>,
-    @InjectModel(Song.name) private songModel: Model<SongDocument>
+    @InjectModel(Song.name) private songModel: Model<SongDocument>,
+    private notificationService: NotificationsService,
   ) {}
 
   // Suggest a new song (Default: Pending)
@@ -27,7 +29,7 @@ export class SongService {
 
   // Approve or reject a song (Admin only)
   async updateSongStatus(songId: string, status: string, adminId: string) {
-    if (!['Approved', 'Rejected'].includes(status)) {
+    if (!['Approved', 'Postponed'].includes(status)) {
       throw new ForbiddenException('Invalid status');
     }
 
@@ -36,6 +38,15 @@ export class SongService {
 
     song.status = status;
     song.approvedBy = adminId;
-    return song.save();
+    await song.save();
+
+    // Send notification to the uploader
+    await this.notificationService.sendNotification(
+      song.uploadedBy,
+      `Your song "${song.title}" has been ${status}.`
+    );
+
+    return song;
   }
+  
 }

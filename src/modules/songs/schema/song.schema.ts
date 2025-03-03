@@ -15,7 +15,7 @@ export class Song {
 //   category: string; // e.g., "Worship", "Praise", "Hymn"
   @Prop({ required: true, ref: 'Category' })  
   category: string; // Reference to Category Schema
-  
+
   @Prop()
   audioUrl: string; // Optional: link to an audio file
 
@@ -24,6 +24,9 @@ export class Song {
 
   @Prop({ default: 'Pending', enum: ['Pending', 'Approved', 'Postponed'] })
   status: string; // Admin approval system
+
+  @Prop({ required: true })
+  uploadedBy: string;
 
   @Prop({ required: true })
   suggestedBy: string; // User who suggested the song

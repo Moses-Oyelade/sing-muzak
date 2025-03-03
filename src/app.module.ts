@@ -6,6 +6,10 @@ import { UsersModule } from './modules/users/users.module';
 import { SongModule } from './modules/songs/songs.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { RehearsalModule } from './modules/rehearsals/rehearsals.module';
+import { CategoryModule } from './modules/category/category.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+
+
 
 @Module({
   imports: [
@@ -15,6 +19,7 @@ import { RehearsalModule } from './modules/rehearsals/rehearsals.module';
     SongModule, 
     CategoryModule,
     RehearsalModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -26,7 +31,6 @@ export class AppModule {}
 // import { APP_GUARD } from '@nestjs/core';
 // import { JwtAuthGuard } from './modules/auth/jwt.guard';
 // import { RolesGuard } from './modules/auth/roles.guard';
-import { CategoryModule } from './modules/category/category.module';
 
 // @Module({
 //   providers: [
