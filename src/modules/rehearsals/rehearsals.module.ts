@@ -1,9 +1,13 @@
 import { Module } from '@nestjs/common';
-import { RehearsalsService } from './rehearsals.service';
-import { RehearsalsController } from './rehearsals.controller';
+import { MongooseModule } from '@nestjs/mongoose';
+import { RehearsalService } from './rehearsals.service';
+import { RehearsalController } from './rehearsals.controller';
+import { Rehearsal, RehearsalSchema } from './schema/rehearsal.schema';
 
 @Module({
-  providers: [RehearsalsService],
-  controllers: [RehearsalsController]
+  imports: [MongooseModule.forFeature([{ name: Rehearsal.name, schema: RehearsalSchema }])],
+  controllers: [RehearsalController],
+  providers: [RehearsalService],
+  exports: [RehearsalService],
 })
-export class RehearsalsModule {}
+export class RehearsalModule {}
