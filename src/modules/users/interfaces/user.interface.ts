@@ -1,0 +1,21 @@
+export enum UserRole {
+    ADMIN = 'admin',
+    MEMBER = 'member',
+}
+
+export enum VoicePart {
+    SOPRANO = 'soprano',
+    ALTO = 'alto',
+    TENOR = 'tenor',
+    BASS = 'bass',
+}
+
+export interface User {
+    name: string;
+    email: string;
+    phone: string;
+    password: string;
+    address: string;
+    role: UserRole;
+    voicePart: VoicePart;
+}

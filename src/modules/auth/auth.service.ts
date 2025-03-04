@@ -12,8 +12,8 @@ export class AuthService {
     @InjectModel(User.name) private userModel: Model<User>,
   ) {}
 
-  async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.userModel.findOne({ email });
+  async validateUser(phone: string, pass: string): Promise<any> {
+    const user = await this.userModel.findOne({ phone });
     if (user && (await user.validatePassword(pass))) {
       const { password, ...result } = user.toObject();
       return result;
@@ -30,7 +30,8 @@ export class AuthService {
 
   async register(userData: any) {
     const userExists = await this.userModel.findOne({ email: userData.email });
-    if (userExists) throw new UnauthorizedException('User already exists');
+    const userExists2 = await this.userModel.findOne({ phone: userData.phone });
+    if (userExists || userExists2) throw new UnauthorizedException('User already exists');
     const user = new this.userModel(userData);
     await user.save();
     return this.login(user);

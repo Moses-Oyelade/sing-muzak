@@ -6,7 +6,9 @@ import { Parser } from 'json2csv';
 
 @Injectable()
 export class RehearsalService {
-  constructor(@InjectModel(Rehearsal.name) private rehearsalModel: Model<RehearsalDocument>) {}
+  constructor(
+    @InjectModel(Rehearsal.name) private rehearsalModel: Model<RehearsalDocument>
+) {}
 
   // Admin schedules a new rehearsal
   async scheduleRehearsal(date: Date, time: string, location: string, agenda: string, adminId: string) {

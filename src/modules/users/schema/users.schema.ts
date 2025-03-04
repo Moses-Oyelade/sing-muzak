@@ -1,23 +1,30 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { UserRole, VoicePart } from '../interfaces/user.interface';
 
 @Schema()
 export class User extends Document {
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   name: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ type: String, unique: true })
   email: string;
+  
+  @Prop({ type: String, required: true, unique: true })
+  phone: string;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   password: string;
 
-  @Prop({ enum: ['Admin', 'Member'], default: 'Member' })
-  role: string;
+  @Prop({ type: String, required: false })
+  address: string;
 
-  @Prop({ enum: ['Soprano', 'Alto', 'Tenor', 'Bass'], required: false })
-  voicePart: string;
+  @Prop({ type: String, enum: UserRole, default: UserRole.MEMBER })
+  role: UserRole;
+
+  @Prop({ type: String, enum: VoicePart, required: false })
+  voicePart: VoicePart;
 
   async validatePassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.password);
