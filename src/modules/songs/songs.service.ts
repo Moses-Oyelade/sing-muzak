@@ -4,13 +4,16 @@ import { Model } from 'mongoose';
 import { Song, SongDocument } from './schema/song.schema';
 import { Category, CategoryDocument } from '../category/schema/category.schema';
 import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationGateway } from '../notifications/notification.gateway';
 
 @Injectable()
 export class SongService {
+
   constructor(
     @InjectModel(Category.name) private categoryModel: Model<CategoryDocument>,
     @InjectModel(Song.name) private songModel: Model<SongDocument>,
     private notificationService: NotificationsService,
+    private readonly notificationGateway: NotificationGateway,
   ) {}
 
   // Suggest a new song (Default: Pending)
@@ -45,6 +48,13 @@ export class SongService {
       song.uploadedBy,
       `Your song "${song.title}" has been ${status}.`
     );
+
+    // // Store notification in database
+    // await this.notificationService.sendNotification(song.uploadedBy, message);
+
+    // // Send real-time notification via WebSocket
+    // this.notificationGateway.sendNotification(song.uploadedBy, message);
+
 
     return song;
   }

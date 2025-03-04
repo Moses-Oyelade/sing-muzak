@@ -1,47 +1,27 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { SongModule } from './modules/songs/songs.module';
-import { MongooseModule } from '@nestjs/mongoose';
 import { RehearsalModule } from './modules/rehearsals/rehearsals.module';
-import { CategoryModule } from './modules/category/category.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
-
-
+import { JwtStrategy } from './modules/auth/jwt/jwt.strategy';
+import databaseConfig from '../config/database.config';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost/choir-app'),
-    AuthModule, 
-    UsersModule, 
-    SongModule, 
-    CategoryModule,
-    RehearsalModule,
-    NotificationsModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [databaseConfig], // Loads database configuration
+    }),
+    MongooseModule.forRoot(process.env.MONGODB_URI as string), // Connects to MongoDB
+    AuthModule, // Handles authentication & JWT
+    UsersModule, // Manages user profiles & roles
+    SongModule, // Manages song catalog & uploads
+    RehearsalModule, // Handles rehearsals & attendance
+    NotificationsModule, // Manages notifications
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  providers: [JwtStrategy], // Global JWT strategy
 })
 export class AppModule {}
-
-
-// import { Module } from '@nestjs/common';
-// import { APP_GUARD } from '@nestjs/core';
-// import { JwtAuthGuard } from './modules/auth/jwt.guard';
-// import { RolesGuard } from './modules/auth/roles.guard';
-
-// @Module({
-//   providers: [
-//     {
-//       provide: APP_GUARD,
-//       useClass: JwtAuthGuard,
-//     },
-//     {
-//       provide: APP_GUARD,
-//       useClass: RolesGuard,
-//     },
-//   ],
-// })
-// export class AppModule {}

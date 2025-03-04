@@ -1,8 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
+
+export type NotificationDocument = HydratedDocument<Notification>;
 
 @Schema({ timestamps: true })
-export class Notification extends Document {
+export class Notification {
   @Prop({ required: true })
   userId: string;
 

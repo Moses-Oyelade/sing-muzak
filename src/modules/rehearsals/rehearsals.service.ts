@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Rehearsal, RehearsalDocument } from './schema/rehearsal.schema';
 import { Parser } from 'json2csv';
 
@@ -15,7 +15,7 @@ export class RehearsalService {
       time,
       location,
       agenda,
-      createdBy: adminId,
+      createdBy: new Types.ObjectId(adminId), // Convert adminId to ObjectId
       attendees: [],
     });
     return await newRehearsal.save();
@@ -28,79 +28,78 @@ export class RehearsalService {
 
   // Members mark attendance
   async markAttendance(rehearsalId: string, userId: string) {
-    const rehearsal = await this.rehearsalModel.findById(rehearsalId);
+    const rehearsal = await this.rehearsalModel.findById(new Types.ObjectId(rehearsalId));
     if (!rehearsal) throw new NotFoundException('Rehearsal not found');
 
-    if (rehearsal.attendees.includes(userId)) {
+    if (rehearsal.attendees.some(attendee => attendee.equals(new Types.ObjectId(userId)))) {
       throw new ForbiddenException('Attendance already marked');
     }
 
-    rehearsal.attendees.push(userId);
+    rehearsal.attendees.push(new Types.ObjectId(userId));
     return await rehearsal.save();
   }
 
-//   Amin marks attendance for members
+  // Admin marks attendance for members
   async markAttendanceForMember(rehearsalId: string, memberId: string, adminId: string) {
-    const rehearsal = await this.rehearsalModel.findById(rehearsalId);
+    const rehearsal = await this.rehearsalModel.findById(new Types.ObjectId(rehearsalId));
     if (!rehearsal) throw new NotFoundException('Rehearsal not found');
-  
-    // Check if the member is already marked present
-    if (rehearsal.attendees.includes(memberId)) {
+
+    if (rehearsal.attendees.some(attendee => attendee.equals(new Types.ObjectId(memberId)))) {
       throw new ForbiddenException('Member already marked present');
     }
-  
-    rehearsal.attendees.push(memberId);
+
+    rehearsal.attendees.push(new Types.ObjectId(memberId));
     return await rehearsal.save();
   }
 
+  // Admin removes attendance for members
   async removeAttendanceForMember(rehearsalId: string, memberId: string, adminId: string) {
-    const rehearsal = await this.rehearsalModel.findById(rehearsalId);
+    const rehearsal = await this.rehearsalModel.findById(new Types.ObjectId(rehearsalId));
     if (!rehearsal) throw new NotFoundException('Rehearsal not found');
-  
-    // Check if the member is marked present
-    if (!rehearsal.attendees.includes(memberId)) {
+
+    if (!rehearsal.attendees.some(attendee => attendee.equals(new Types.ObjectId(memberId)))) {
       throw new ForbiddenException('Member is not marked present');
     }
-  
-    // Remove the member from the attendees list
-    rehearsal.attendees = rehearsal.attendees.filter(id => id !== memberId);
+
+    // Correctly remove the member from attendees
+    rehearsal.attendees = rehearsal.attendees.filter(attendee => !attendee.equals(new Types.ObjectId(memberId)));
     return await rehearsal.save();
   }
-    
+
   // Admin gets attendance list
   async getAttendance(rehearsalId: string) {
-    const rehearsal = await this.rehearsalModel.findById(rehearsalId).populate('attendees', 'name email').exec();
+    const rehearsal = await this.rehearsalModel.findById(new Types.ObjectId(rehearsalId)).populate('attendees', 'name email').exec();
     if (!rehearsal) throw new NotFoundException('Rehearsal not found');
 
     return rehearsal.attendees;
   }
 
   async getAttendanceReport(rehearsalId: string) {
-    const rehearsal = await this.rehearsalModel.findById(rehearsalId).populate('attendees', 'name role').exec();
+    const rehearsal = await this.rehearsalModel.findById(new Types.ObjectId(rehearsalId)).populate({ path: 'attendees', select: 'name role' }).exec();
     if (!rehearsal) throw new NotFoundException('Rehearsal not found');
-  
+
     return {
       rehearsalId: rehearsal._id,
       date: rehearsal.date,
-      attendees: rehearsal.attendees.map(member => ({
+      attendees: rehearsal.attendees.map((member: any) => ({
         id: member._id,
         name: member.name,
         role: member.role
       }))
     };
-  } 
-  
+  }
+
   async getAttendanceReportByDateRange(startDate: string, endDate: string) {
     const rehearsals = await this.rehearsalModel
       .find({
         date: { $gte: new Date(startDate), $lte: new Date(endDate) }
       })
       .populate('attendees', 'name role').exec();
-  
+
     return rehearsals.map(rehearsal => ({
       rehearsalId: rehearsal._id,
       date: rehearsal.date,
-      attendees: rehearsal.attendees.map(member => ({
+      attendees: rehearsal.attendees.map((member: any) => ({
         id: member._id,
         name: member.name,
         role: member.role
@@ -108,7 +107,7 @@ export class RehearsalService {
     }));
   }
 
-//   Admin gets CSV attendance files and can download
+  // Admin gets CSV attendance files and can download
   async exportAttendanceReportToCSV(startDate: string, endDate: string) {
     const data = await this.getAttendanceReportByDateRange(startDate, endDate);
 
@@ -124,14 +123,13 @@ export class RehearsalService {
     const rehearsals = await this.rehearsalModel.find({
       date: { $gte: new Date(startDate), $lte: new Date(endDate) }
     });
-  
+
     // Generate trend data
     const trends = rehearsals.map(rehearsal => ({
       date: rehearsal.date,
       totalAttendees: rehearsal.attendees.length
     }));
-  
-    return trends;
-  }  
 
+    return trends;
+  }
 }
