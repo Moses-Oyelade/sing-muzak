@@ -1,11 +1,13 @@
-import { Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, Get, Param, Res, UseGuards, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GoogleDriveService } from './google-drive.service';
-import { Request } from 'express';
-import { Multer } from 'multer';  // Import Multer separately
+// import { JwtAuthGuard } from '../modules/auth/jwt/jwt.guard';
+import { Response } from 'express';
+// import { Request } from 'express';
+// import { Multer } from 'multer';  // Import Multer separately
 
 
-
+// @UseGuards(JwtAuthGuard)
 @Controller('google-drive')
 export class GoogleDriveController {
   constructor(private readonly googleDriveService: GoogleDriveService) {}
@@ -14,8 +16,15 @@ export class GoogleDriveController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
     const fileUrl = await this.googleDriveService.uploadFile(file);
-    return { url: fileUrl };
+    return { url: fileUrl, message: 'File uploaded successfully' };
     // console.log(file); // Debugging
     // return { message: 'File uploaded successfully' };
   }
+
+//   To download file
+  @Get('download/:fileId')
+  async downloadFile(@Param('fileId') fileId: string, @Res() res: Response) {
+    return this.googleDriveService.downloadFile(fileId, res);
+  }
+
 }
