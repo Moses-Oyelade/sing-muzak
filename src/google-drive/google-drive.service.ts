@@ -7,7 +7,7 @@ import { Readable } from 'stream';
 @Injectable()
 export class GoogleDriveService {
   private driveClient: any;
-  private drive: any;
+//   private drive: any;
 
   constructor(private configService: ConfigService) {
     const auth = new google.auth.JWT(
@@ -17,38 +17,76 @@ export class GoogleDriveService {
         ['https://www.googleapis.com/auth/drive']
       );
 
-    this.driveClient = this.initializeDriveClient();
-  }
+    // this.driveClient = this.initializeDriveClient();
+//   }
 
-  private initializeDriveClient() {
-    const auth = new google.auth.GoogleAuth({
-      keyFile: 'path/to/your-service-account.json', // Update with the correct path
-      scopes: ['https://www.googleapis.com/auth/drive'],
-    });
+//   private initializeDriveClient() {
+//     const auth = new google.auth.GoogleAuth({
+//       keyFile: 'path/to/your-service-account.json', // Update with the correct path
+//       scopes: ['https://www.googleapis.com/auth/drive'],
+//     });
 
-    return google.drive({ version: 'v3', auth });
+    // return google.drive({ version: 'v3', auth });
+    this.driveClient = google.drive({ version: 'v3', auth });
   }
 
   async uploadFile(file: Express.Multer.File) {
-    const { originalname, buffer } = file;
-    
-    const fileMetadata = { name: originalname };
-    const media = { mimeType: file.mimetype, body: Readable.from(buffer) };
+    try {
+      const { originalname, mimetype, buffer } = file;
 
-    const response = await this.driveClient.files.create({
-      requestBody: fileMetadata,
-      media,
-      fields: 'id',
-    });
+      // Convert buffer to Readable Stream
+      const stream = new Readable();
+      stream.push(buffer);
+      stream.push(null);
 
-    return `https://drive.google.com/uc?id=${response.data.id}`;
+      const response = await this.driveClient.files.create({
+        requestBody: {
+          name: originalname,
+          mimeType: mimetype,
+        },
+        media: {
+          mimeType: mimetype,
+          body: stream, // Ensure body is a Readable stream
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error('Google Drive Upload Error:', error);
+      throw error;
+    }
   }
+
+
+// async uploadFile(file: Express.Multer.File) {
+//     const fileMetadata = {
+//       name: file.originalname,
+//       parents: [this.configService.get('GOOGLE_DRIVE_FOLDER_ID')], // Set folder ID
+//     };
+
+//     const media = {
+//       mimeType: file.mimetype,
+//       body: file.buffer, // Use buffer if storing in memory
+//     };
+
+//     const response = await this.drive.files.create({
+//       requestBody: fileMetadata,
+//       media,
+//       fields: 'id, name, webViewLink',
+//     });
+
+//     return {
+//       fileId: response.data.id,
+//       fileName: response.data.name,
+//       webViewLink: response.data.webViewLink,
+//     };
+//   }
 
 //   To download Files
 async downloadFile(fileId: string, res: Response) {
     try {
       // Get file metadata (name and MIME type)
-      const fileMetadata = await this.drive.files.get({
+      const fileMetadata = await this.driveClient.files.get({
         fileId,
         fields: 'name, mimeType',
       });
@@ -57,7 +95,7 @@ async downloadFile(fileId: string, res: Response) {
       const mimeType = fileMetadata.data.mimeType;
 
       // Stream the file content
-      const response = await this.drive.files.get(
+      const response = await this.driveClient.files.get(
         { fileId, alt: 'media' },
         { responseType: 'stream' }
       );
@@ -80,6 +118,15 @@ async downloadFile(fileId: string, res: Response) {
       response.data.pipe(res);
     } catch (error) {
       throw new NotFoundException('File not found');
+    }
+  }
+
+  async deleteFile(fileId: string): Promise<string> {
+    try {
+      await this.driveClient.files.delete({ fileId });
+      return `File with ID ${fileId} deleted successfully.`;
+    } catch (error) {
+      throw new Error(`Failed to delete file: ${error.message}`);
     }
   }
 }

@@ -33,11 +33,12 @@ export class CreateUserDto {
     @IsNotEmpty()
     @IsString()
     name: string;
-  
+    
     @IsOptional()
     @IsEmail()
     email: string;
-  
+    
+    @IsString()
     @IsNotEmpty()
     phone: string;
   
