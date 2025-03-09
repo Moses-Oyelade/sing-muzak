@@ -28,4 +28,11 @@ export class AuthController {
   getProfile(@Request() req: any) {
     return req.user;
   }
+  
+  // @UseGuards(JwtAuthGuard)
+  @Post('register-admin')
+  async registerAdmin(@Body() adminData: Partial<User>) {
+      return this.authService.registerAdmin(adminData);
+  }
+
 }

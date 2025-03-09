@@ -20,7 +20,7 @@ export class CreateUserFromAdminDto {
 
     @IsOptional()
     @IsString()
-    address: string
+    address?: string
 
     @IsString()
     @IsEnum(VoicePart)

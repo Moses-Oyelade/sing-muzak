@@ -1,7 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schema/users.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
+import { UserRole } from './interfaces/user.interface';
+import { CreateUserFromAdminDto } from './dto/create-user.dto';
+
 
 @Injectable()
 export class UsersService {
@@ -43,4 +46,24 @@ export class UsersService {
     // console.log('Querying users...');
     return this.userModel.find().exec();
   }
+
+  async createUser(createUserFromAdminDto: CreateUserFromAdminDto): Promise<User> {
+    const createdUser = new this.userModel({
+      ...createUserFromAdminDto,
+      role: UserRole.MEMBER,
+      _id: new Types.ObjectId(),
+    });
+    return createdUser.save();
+  }
+
+
+  async deleteUser(userId: string): Promise<string> {
+    try {
+      await this.userModel.findByIdAndDelete( userId );
+      return `user ${userId} deleted successfully.`;
+    } catch (error) {
+      throw new Error(`Failed to delete file: ${error.message}`);
+    }
+  }
+
 }
