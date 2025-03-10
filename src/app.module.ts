@@ -9,6 +9,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { JwtStrategy } from './modules/auth/jwt/jwt.strategy';
 import databaseConfig from '../config/database.config';
 import { GoogleDriveModule } from './google-drive/google-drive.module';
+import { AnnouncementsModule } from './modules/announcements/announcements.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { GoogleDriveModule } from './google-drive/google-drive.module';
     RehearsalModule, // Handles rehearsals & attendance
     NotificationsModule, // Manages notifications
     GoogleDriveModule, // Manages files saving and retrieval
+    AnnouncementsModule
   ],
   providers: [JwtStrategy], // Global JWT strategy
 })
