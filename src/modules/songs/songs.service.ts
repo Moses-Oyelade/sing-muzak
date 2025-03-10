@@ -30,6 +30,10 @@ export class SongService {
     return this.songModel.find(filter);
   }
 
+  async findById(id: string): Promise<Song | null> {
+    return this.songModel.findById(id).exec();
+  }
+
   // Approve or reject a song (Admin only)
   async updateSongStatus(songId: string, status: string, adminId: string) {
     if (!['Approved', 'Postponed'].includes(status)) {
@@ -54,9 +58,16 @@ export class SongService {
 
     // // Send real-time notification via WebSocket
     // this.notificationGateway.sendNotification(song.uploadedBy, message);
-
-
     return song;
+  }
+
+  async deleteSong(songId: string): Promise<string> {
+    try{
+      await this.songModel.findByIdAndDelete( songId );
+      return `song ${songId} deleted successfully.`;
+    } catch (error) {
+      throw new Error(`Failed to delete file: ${error.message}`);
+    }
   }
   
 }

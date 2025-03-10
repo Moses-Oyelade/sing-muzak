@@ -25,7 +25,7 @@ export class RehearsalService {
 
   // Get all rehearsals
   async getRehearsals() {
-    return await this.rehearsalModel.find().populate('attendees', 'name email');
+    return await this.rehearsalModel.find().populate('attendees', 'name phone');
   }
 
   // Members mark attendance
@@ -70,7 +70,7 @@ export class RehearsalService {
 
   // Admin gets attendance list
   async getAttendance(rehearsalId: string) {
-    const rehearsal = await this.rehearsalModel.findById(new Types.ObjectId(rehearsalId)).populate('attendees', 'name email').exec();
+    const rehearsal = await this.rehearsalModel.findById(new Types.ObjectId(rehearsalId)).populate('attendees', 'name phone').exec();
     if (!rehearsal) throw new NotFoundException('Rehearsal not found');
 
     return rehearsal.attendees;
