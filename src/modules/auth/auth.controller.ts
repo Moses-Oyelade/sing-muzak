@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Request, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, BadRequestException, Get, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt/jwt.guard';
 import { CreateUserDto } from '../users/dto/create-user.dto';
@@ -33,6 +33,12 @@ export class AuthController {
   @Post('register-admin')
   async registerAdmin(@Body() adminData: Partial<User>) {
       return this.authService.registerAdmin(adminData);
+  }
+
+  @Get('protected-route')
+  async testAuth(@Req() req: any) {
+    console.log(req.user); // Check if the user is attached to the request
+    return { message: 'You have access!' };
   }
 
 }

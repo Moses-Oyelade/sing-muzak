@@ -44,7 +44,7 @@ export class UsersService {
 
   async getAllUsers(): Promise<User[]> {
     // console.log('Querying users...');
-    return this.userModel.find().exec();
+    return this.userModel.find().sort({ createdAt: -1 }).exec();
   }
 
   async createUser(createUserFromAdminDto: CreateUserFromAdminDto): Promise<User> {

@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Request, Delete, Param, NotFoundException, Post, Body, Put } from '@nestjs/common';
+import { Controller, Get, UseGuards, Request, Delete, Param, NotFoundException, Post, Body, Put, BadRequestException } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { Roles } from '../auth/roles/roles.decorator';
 import { RolesGuard } from '../auth/roles/roles.guard';
@@ -15,11 +15,25 @@ export class UsersController {
   ) { }
   
   // Only Admins can access this route
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles('Admin')
+  // @Get( )
+  // getAllUsers(@Request() req: any) {
+  //   return { message: 'Only admins can see this', user: req.user };
+  // }
+
+  // Only Admins can access this route
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('Admin')
   @Get( )
-  getAllUsers(@Request() req: any) {
-    return { message: 'Only admins can see this', user: req.user };
+  async getAllUsers(){
+    try{
+      const users = await this.userService.getAllUsers()
+      return users;
+    } catch (error){
+      const message = new BadRequestException(error.message);
+      return `Only admins can see this, ${message}`
+    }
   }
 
   // Both Admins and Members can access

@@ -10,13 +10,17 @@ export class RolesGuard implements CanActivate {
     const requiredRoles = this.reflector.get<string[]>(ROLES_KEY, context.getHandler());
     if (!requiredRoles) return true; // If no roles are required, allow access
 
-    const request = context.switchToHttp().getRequest();
-    const user = request.user;
+    // const request = context.switchToHttp().getRequest();
+    const req = context.switchToHttp().getRequest();
+    const user = req.user;
 
-    if (!user || !requiredRoles.includes(user.role)) {
-      throw new ForbiddenException('You do not have permission to access this resource');
-    }
+    console.log('User Role:', user?.role); // Check user role
+    return user?.role === 'admin'; // Adjust role as needed
 
-    return true;
+    // if (!user || !requiredRoles.includes(user.role)) {
+    //   throw new ForbiddenException('You do not have permission to access this resource');
+    // }
+
+    // return true;
   }
 }

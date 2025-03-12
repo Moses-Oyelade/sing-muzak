@@ -47,17 +47,19 @@ export class SongService {
     song.approvedBy = adminId;
     await song.save();
 
+    const message = `Your song "${song.title}" has been ${status}.`
+    
     // Send notification to the uploader
     await this.notificationService.sendNotification(
       song.uploadedBy,
-      `Your song "${song.title}" has been ${status}.`
+      message
     );
 
     // // Store notification in database
     // await this.notificationService.sendNotification(song.uploadedBy, message);
 
-    // // Send real-time notification via WebSocket
-    // this.notificationGateway.sendNotification(song.uploadedBy, message);
+    // Send real-time notification via WebSocket
+    this.notificationGateway.sendNotification(song.uploadedBy, message);
     return song;
   }
 

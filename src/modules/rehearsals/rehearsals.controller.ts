@@ -34,7 +34,7 @@ export class RehearsalController {
   async markAttendanceForMember(
     @Param('id') rehearsalId: string,
     @Body('memberId') memberId: string,
-    @Req() req
+    @Req() req: any
   ) {
       return this.rehearsalService.markAttendanceForMember(rehearsalId, memberId, req.user.userId);
   }
@@ -45,7 +45,7 @@ export class RehearsalController {
   async removeAttendanceForMember(
     @Param('id') rehearsalId: string,
     @Body('memberId') memberId: string,
-    @Req() req
+    @Req() req: any,
   ) {
       return this.rehearsalService.removeAttendanceForMember(rehearsalId, memberId, req.user.userId);
   }
