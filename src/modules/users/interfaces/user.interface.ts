@@ -15,7 +15,10 @@ export interface User {
     email: string;
     phone: string;
     password: string;
+    profileImagine?: string;
     address: string;
     role: UserRole;
     voicePart: VoicePart;
+    createdAt?: Date;
+    updatedAt?: Date;
 }

@@ -3,9 +3,10 @@ import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { Roles } from '../auth/roles/roles.decorator';
 import { RolesGuard } from '../auth/roles/roles.guard';
 import { UsersService } from './users.service';
-import { User, VoicePart } from './interfaces/user.interface';
+import { VoicePart } from './interfaces/user.interface';
 import { CreateUserFromAdminDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './schema/users.schema';
 
 
 @Controller('users')
@@ -26,13 +27,13 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('Admin')
   @Get( )
-  async getAllUsers(){
+  async getAllUsers(): Promise<User[]> {
     try{
       const users = await this.userService.getAllUsers()
       return users;
     } catch (error){
-      const message = new BadRequestException(error.message);
-      return `Only admins can see this, ${message}`
+      throw new BadRequestException(error.message);
+      // return `Only admins can see this, ${message}`
     }
   }
 
@@ -41,7 +42,7 @@ export class UsersController {
   @Roles('Admin', 'Member')
   @Get('profile')
   getProfile(@Request() req: any) {
-    return { message: 'Accessible to both Admin and Member', user: req.user };
+    return { message: 'Profile Data', user: req.user };
   }
   
   // To delete a user
@@ -64,8 +65,8 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('Admin')
   @Get(':phoneNumber')
-  async findByPhoneNumber(@Param('phoneNumber') phoneNumber: string): Promise<User> {
-    const user = await this.userService.findByPhoneNumber(phoneNumber);
+  async findByPhoneNumber(@Param('phone') phone: string): Promise<User> {
+    const user = await this.userService.findByPhoneNumber(phone);
     if (!user) {
       throw new NotFoundException('User not found');
     }

@@ -6,7 +6,7 @@ import { User } from '../users/schema/users.schema';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto): Promise<{ access_token: string; user: any }> {
@@ -20,7 +20,8 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() loginDto: { phone: string; password: string }) {
-    return this.authService.validateUser(loginDto.phone, loginDto.password);
+    const user = await this.authService.validateUser(loginDto.phone, loginDto.password);
+    return this.authService.login(user);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -39,6 +40,19 @@ export class AuthController {
   async testAuth(@Req() req: any) {
     console.log(req.user); // Check if the user is attached to the request
     return { message: 'You have access!' };
+  }
+
+  @Post('refresh')
+  async refresh(@Body() refreshDto: { userId: string; refreshToken: string }) {
+    return this.authService.refreshToken(refreshDto.userId, refreshDto.refreshToken);
+  }
+
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  async logout(@Req() req: any) {
+    const user = req.user;
+    await this.authService.logout(user.sub);
+    return { message: 'Logout successful' };
   }
 
 }

@@ -16,3 +16,5 @@ import { User, UserSchema } from './schema/users.schema';
   exports: [UsersService, MongooseModule], // Export UsersService for other modules
 })
 export class UsersModule {}
+
+export { User };

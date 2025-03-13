@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schema/users.schema';
 import { Model, Types } from 'mongoose';
-import { UserRole } from './interfaces/user.interface';
+import { UserRole, VoicePart } from './interfaces/user.interface';
 import { CreateUserFromAdminDto } from './dto/create-user.dto';
 
 
@@ -13,19 +13,24 @@ export class UsersService {
   ) {}
 
   
-  async findByEmail(email: string): Promise<User | null> {
+  async findByEmail(email: string): Promise<User| null> {
     return this.userModel.findOne({ email }).exec();
   }
 
-  async findByPhoneNumber(phoneNumber: string): Promise<User | null> {
-    return this.userModel.findOne({ phoneNumber }).exec();
+  async findByPhoneNumber(phone: string): Promise<User | null> {
+    return this.userModel.findOne({ phone }).exec();
   }
 
   async findById(id: string): Promise<User | null> {
     return this.userModel.findById(id).exec();
   }
+  
 
   async updateUser(userId: string, updateData: Partial<User>): Promise<User> {
+    if (updateData.voicePart) {
+      updateData.voicePart = updateData.voicePart as VoicePart;
+    }
+    
     const updatedUser = await this.userModel.findByIdAndUpdate(
       userId,
       updateData,
@@ -56,6 +61,11 @@ export class UsersService {
     return createdUser.save();
   }
 
+
+  // Use for logging Out
+  async updateRefreshToken(userId: string, refreshToken: string | null): Promise<void> {
+    await this.userModel.updateOne({ _id: userId }, { refreshToken }).exec();
+  }
 
   async deleteUser(userId: string): Promise<string> {
     try {

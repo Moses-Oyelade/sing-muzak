@@ -32,6 +32,7 @@ import { Category, CategorySchema } from '../category/schema/category.schema';
 import { Notification, NotificationSchema } from '../notifications/schema/notification.schema';
 import { JwtService } from '@nestjs/jwt';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
       { name: Category.name, schema: CategorySchema },
       { name: Notification.name, schema: NotificationSchema },
     ]),
+    AuthModule,
     forwardRef(() => NotificationsModule), // ✅ Fix circular dependency
   ],
   controllers: [SongController],

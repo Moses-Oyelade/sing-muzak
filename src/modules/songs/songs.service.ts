@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Song, SongDocument } from './schema/song.schema';
-import { Category, CategoryDocument } from '../category/schema/category.schema';
+import { Song } from './schema/song.schema';
+import { Category } from '../category/schema/category.schema';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationGateway } from '../notifications/notification.gateway';
 
@@ -10,8 +10,8 @@ import { NotificationGateway } from '../notifications/notification.gateway';
 export class SongService {
 
   constructor(
-    @InjectModel(Category.name) private categoryModel: Model<CategoryDocument>,
-    @InjectModel(Song.name) private songModel: Model<SongDocument>,
+    @InjectModel(Category.name) private categoryModel: Model<Category>,
+    @InjectModel(Song.name) private songModel: Model<Song>,
     private notificationService: NotificationsService,
     private readonly notificationGateway: NotificationGateway,
   ) {}
