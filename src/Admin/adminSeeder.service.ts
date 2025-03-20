@@ -10,7 +10,7 @@ import { UserRole } from 'src/modules/users/interfaces/user.interface';
 
 // @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('admin')
-export class AdminController implements OnApplicationBootstrap {
+export class AdminSeederService implements OnApplicationBootstrap {
     constructor(
         private readonly authService: AuthService,
         private readonly configService: ConfigService,
@@ -21,12 +21,12 @@ export class AdminController implements OnApplicationBootstrap {
       const email = this.configService.get<string>('ADMIN_EMAIL');
       const password = this.configService.get('ADMIN_PASSWORD');
       const phone = this.configService.get('PHONE');
-      const admin = await this.usersService.getUserByField('email', email);
-      const hashedPassword = await bcrypt.hash(password, 10);
+      const admin = await this.usersService.getUserByField('phone', phone);
+      // const hashedPassword = await bcrypt.hash(password, 10);
       if (!admin) {
         await this.authService.registerAdmin(<any>{
             email,
-            password:hashedPassword,
+            password,
             phone,
             name: 'sing-muzak',
             roles: UserRole.ADMIN,

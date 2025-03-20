@@ -25,7 +25,7 @@ export class UsersController {
 
   // Only Admins can access this route
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   @Get( )
   async getAllUsers(): Promise<User[]> {
     try{
@@ -39,19 +39,25 @@ export class UsersController {
 
   // Both Admins and Members can access
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('Admin', 'Member')
+  @Roles('admin', 'member')
   @Get('profile')
   getProfile(@Request() req: any) {
     return { message: 'Profile Data', user: req.user };
   }
   
-  // To delete a user
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('Admin')
-  @Delete(':userId')
-  async deleteFile(@Param('userId') userId: string) {
-    return this.userService.deleteUser(userId);
+  // Find by Phone No.
+  @Get('all-phone')
+  async getAllPhoneNumbers() {
+    const users = await this.userService.getAllPhoneNumbers();
+    console.log(`all phones ${users}`)
+    return users;
   }
+  
+  @Get('all-phone-names')
+  async getAllPhoneNumbersOwners() {
+    return this.userService.getAllPhoneNumbersOwners();
+  }
+  
 
   @Get(':id')
   async getUser(@Param('id') id: string): Promise<User> {
@@ -61,9 +67,9 @@ export class UsersController {
     }
     return user;
   }
-
+  
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   @Get(':phoneNumber')
   async findByPhoneNumber(@Param('phone') phone: string): Promise<User> {
     const user = await this.userService.findByPhoneNumber(phone);
@@ -72,15 +78,15 @@ export class UsersController {
     }
     return user;
   }
-
-
+  
+  
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   @Post('createUser')
   async createUserFromAdmin(@Body() createUserFromAdminDto: CreateUserFromAdminDto): Promise<User> {
     return await this.userService.createUser(createUserFromAdminDto);
   }
-
+  
   @Put(':userId')
   async updateUser(
     @Param('userId') userId: string,
@@ -91,6 +97,15 @@ export class UsersController {
     }
     return this.userService.updateUser(userId, updateData);
   }
+  
+  // To delete a user
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Delete(':userId')
+  async deleteFile(@Param('userId') userId: string) {
+    return this.userService.deleteUser(userId);
+  }
+  
 }
 
 

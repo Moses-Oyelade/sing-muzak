@@ -21,6 +21,26 @@ export class UsersService {
     return this.userModel.findOne({ phone }).exec();
   }
 
+  // to check only all the phone numbers
+  async getAllPhoneNumbers() {
+    // const users = await this.userModel.find({}, { phone: 1, _id: 0 }).lean();
+    const users = await this.userModel.find().select('phone -_id');
+    return users.map((user: { name: string; phone: string }) => (user.name, user.phone))
+  }
+ 
+  // To check their names and phone numbers
+  async getAllPhoneNumbersOwners() {
+    const users = await this.userModel.find().select('name phone -_id'); 
+    // Convert to key-value pair (name: phone)
+    const phoneBook = {};
+    users.forEach(user => {
+      phoneBook[user.name] = user.phone;
+    });
+  
+    return phoneBook;
+  }
+  
+
   async findById(id: string): Promise<User | null> {
     return this.userModel.findById(id).exec();
   }

@@ -21,14 +21,21 @@ export class AuthService {
     
     const user = await this.usersService.findByPhoneNumber(phone);
     if (!user) {
-      console.log('User not found!');
+      // console.log('User not found!');
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    console.log('User found:', user);
+    // user.password = await bcrypt.hash('newpassword', 10);
+    // await user.save();
 
+
+    console.log('User found:', user);
+    console.log('User password:', user.password);
+    
     // Use bcrypt to compare the password
     const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log('Password Match:', isPasswordValid);
+
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -51,23 +58,14 @@ export class AuthService {
     };
   }
 
-  async register(createUserDto: CreateUserDto): Promise<{ access_token: string; user: User }> {
+  async register(createUserDto: CreateUserDto): Promise<{ access_token: string; user: any }> {
     const { name, email, password, phone } = createUserDto;
 
     // Check if user already exists
-    const userExists = await this.userModel.findOne({ $or: [{ email }, { phone }] });
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const userExists = await this.userModel.findOne({ $or: [{ email }, { phone }] }).exec();
+    if (userExists) throw new UnauthorizedException('User with this email or phone already exists');
     
-    if (userExists) {
-      if (await userExists.validatePassword(password)) {
-        throw new UnauthorizedException('User already exists');
-      } else {
-        userExists.email = email;
-        userExists.password = hashedPassword;
-        userExists.name = name;
-      }
-      await userExists.save();
-    }
+    const hashedPassword = await bcrypt.hash(password, 10);
     
     // If the user does not exist, Create new user and save
     const user = new this.userModel({
@@ -75,15 +73,17 @@ export class AuthService {
       password: hashedPassword,
       name,
       phone,
+      role: UserRole.MEMBER,
       _id: new Types.ObjectId(),
     });
     await user.save();
 
     // Login the user after registration
+    // return this.login(user.phone, user.password);
     return this.login(user);
   }
 
-  async registerAdmin(adminData: Partial<User>): Promise<{ access_token: string; user: User}> {
+  async registerAdmin(adminData: Partial<User>): Promise<{ access_token: string; user: any}> {
   // async registerAdmin(adminData: Partial<User>): Promise<User> {
     if (!adminData.password) {
       throw new BadRequestException('Password is required'); // Import BadRequestException from @nestjs/common
@@ -100,6 +100,7 @@ export class AuthService {
     await admin.save();
   
     // Login the user after registration
+    // return this.login(admin.phone, admin.password);
     return this.login(admin);
   }
 
@@ -131,7 +132,7 @@ export class AuthService {
     const isValid = await bcrypt.compare(refreshToken, user.refreshToken);
     if (!isValid) throw new BadRequestException('Invalid token');
 
-    const payload = { sub: user._id, phoneNumber: user.phone };
+    const payload = { sub: user._id, phone: user.phone, role: user.role };
 
     const newAccessToken = this.jwtService.sign(payload, { expiresIn: '60m' });
     const newRefreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });

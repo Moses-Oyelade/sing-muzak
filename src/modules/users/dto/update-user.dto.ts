@@ -6,7 +6,7 @@ import { VoicePart } from '../interfaces/user.interface';
 export class UpdateUserDto extends PartialType(CreateUserDto) {
 
     @IsString()
-    firstName: string;
+    name: string;
 
     @IsEmail()
     email: string;

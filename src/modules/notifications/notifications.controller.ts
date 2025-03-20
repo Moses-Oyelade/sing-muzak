@@ -20,7 +20,7 @@ export class NotificationsController {
   }
 
   @Get('user')
-  async getUserNotifications(@Req() req) {
+  async getUserNotifications(@Req() req: any) {
     return this.notificationsService.getUserNotifications(req.user.userId);
   }
 

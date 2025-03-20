@@ -12,7 +12,7 @@ export class RehearsalController {
   // Admin schedules a new rehearsal
   @Roles('Admin')
   @Post()
-  async scheduleRehearsal(@Body() body, @Req() req) {
+  async scheduleRehearsal(@Body() body: any, @Req() req: any) {
     return this.rehearsalService.scheduleRehearsal(body.date, body.time, body.location, body.agenda, req.user.userId);
   }
 
@@ -25,7 +25,7 @@ export class RehearsalController {
   // Members mark attendance
   @Roles('Member')
   @Patch(':id/attendance')
-  async markAttendance(@Param('id') rehearsalId: string, @Req() req) {
+  async markAttendance(@Param('id') rehearsalId: string, @Req() req: any) {
     return this.rehearsalService.markAttendance(rehearsalId, req.user.userId);
   }
 
@@ -94,7 +94,4 @@ export class RehearsalController {
   ) {
       return this.rehearsalService.getAttendanceTrends(startDate, endDate);
   }
-
-
-
 }

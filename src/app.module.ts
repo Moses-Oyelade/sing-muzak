@@ -10,13 +10,23 @@ import { JwtStrategy } from './modules/auth/jwt/jwt.strategy';
 import databaseConfig from '../config/database.config';
 import { GoogleDriveModule } from './google-drive/google-drive.module';
 import { AnnouncementsModule } from './modules/announcements/announcements.module';
-import { AdminController } from './Admin/adminSeeder.service';
+import { AdminSeederService } from './Admin/adminSeeder.service';
+import { JwtModule } from '@nestjs/jwt';
+import { jwtConstants } from 'config/jwt.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig], // Loads database configuration
+    }),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '1h' },
+      }),
     }),
     MongooseModule.forRoot(process.env.MONGODB_URI as string), // Connects to MongoDB
     AuthModule, // Handles authentication & JWT
@@ -28,6 +38,6 @@ import { AdminController } from './Admin/adminSeeder.service';
     AnnouncementsModule
   ],
   // providers: [JwtStrategy], // Global JWT strategy
-  providers: [JwtStrategy, AdminController], // Global 
+  providers: [AdminSeederService], // Global 
 })
 export class AppModule {}

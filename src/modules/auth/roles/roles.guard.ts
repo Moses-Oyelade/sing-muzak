@@ -9,33 +9,25 @@ export class RolesGuard implements CanActivate {
 
   canActivate(
     context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  ): boolean {
+  // ): boolean | Promise<boolean> | Observable<boolean> {
     const requiredRoles = this.reflector.get<string[]>(
       ROLES_KEY,
       context.getHandler(),
     );
-    if (!requiredRoles) {
-      return true;
-    }
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-    return requiredRoles.some(role => user.roles?.includes(role));
+
+    if (!user || !requiredRoles.includes(user.role)) {
+      console.log('Access Denied!');
+    throw new ForbiddenException('You do not have permission to access this resource');
+
+    }
+    console.log('User Roles:', user?.role);
+    console.log('Required Roles:', requiredRoles); // Debugging
+    
+    // return requiredRoles.some(role => user.role === role || user.roles?.includes(role));
+  
+    return true;
   }
-  // canActivate(context: ExecutionContext): boolean {
-  //   const requiredRoles = this.reflector.get<string[]>(ROLES_KEY, context.getHandler());
-  //   if (!requiredRoles) return true; // If no roles are required, allow access
-
-  //   // const request = context.switchToHttp().getRequest();
-  //   const req = context.switchToHttp().getRequest();
-  //   const user = req.user;
-
-  //   console.log('User Role:', user?.role); // Check user role
-  //   return user?.role === 'admin'; // Adjust role as needed
-
-  //   // if (!user || !requiredRoles.includes(user.role)) {
-  //   //   throw new ForbiddenException('You do not have permission to access this resource');
-  //   // }
-
-  //   // return true;
-  // }
 }

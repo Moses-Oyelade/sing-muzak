@@ -86,7 +86,8 @@ export class RehearsalService {
       attendees: rehearsal.attendees.map((member: any) => ({
         id: member._id,
         name: member.name,
-        role: member.role
+        // role: member.role
+        voicePart: member.voicePart
       }))
     };
   }
@@ -96,7 +97,7 @@ export class RehearsalService {
       .find({
         date: { $gte: new Date(startDate), $lte: new Date(endDate) }
       })
-      .populate('attendees', 'name role').exec();
+      .populate('attendees', 'name voicePart').exec();
 
     return rehearsals.map(rehearsal => ({
       rehearsalId: rehearsal._id,
@@ -104,7 +105,8 @@ export class RehearsalService {
       attendees: rehearsal.attendees.map((member: any) => ({
         id: member._id,
         name: member.name,
-        role: member.role
+        // role: member.role
+        voicePart: member.voicePart
       }))
     }));
   }
@@ -114,7 +116,7 @@ export class RehearsalService {
     const data = await this.getAttendanceReportByDateRange(startDate, endDate);
 
     // Convert data to CSV format
-    const fields = ['rehearsalId', 'date', 'attendees.id', 'attendees.name', 'attendees.role'];
+    const fields = ['rehearsalId', 'date', 'attendees.id', 'attendees.name', 'attendees.voicePart'];
     const json2csvParser = new Parser({ fields });
     const csv = json2csvParser.parse(data);
 
