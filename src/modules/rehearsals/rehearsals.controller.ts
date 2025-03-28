@@ -10,26 +10,27 @@ export class RehearsalController {
   constructor(private readonly rehearsalService: RehearsalService) {}
 
   // Admin schedules a new rehearsal
-  @Roles('Admin')
+  @Roles('admin')
   @Post()
   async scheduleRehearsal(@Body() body: any, @Req() req: any) {
     return this.rehearsalService.scheduleRehearsal(body.date, body.time, body.location, body.agenda, req.user.userId);
   }
 
   // Get all rehearsals
+  @Roles('admin', 'member')
   @Get()
   async getRehearsals() {
     return this.rehearsalService.getRehearsals();
   }
 
   // Members mark attendance
-  @Roles('Member')
+  @Roles('member')
   @Patch(':id/attendance')
   async markAttendance(@Param('id') rehearsalId: string, @Req() req: any) {
     return this.rehearsalService.markAttendance(rehearsalId, req.user.userId);
   }
 
-  @Roles('Admin')
+  @Roles('admin')
   @Patch(':id/attendance/admin')
   async markAttendanceForMember(
     @Param('id') rehearsalId: string,
@@ -40,7 +41,7 @@ export class RehearsalController {
   }
 
   // Admin remove member mistakenly marked in attendance
-  @Roles('Admin')
+  @Roles('admin')
   @Patch(':id/attendance/admin/remove')
   async removeAttendanceForMember(
     @Param('id') rehearsalId: string,
@@ -51,21 +52,21 @@ export class RehearsalController {
   }
 
   // Admin gets attendance list
-  @Roles('Admin')
+  @Roles('admin')
   @Get(':id/attendance')
   async getAttendance(@Param('id') rehearsalId: string) {
     return this.rehearsalService.getAttendance(rehearsalId);
   }
 
   // Admin gets attendance report
-  @Roles('Admin')
+  @Roles('admin')
   @Get(':id/attendance/report')
   async getAttendanceReport(@Param('id') rehearsalId: string) {
     return this.rehearsalService.getAttendanceReport(rehearsalId);
   }
 
 //   Admin gets attendance report by Date range
-  @Roles('Admin')
+  @Roles('admin')
   @Get('attendance/report')
   async getAttendanceReportByDateRange(
     @Query('startDate') startDate: string,
@@ -74,7 +75,7 @@ export class RehearsalController {
       return this.rehearsalService.getAttendanceReportByDateRange(startDate, endDate);
   }
 
-  @Roles('Admin')
+  @Roles('admin')
   @Get('attendance/export')
   @Header('Content-Type', 'text/csv')
   @Header('Content-Disposition', 'attachment; filename=attendance_report.csv')
@@ -86,7 +87,7 @@ export class RehearsalController {
   }
 
 //   Admin get Attendance trends
-  @Roles('Admin')
+  @Roles('admin')
   @Get('attendance/trends')
   async getAttendanceTrends(
     @Query('startDate') startDate: string,

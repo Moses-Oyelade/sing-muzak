@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import { Types } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type RehearsalDocument = Rehearsal & Document;
 
@@ -18,11 +17,29 @@ export class Rehearsal {
   @Prop({ default: '' })
   agenda: string;
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }] })  
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }], default: [], autopopulate: true, required: true })  
   attendees: Types.ObjectId[]; // Stores user IDs of attendees
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })  
   createdBy: Types.ObjectId; // Admin who scheduled the rehearsal
+
+  @Prop({ default: '' })
+  description?: string; // Optional extra details
 }
 
 export const RehearsalSchema = SchemaFactory.createForClass(Rehearsal);
+
+// Add Virtuals for Population (Optional)
+RehearsalSchema.virtual('attendeeDetails', {
+  ref: 'User',
+  localField: 'attendees',
+  foreignField: '_id',
+  justOne: false,
+});
+
+RehearsalSchema.virtual('createdByDetails', {
+  ref: 'User',
+  localField: 'createdBy',
+  foreignField: '_id',
+  justOne: true,
+});

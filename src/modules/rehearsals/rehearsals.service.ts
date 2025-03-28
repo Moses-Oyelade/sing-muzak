@@ -3,11 +3,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Rehearsal, RehearsalDocument } from './schema/rehearsal.schema';
 import { Parser } from 'json2csv';
+import { User } from '../users/schema/users.schema';
 
 @Injectable()
 export class RehearsalService {
   constructor(
-    @InjectModel(Rehearsal.name) private rehearsalModel: Model<RehearsalDocument>
+    @InjectModel(User.name) private readonly userModel: Model<User>,
+    @InjectModel(Rehearsal.name) private readonly rehearsalModel: Model<RehearsalDocument>
 ) {}
 
   // Admin schedules a new rehearsal
@@ -25,34 +27,54 @@ export class RehearsalService {
 
   // Get all rehearsals
   async getRehearsals() {
-    return await this.rehearsalModel.find().populate('attendees', 'name phone');
+    return await this.rehearsalModel.find().populate('attendees', 'name phone').sort({ createdAt: -1 }).exec();
   }
 
   // Members mark attendance
+  // async markAttendance(rehearsalId: string, userId: string) {
+  //   const rehearsal = await this.rehearsalModel.findById(new Types.ObjectId(rehearsalId));
+  //   if (!rehearsal) throw new NotFoundException('Rehearsal not found');
+
+  //   if (rehearsal.attendees.some(attendee => attendee.equals(new Types.ObjectId(userId)))) {
+  //     throw new ForbiddenException('Attendance already marked');
+  //   }
+
+  //   rehearsal.attendees.push(new Types.ObjectId(userId));
+  //   return await rehearsal.save();
+  // }
+
   async markAttendance(rehearsalId: string, userId: string) {
     const rehearsal = await this.rehearsalModel.findById(new Types.ObjectId(rehearsalId));
     if (!rehearsal) throw new NotFoundException('Rehearsal not found');
-
-    if (rehearsal.attendees.some(attendee => attendee.equals(new Types.ObjectId(userId)))) {
+  
+    const userObjectId = new Types.ObjectId(userId);
+  
+    if (rehearsal.attendees.some(attendee => attendee.equals(userObjectId))) {
       throw new ForbiddenException('Attendance already marked');
     }
-
-    rehearsal.attendees.push(new Types.ObjectId(userId));
+  
+    rehearsal.attendees.push(userObjectId);
     return await rehearsal.save();
   }
+  
 
   // Admin marks attendance for members
   async markAttendanceForMember(rehearsalId: string, memberId: string, adminId: string) {
-    const rehearsal = await this.rehearsalModel.findById(new Types.ObjectId(rehearsalId));
+    const rehearsalObjectId = new Types.ObjectId(rehearsalId);
+    const memberObjectId = new Types.ObjectId(memberId);
+  
+    const rehearsal = await this.rehearsalModel.findById(rehearsalObjectId);
     if (!rehearsal) throw new NotFoundException('Rehearsal not found');
-
-    if (rehearsal.attendees.some(attendee => attendee.equals(new Types.ObjectId(memberId)))) {
+  
+    // Check if member is already in attendees
+    if (rehearsal.attendees.some(attendee => attendee?.equals(memberObjectId))) {
       throw new ForbiddenException('Member already marked present');
     }
-
-    rehearsal.attendees.push(new Types.ObjectId(memberId));
+  
+    rehearsal.attendees.push(memberObjectId);
     return await rehearsal.save();
   }
+  
 
   // Admin removes attendance for members
   async removeAttendanceForMember(rehearsalId: string, memberId: string, adminId: string) {
@@ -77,20 +99,33 @@ export class RehearsalService {
   }
 
   async getAttendanceReport(rehearsalId: string) {
-    const rehearsal = await this.rehearsalModel.findById(new Types.ObjectId(rehearsalId)).populate({ path: 'attendees', select: 'name role' }).exec();
+    const rehearsal = await this.rehearsalModel
+      .findById(new Types.ObjectId(rehearsalId))
+      .populate('attendees', 'name voicePart') // Ensure user fields are populated
+      .exec();
+  
     if (!rehearsal) throw new NotFoundException('Rehearsal not found');
+    
 
+    const missingUsers = await this.userModel.find({
+      _id: { $in: rehearsal.attendees },
+    });
+    
+    if (missingUsers.length === 0) {
+      console.warn('No matching users found for attendees!');
+    }
+    
     return {
       rehearsalId: rehearsal._id,
       date: rehearsal.date,
       attendees: rehearsal.attendees.map((member: any) => ({
         id: member._id,
-        name: member.name,
-        // role: member.role
-        voicePart: member.voicePart
+        name: member.name || 'Unknown', // Default fallback if missing
+        voicePart: member.voicePart || 'Not Specified',
       }))
     };
   }
+  
 
   async getAttendanceReportByDateRange(startDate: string, endDate: string) {
     const rehearsals = await this.rehearsalModel
