@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Types } from 'mongoose';
 import { AbstractDocument } from 'src/modules/common/abstract.schema';
 
 @Schema({ timestamps: true })
@@ -23,11 +24,18 @@ export class Song extends AbstractDocument {
   @Prop({ default: 'Pending', enum: ['Pending', 'Approved', 'Postponed'] })
   status: string; // Admin approval system
 
-  @Prop({ required: true })
-  uploadedBy: string;
+  // @Prop({ required: true })
+  // uploadedBy: string;
 
-  @Prop({ required: true })
-  suggestedBy: string; // User who suggested the song
+  // @Prop({ required: true })
+  // suggestedBy: string; // User who suggested the song
+
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  uploadedBy: Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  suggestedBy: Types.ObjectId;
+
 
   @Prop()
   approvedBy?: string; // Admin who approved/rejected

@@ -4,6 +4,7 @@ import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { RolesGuard } from '../auth/roles/roles.guard';
 import { Roles } from '../auth/roles/roles.decorator';
 import { Song } from './schema/song.schema';
+import { SuggestSongDto } from './dto/create-song.dto';
 
 @Controller('songs')
 export class SongController {
@@ -12,8 +13,8 @@ export class SongController {
   // Suggest a song (Any authenticated user)
   @UseGuards(JwtAuthGuard)
   @Post('suggest')
-  suggestSong(@Body() body: any, @Request() req: any) {
-    return this.songService.suggestSong(body.title, body.artist, body.category, req.user.id);
+  suggestSong(@Body() suggestSongDto: SuggestSongDto) {
+    return this.songService.suggestSong(suggestSongDto);
   }
 
   // Get all songs (Admins can filter by status)

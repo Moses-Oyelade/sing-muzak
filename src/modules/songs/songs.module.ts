@@ -21,7 +21,7 @@ import { AuthModule } from '../auth/auth.module';
     forwardRef(() => NotificationsModule), // Fix circular dependency
   ],
   controllers: [SongController],
-  providers: [SongService, JwtService],
+  providers: [SongService],
   exports: [SongService], // Export services to prevent DI issues
 })
 export class SongModule {}
