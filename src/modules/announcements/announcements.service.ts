@@ -45,6 +45,6 @@ export class AnnouncementsService {
   async deleteAnnouncement(id: string) {
     const deletedAnnouncement = await this.announcementModel.findByIdAndDelete(id);
     if (!deletedAnnouncement) throw new NotFoundException('Announcement not found');
-    return deletedAnnouncement;
+    return `Announcement ${deletedAnnouncement} deleted successfully`;
   }
 }

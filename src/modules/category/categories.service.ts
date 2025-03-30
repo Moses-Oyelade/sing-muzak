@@ -43,6 +43,6 @@ export class CategoriesService {
   async deleteCategory(id: string) {
     const category = await this.categoryModel.findByIdAndDelete(id);
     if (!category) throw new NotFoundException('Category not found');
-    return `Song Category ${id} deleted Successfully`;
+    return `Song Category ${category} deleted Successfully`;
   }
 }
