@@ -5,7 +5,7 @@ import { Category, CategoryDocument } from './schema/category.schema';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 
 @Injectable()
-export class CategoryService {
+export class CategoriesService {
   constructor(@InjectModel(Category.name) private categoryModel: Model<CategoryDocument>) {}
 
   // Create a new category with DTO
@@ -23,8 +23,10 @@ export class CategoryService {
   }
 
   // Get Category by ID
-  async findById(id: string) {
-    return this.categoryModel.findById(id)
+  async getCategoryById(id: string) {
+    const category = await this.categoryModel.findById(id);
+    if (!category) throw new NotFoundException('Category not found');
+    return category;
   }
 
   // Update category with DTO
@@ -39,9 +41,8 @@ export class CategoryService {
 
   // Delete a category
   async deleteCategory(id: string) {
-    const category = await this.categoryModel.findById(id);
+    const category = await this.categoryModel.findByIdAndDelete(id);
     if (!category) throw new NotFoundException('Category not found');
-
-    return this.categoryModel.findByIdAndDelete(id);
+    return `Song Category ${id} deleted Successfully`;
   }
 }

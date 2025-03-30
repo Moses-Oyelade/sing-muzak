@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Rehearsal, RehearsalDocument } from './schema/rehearsal.schema';
@@ -54,7 +54,13 @@ export class RehearsalService {
     }
   
     rehearsal.attendees.push(userObjectId);
-    return await rehearsal.save();
+    await rehearsal.save();
+
+    return {
+      message: 'Attendance marked successfully',
+      rehearsalId: rehearsal._id,
+      attendees: rehearsal.attendees,
+    };
   }
   
 
@@ -67,12 +73,19 @@ export class RehearsalService {
     if (!rehearsal) throw new NotFoundException('Rehearsal not found');
   
     // Check if member is already in attendees
-    if (rehearsal.attendees.some(attendee => attendee?.equals(memberObjectId))) {
+    // if (rehearsal.attendees.some(attendee => attendee?.equals(memberObjectId))) {
+    if (rehearsal.attendees.some(attendee => attendee.equals(memberObjectId))) {
       throw new ForbiddenException('Member already marked present');
     }
   
     rehearsal.attendees.push(memberObjectId);
-    return await rehearsal.save();
+    await rehearsal.save();
+
+    return {
+      message: 'Member marked present successfully',
+      rehearsalId: rehearsal._id,
+      attendees: rehearsal.attendees,
+    };
   }
   
 
@@ -87,7 +100,13 @@ export class RehearsalService {
 
     // Correctly remove the member from attendees
     rehearsal.attendees = rehearsal.attendees.filter(attendee => !attendee.equals(new Types.ObjectId(memberId)));
-    return await rehearsal.save();
+    await rehearsal.save();
+
+    return {
+      message: 'Member Unmarked successfully',
+      rehearsalId: rehearsal._id,
+      attendees: rehearsal.attendees,
+    };
   }
 
   // Admin gets attendance list
@@ -100,8 +119,8 @@ export class RehearsalService {
 
   async getAttendanceReport(rehearsalId: string) {
     const rehearsal = await this.rehearsalModel
-      .findById(new Types.ObjectId(rehearsalId))
-      .populate('attendees', 'name voicePart') // Ensure user fields are populated
+      .findById(rehearsalId)
+      .populate({ path: 'attendees', select: 'name voicePart', model: 'User'}) // Ensure user fields are populated
       .exec();
   
     if (!rehearsal) throw new NotFoundException('Rehearsal not found');
@@ -130,7 +149,7 @@ export class RehearsalService {
   async getAttendanceReportByDateRange(startDate: string, endDate: string) {
     const rehearsals = await this.rehearsalModel
       .find({
-        date: { $gte: new Date(startDate), $lte: new Date(endDate) }
+        createdBy: { $gte: new Date(startDate), $lte: new Date(endDate) }
       })
       .populate('attendees', 'name voicePart').exec();
 
@@ -160,7 +179,7 @@ export class RehearsalService {
 
   async getAttendanceTrends(startDate: string, endDate: string) {
     const rehearsals = await this.rehearsalModel.find({
-      date: { $gte: new Date(startDate), $lte: new Date(endDate) }
+      createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) }
     });
 
     // Generate trend data

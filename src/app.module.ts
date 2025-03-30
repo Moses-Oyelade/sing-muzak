@@ -13,6 +13,8 @@ import { AnnouncementsModule } from './modules/announcements/announcements.modul
 import { AdminSeederService } from './Admin/adminSeeder.service';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from 'config/jwt.config';
+import { CategorySchema } from './modules/category/schema/category.schema';
+import { CategoriesModule } from './modules/category/categories.module';
 
 @Module({
   imports: [
@@ -35,7 +37,8 @@ import { jwtConstants } from 'config/jwt.config';
     RehearsalModule, // Handles rehearsals & attendance
     NotificationsModule, // Manages notifications
     GoogleDriveModule, // Manages files saving and retrieval
-    AnnouncementsModule
+    AnnouncementsModule,
+    CategoriesModule
   ],
   // providers: [JwtStrategy], // Global JWT strategy
   providers: [AdminSeederService], // Global 

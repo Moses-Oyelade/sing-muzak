@@ -18,10 +18,10 @@ import { AuthModule } from '../auth/auth.module';
       { name: Notification.name, schema: NotificationSchema },
     ]),
     AuthModule,
-    forwardRef(() => NotificationsModule), // ✅ Fix circular dependency
+    forwardRef(() => NotificationsModule), // Fix circular dependency
   ],
   controllers: [SongController],
   providers: [SongService, JwtService],
-  exports: [SongService], // ✅ Export services to prevent DI issues
+  exports: [SongService], // Export services to prevent DI issues
 })
 export class SongModule {}

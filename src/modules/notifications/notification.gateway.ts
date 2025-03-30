@@ -33,7 +33,7 @@ export class NotificationGateway {
   @WebSocketServer()
   server: Server;
 
-  constructor(@Inject(forwardRef(() => NotificationsService)) private notificationsService: NotificationsService) {} // ✅ Fix DI issue
+  constructor(@Inject(forwardRef(() => NotificationsService)) private notificationsService: NotificationsService) {} // Fix DI issue
 
   sendNotification(userId: string, message: string) {
     this.server.to(userId).emit('newNotification', message);

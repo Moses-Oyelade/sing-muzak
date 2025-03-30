@@ -23,21 +23,25 @@ export class RehearsalController {
     return this.rehearsalService.getRehearsals();
   }
 
-  // Members mark attendance
+  // Member marks their own attendance
   @Roles('member')
-  @Patch(':id/attendance')
-  async markAttendance(@Param('id') rehearsalId: string, @Req() req: any) {
-    return this.rehearsalService.markAttendance(rehearsalId, req.user.userId);
+  @Patch(':rehearsalId/attendance')
+  async markAttendance(
+    @Param('rehearsalId') rehearsalId: string,
+    @Body('userId') userId: string,
+  ) {
+    return this.rehearsalService.markAttendance(rehearsalId, userId);
   }
 
+  // Admin marks attendance for a member
   @Roles('admin')
-  @Patch(':id/attendance/admin')
+  @Patch(':rehearsalId/attendance/admin')
   async markAttendanceForMember(
-    @Param('id') rehearsalId: string,
+    @Param('rehearsalId') rehearsalId: string,
+    @Body('adminId') adminId: string,
     @Body('memberId') memberId: string,
-    @Req() req: any
   ) {
-      return this.rehearsalService.markAttendanceForMember(rehearsalId, memberId, req.user.userId);
+    return this.rehearsalService.markAttendanceForMember(rehearsalId, memberId, adminId);
   }
 
   // Admin remove member mistakenly marked in attendance
@@ -58,7 +62,7 @@ export class RehearsalController {
     return this.rehearsalService.getAttendance(rehearsalId);
   }
 
-  // Admin gets attendance report
+  // Admin gets attendance report for a specific rehearsal
   @Roles('admin')
   @Get(':id/attendance/report')
   async getAttendanceReport(@Param('id') rehearsalId: string) {

@@ -17,7 +17,8 @@ export class Rehearsal {
   @Prop({ default: '' })
   agenda: string;
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }], default: [], autopopulate: true, required: true })  
+  // @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }], default: [], autopopulate: true, required: true })  
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }], default: [] })  
   attendees: Types.ObjectId[]; // Stores user IDs of attendees
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })  
