@@ -12,8 +12,8 @@ export class Song extends AbstractDocument {
 
 //   @Prop()
 //   category: string; // e.g., "Worship", "Praise", "Hymn"
-  @Prop({ required: true, ref: 'Category' })  
-  category: string; // Reference to Category Schema
+  @Prop({ required: true, type: Types.ObjectId, ref: 'Category' })  
+  category: Types.ObjectId; // Reference to Category Schema
 
   @Prop()
   audioUrl: string; // Optional: link to an audio file
@@ -33,11 +33,10 @@ export class Song extends AbstractDocument {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   uploadedBy: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  @Prop({ type: Types.ObjectId, ref: 'User', required: false })
   suggestedBy: Types.ObjectId;
-
-
-  @Prop()
+  
+  @Prop({ type: Types.ObjectId, ref: 'User', required: false })
   approvedBy?: string; // Admin who approved/rejected
 }
 

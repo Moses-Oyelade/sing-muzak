@@ -14,12 +14,14 @@ export class RehearsalService {
 
   // Admin schedules a new rehearsal
   async scheduleRehearsal(date: Date, time: string, location: string, agenda: string, adminId: string) {
+    
+    const user = new this.userModel(adminId);
     const newRehearsal = new this.rehearsalModel({
       date,
       time,
       location,
       agenda,
-      createdBy: new Types.ObjectId(adminId), // Convert adminId to ObjectId
+      createdBy: user._id, // Convert adminId to ObjectId
       attendees: [],
     });
     return await newRehearsal.save();

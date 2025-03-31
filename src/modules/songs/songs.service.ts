@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Song } from './schema/song.schema';
@@ -6,17 +6,22 @@ import { Suggestion } from './schema/suggestion.schema';
 import { Category } from '../category/schema/category.schema';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationGateway } from '../notifications/notification.gateway';
-import { SuggestSongDto } from './dto/create-song.dto';
+import { CreateSongDto, SuggestSongDto, } from './dto/create-song.dto';
+import { GoogleDriveService } from 'src/google-drive/google-drive.service';
+import { User } from '../users/schema/users.schema';
 
 @Injectable()
 export class SongService {
+  
 
   constructor(
     @InjectModel(Category.name) private categoryModel: Model<Category>,
     @InjectModel(Song.name) private songModel: Model<Song>,
     @InjectModel(Suggestion.name) private suggestionModel: Model<Suggestion>,
+    @InjectModel(User.name) private userModel: Model<User>,
     private notificationService: NotificationsService,
     private readonly notificationGateway: NotificationGateway,
+    private readonly googleDriveService: GoogleDriveService, //Inject Google drive service
   ) {}
 
   // Suggest a new song (Default: Pending)
@@ -30,7 +35,7 @@ export class SongService {
   async suggestSong(suggestSongDto: SuggestSongDto) {
     const { title, artist, suggestedBy, songId } = suggestSongDto;
   
-    let song;
+    let song: any;
   
     if (songId) {
       // Check if song exists
@@ -45,11 +50,11 @@ export class SongService {
       if (!song) {
         // If song does not exist, create it
         song = new this.songModel({
-          title,
-          artist,
-          uploadedBy: suggestedBy, // Set the user who suggested as uploader
-          suggestedBy: suggestedBy,
-          status: 'pending' // You can add a 'pending' status for admin approval
+          ...suggestSongDto,
+          uploadedBy: new Types.ObjectId(suggestedBy), // Set the user who suggested as uploader
+          suggestedBy: new Types.ObjectId(suggestedBy),
+          status: 'Pending', // You can add a 'pending' status for admin approval
+          _id: new Types.ObjectId()
         });
   
         await song.save();
@@ -70,11 +75,59 @@ export class SongService {
       suggestion,
     };
   }
+
+  async createSong(createSongDto: CreateSongDto, file: Express.Multer.File, userId: string) {
+
+    const { title, artist, category, uploadedBy } = createSongDto;
+    
+    let audioUrl: any;
+    let sheetMusicUrl: any;
+
+    // const existingSong = await this.songModel.findOne(createSongDto);
+    const existingSong = await this.songModel.findOne({ title, artist });
+    if (existingSong){
+      throw new BadRequestException('Song already exist!');
+    }
+
+    const songCategory = await this.categoryModel.findOne({ name: category });
+    if (!songCategory){
+      throw new NotFoundException(`Category "${category}" does not exist.`);
+    }
+
+    if (file) {
+      // Upload file to Google Drive
+      const uploadedFile = await this.googleDriveService.uploadFile(file);
+      audioUrl = uploadedFile.webViewLink; // Get the Google Drive URL
+    }
+
+    const newSong = new this.songModel({
+      ...createSongDto,
+      uploadedBy: new Types.ObjectId(uploadedBy),
+      suggestedBy: 'Not Assigned',
+      category: songCategory._id,
+      audioUrl: audioUrl,
+      _id: new Types.ObjectId(),
+    });
+
+    await newSong.save();
+    
+    // return `New Song ${newSong.title}`;
+    return {
+      message: 'Song uploaded successfully',
+      newSong,
+    };
+  }
   
 
   // Get all songs (Admin can filter by status)
   async getAllSongs(status?: string) {
     const filter = status ? { status } : {};
+    return this.songModel.find(filter);
+  }
+
+  // Get all songs (Admin can filter by category)
+  async getAllSongsByCategory(category?: string) {
+    const filter = category ? { category } : {};
     return this.songModel.find(filter);
   }
 
@@ -89,9 +142,13 @@ export class SongService {
     }
 
     const song = await this.songModel.findById(songId);
-    if (!song) throw new NotFoundException('Song not found');
+    if (!song) throw new NotFoundException('Song not found!');
+
+    // const user = await this.userModel.findById(adminId)
+    // if (!user) throw new NotFoundException('User not found!');
 
     song.status = status;
+    // song.approvedBy = user._id;
     song.approvedBy = adminId;
     await song.save();
 
@@ -102,7 +159,8 @@ export class SongService {
       song.uploadedBy.toString(),
       message
     );
-    return song;
+    this.notificationGateway.sendNotification(song.uploadedBy.toString(), message);
+    return { song };
   }
 
   async deleteSong(songId: string): Promise<string> {

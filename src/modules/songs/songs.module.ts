@@ -9,6 +9,10 @@ import { Notification, NotificationSchema } from '../notifications/schema/notifi
 import { JwtService } from '@nestjs/jwt';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { AuthModule } from '../auth/auth.module';
+import { Suggestion, SuggestionSchema } from './schema/suggestion.schema';
+import { GoogleDriveModule } from 'src/google-drive/google-drive.module';
+import { User } from '../users/users.module';
+import { UserSchema } from '../users/schema/users.schema';
 
 @Module({
   imports: [
@@ -16,8 +20,11 @@ import { AuthModule } from '../auth/auth.module';
       { name: Song.name, schema: SongSchema },
       { name: Category.name, schema: CategorySchema },
       { name: Notification.name, schema: NotificationSchema },
+      { name: Suggestion.name, schema: SuggestionSchema },
+      { name: User.name, schema: UserSchema },
     ]),
     AuthModule,
+    GoogleDriveModule,
     forwardRef(() => NotificationsModule), // Fix circular dependency
   ],
   controllers: [SongController],
