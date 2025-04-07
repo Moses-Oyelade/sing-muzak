@@ -22,10 +22,24 @@ let NotificationGateway = class NotificationGateway {
         this.notificationsService = notificationsService;
     }
     sendNotification(userId, message) {
-        this.server.to(userId).emit('newNotification', message);
+        this.server.emit(`Notification: ${userId}`, { message });
     }
     handleJoin(userId, client) {
         client.join(userId);
+    }
+    broadcastNewSong(song) {
+        this.server.emit('notification', {
+            type: 'new_upload',
+            songId: song._id,
+            song,
+        });
+    }
+    broadcastStatusUpdate(song) {
+        this.server.emit('notification', {
+            type: 'status_update',
+            songId: song._id,
+            status: song.status,
+        });
     }
 };
 exports.NotificationGateway = NotificationGateway;
@@ -41,7 +55,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], NotificationGateway.prototype, "handleJoin", null);
 exports.NotificationGateway = NotificationGateway = __decorate([
-    (0, websockets_1.WebSocketGateway)({ cors: true }),
+    (0, websockets_1.WebSocketGateway)({ cors: { origin: '*', }, }),
     __param(0, (0, common_1.Inject)((0, common_1.forwardRef)(() => notifications_service_1.NotificationsService))),
     __metadata("design:paramtypes", [notifications_service_1.NotificationsService])
 ], NotificationGateway);

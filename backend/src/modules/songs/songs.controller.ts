@@ -5,7 +5,7 @@ import { RolesGuard } from '../auth/roles/roles.guard';
 import { Roles } from '../auth/roles/roles.decorator';
 import { Song } from './schema/song.schema';
 import { CreateSongDto, SuggestSongDto } from './dto/create-song.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('songs')
 export class SongController {
@@ -19,23 +19,38 @@ export class SongController {
   }
 
   // Upload/Create a song (Any authenticated user)
-  @UseGuards(JwtAuthGuard)
-  @Post('create')
-  @UseInterceptors(FileInterceptor('file'))
+  // @UseGuards(JwtAuthGuard)
+  @Post('upload')
+  @UseInterceptors(FileFieldsInterceptor([
+    { name: 'audio', maxCount: 1 },
+    { name: 'pdf', maxCount: 1 }
+  ]))
   CreateSong(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: { audio?: Express.Multer.File[], pdf?: Express.Multer.File[] },
     @Body() createSongDto: CreateSongDto,
     @Req() req: any,
   ) {
-    return this.songService.createSong(createSongDto, file, req.user.id);
+    return this.songService.uploadSong(createSongDto, file, req.user.id);
   }
 
   // Get all songs (Admins can filter by status)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles('admin', 'user')
   @Get()
   getAllSongs(@Query('status') status?: string) {
     return this.songService.getAllSongs(status);
+  }
+
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles('admin')
+  @Get()
+  async getSongs(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('status') status?: string,
+    @Query('category') category?: string,
+  ) {
+    return this.songService.getAllSongsWithFilters(+page, +limit, status, category);
   }
 
   // Get all songs (Admins can filter by status)

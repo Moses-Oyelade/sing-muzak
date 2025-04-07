@@ -25,11 +25,6 @@ __decorate([
     __metadata("design:type", String)
 ], CreateSongDto.prototype, "artist", void 0);
 __decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsMongoId)(),
-    __metadata("design:type", String)
-], CreateSongDto.prototype, "uploadedBy", void 0);
-__decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
@@ -44,6 +39,16 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateSongDto.prototype, "sheetMusicUrl", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsMongoId)(),
+    __metadata("design:type", String)
+], CreateSongDto.prototype, "uploadedBy", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsMongoId)({ message: 'suggestedBy must be a valid MongoDB ObjectId' }),
+    __metadata("design:type", String)
+], CreateSongDto.prototype, "suggestedBy", void 0);
 class SuggestSongDto {
 }
 exports.SuggestSongDto = SuggestSongDto;
@@ -58,7 +63,7 @@ __decorate([
     __metadata("design:type", String)
 ], SuggestSongDto.prototype, "artist", void 0);
 __decorate([
-    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsMongoId)({ message: 'suggestedBy must be a valid MongoDB ObjectId' }),
     __metadata("design:type", String)
 ], SuggestSongDto.prototype, "suggestedBy", void 0);
 __decorate([

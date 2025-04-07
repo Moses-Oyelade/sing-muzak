@@ -13,7 +13,10 @@ export declare class SongController {
             __v: number;
         };
     }>;
-    CreateSong(file: Express.Multer.File, createSongDto: CreateSongDto, req: any): Promise<{
+    CreateSong(file: {
+        audio?: Express.Multer.File[];
+        pdf?: Express.Multer.File[];
+    }, createSongDto: CreateSongDto, req: any): Promise<{
         message: string;
         newSong: import("mongoose").Document<unknown, {}, Song> & Song & Required<{
             _id: import("mongoose").Types.ObjectId;
@@ -26,6 +29,23 @@ export declare class SongController {
     }> & {
         __v: number;
     })[]>;
+    getSongs(page?: number, limit?: number, status?: string, category?: string): Promise<{
+        data: never[];
+        total: number;
+        page?: undefined;
+        limit?: undefined;
+        totalPages?: undefined;
+    } | {
+        data: (import("mongoose").Document<unknown, {}, Song> & Song & Required<{
+            _id: import("mongoose").Types.ObjectId;
+        }> & {
+            __v: number;
+        })[];
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+    }>;
     getAllSongsByCategory(category?: string): Promise<(import("mongoose").Document<unknown, {}, Song> & Song & Required<{
         _id: import("mongoose").Types.ObjectId;
     }> & {

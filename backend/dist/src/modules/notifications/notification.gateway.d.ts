@@ -6,4 +6,6 @@ export declare class NotificationGateway {
     constructor(notificationsService: NotificationsService);
     sendNotification(userId: string, message: string): void;
     handleJoin(userId: string, client: any): void;
+    broadcastNewSong(song: any): void;
+    broadcastStatusUpdate(song: any): void;
 }

@@ -9,10 +9,6 @@ export class CreateSongDto {
     @IsString()
     artist: string;
   
-    @IsNotEmpty()
-    @IsMongoId()
-    uploadedBy: string;  // Should be a valid ObjectId
-  
     @IsOptional()
     @IsString()
     category: string
@@ -24,6 +20,15 @@ export class CreateSongDto {
     @IsOptional()
     @IsString()
     sheetMusicUrl: string;
+  
+    @IsNotEmpty()
+    @IsMongoId()
+    uploadedBy: string;  // Should be a valid ObjectId
+  
+    @IsOptional()
+    @IsMongoId({ message: 'suggestedBy must be a valid MongoDB ObjectId' })
+    suggestedBy?: string;
+    
   }
 
 export class SuggestSongDto {
@@ -36,7 +41,7 @@ export class SuggestSongDto {
     @IsString()
     artist?: string; // For new song
     
-    @IsString()
+    @IsMongoId({ message: 'suggestedBy must be a valid MongoDB ObjectId' })
     suggestedBy: string; // User suggesting the song
     
     @IsOptional()

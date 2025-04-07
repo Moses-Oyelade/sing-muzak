@@ -1,15 +1,16 @@
 import { Types } from 'mongoose';
 import { AbstractDocument } from 'src/modules/common/abstract.schema';
+import { User } from 'src/modules/users/users.module';
 export declare class Song extends AbstractDocument {
     title: string;
     artist: string;
     category: Types.ObjectId;
-    audioUrl: string;
-    sheetMusicUrl: string;
     status: string;
     uploadedBy: Types.ObjectId;
     suggestedBy: Types.ObjectId;
-    approvedBy?: string;
+    audioUrl: string;
+    sheetMusicUrl: string;
+    approvedBy?: Types.ObjectId | User;
 }
 export declare const SongSchema: import("mongoose").Schema<Song, import("mongoose").Model<Song, any, any, any, import("mongoose").Document<unknown, any, Song> & Song & Required<{
     _id: Types.ObjectId;

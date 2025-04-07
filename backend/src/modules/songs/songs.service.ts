@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { isValidObjectId, Model, Types } from 'mongoose';
 import { Song } from './schema/song.schema';
 import { Suggestion } from './schema/suggestion.schema';
 import { Category } from '../category/schema/category.schema';
@@ -53,6 +53,7 @@ export class SongService {
           ...suggestSongDto,
           uploadedBy: new Types.ObjectId(suggestedBy), // Set the user who suggested as uploader
           suggestedBy: new Types.ObjectId(suggestedBy),
+          // suggestedBy: song.suggestedBy.name,
           status: 'Pending', // You can add a 'pending' status for admin approval
           _id: new Types.ObjectId()
         });
@@ -64,7 +65,7 @@ export class SongService {
     // Save the suggestion entry
     const suggestion = new this.suggestionModel({
       song: song._id,
-      suggestedBy,
+      suggestedBy: new Types.ObjectId(suggestedBy),
     });
   
     await suggestion.save();
@@ -76,12 +77,17 @@ export class SongService {
     };
   }
 
-  async createSong(createSongDto: CreateSongDto, file: Express.Multer.File, userId: string) {
-
+  async uploadSong(
+    createSongDto: CreateSongDto, 
+    files: { audio?: Express.Multer.File[], pdf?: Express.Multer.File[] }, 
+    userId: string
+  ) {
     const { title, artist, category, uploadedBy } = createSongDto;
     
-    let audioUrl: any;
-    let sheetMusicUrl: any;
+    // Basic field validation
+    if (!title || !artist || !category) {
+      throw new BadRequestException('Missing required fields');
+    }
 
     // const existingSong = await this.songModel.findOne(createSongDto);
     const existingSong = await this.songModel.findOne({ title, artist });
@@ -94,22 +100,38 @@ export class SongService {
       throw new NotFoundException(`Category "${category}" does not exist.`);
     }
 
-    if (file) {
+    // Upload audio if present
+    let audioUrl: string | undefined;
+    if (files?.audio?.[0]) {
       // Upload file to Google Drive
-      const uploadedFile = await this.googleDriveService.uploadFile(file);
-      audioUrl = uploadedFile.webViewLink; // Get the Google Drive URL
+      const audioUpload = await this.googleDriveService.uploadFile(files.audio[0]);
+      audioUrl = audioUpload.webViewLink; // Get the Google Drive URL
+    }
+
+    // Upload PDF if present
+    let sheetMusicUrl: string | undefined;
+    if (files?.pdf?.[0]) {
+      // Upload file to Google Drive
+      const pdfUpload = await this.googleDriveService.uploadFile(files.pdf[0]);
+      sheetMusicUrl = pdfUpload.webViewLink; // Get the Google Drive URL
     }
 
     const newSong = new this.songModel({
       ...createSongDto,
-      uploadedBy: new Types.ObjectId(uploadedBy),
-      suggestedBy: 'Not Assigned',
       category: songCategory._id,
-      audioUrl: audioUrl,
+      uploadedBy: new Types.ObjectId(uploadedBy),
+      suggestedBy: isValidObjectId(createSongDto.suggestedBy) ? new Types.ObjectId(createSongDto.suggestedBy) : null,
+      audioUrl,
+      sheetMusicUrl,
+      status: 'Pending',
       _id: new Types.ObjectId(),
     });
+    console.log('createSongDto:', createSongDto);
+    console.log('suggestedBy valid:', isValidObjectId(createSongDto.suggestedBy));
+
 
     await newSong.save();
+    this.notificationGateway.broadcastNewSong(newSong); // after saving new song
     
     // return `New Song ${newSong.title}`;
     return {
@@ -122,13 +144,17 @@ export class SongService {
   // Get all songs (Admin can filter by status)
   async getAllSongs(status?: string) {
     const filter = status ? { status } : {};
-    return this.songModel.find(filter);
+    return this.songModel
+      .find(filter)
+      .populate('suggestedBy', 'name email');
   }
 
   // Get all songs (Admin can filter by category)
   async getAllSongsByCategory(category?: string) {
     const filter = category ? { category } : {};
-    return this.songModel.find(filter);
+    return this.songModel
+      .find(filter);
+      // .populate('category');
   }
 
   async findById(id: string): Promise<Song | null> {
@@ -144,13 +170,15 @@ export class SongService {
     const song = await this.songModel.findById(songId);
     if (!song) throw new NotFoundException('Song not found!');
 
-    // const user = await this.userModel.findById(adminId)
-    // if (!user) throw new NotFoundException('User not found!');
+    const admin = await this.userModel.findById(adminId)
+    if (!admin) throw new NotFoundException('User not found!');
 
     song.status = status;
-    // song.approvedBy = user._id;
-    song.approvedBy = adminId;
+    song.approvedBy = admin._id;
+    // song.approvedBy = adminId;
     await song.save();
+
+    this.notificationGateway.broadcastStatusUpdate(song); // after approving/postponing
 
     const message = `Your song "${song.title}" has been ${status}.`
     
@@ -170,6 +198,47 @@ export class SongService {
     } catch (error) {
       throw new Error(`Failed to delete file: ${error.message}`);
     }
+  }
+
+  //songs with filters and pagination
+  async getAllSongsWithFilters(
+    page: number,
+    limit: number,
+    status?: string,
+    categoryName?: string,
+  ) {
+    const filter: any = {};
+  
+    if (status) {
+      filter.status = status;
+    }
+  
+    if (categoryName) {
+      const category = await this.categoryModel.findOne({ name: categoryName });
+      if (category) {
+        filter.category = category._id;
+      } else {
+        // No category match found
+        return { data: [], total: 0 };
+      }
+    }
+  
+    const total = await this.songModel.countDocuments(filter);
+    const songs = await this.songModel
+      .find(filter)
+      .populate('category', 'name')
+      .populate('suggestedBy', 'fullName email')
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort({ createdAt: -1 }); // Latest first
+  
+    return {
+      data: songs,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
   
 }

@@ -28,10 +28,13 @@ let SongController = class SongController {
         return this.songService.suggestSong(suggestSongDto);
     }
     CreateSong(file, createSongDto, req) {
-        return this.songService.createSong(createSongDto, file, req.user.id);
+        return this.songService.uploadSong(createSongDto, file, req.user.id);
     }
     getAllSongs(status) {
         return this.songService.getAllSongs(status);
+    }
+    async getSongs(page = 1, limit = 10, status, category) {
+        return this.songService.getAllSongsWithFilters(+page, +limit, status, category);
     }
     getAllSongsByCategory(category) {
         return this.songService.getAllSongsByCategory(category);
@@ -60,9 +63,11 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], SongController.prototype, "suggestSong", null);
 __decorate([
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
-    (0, common_1.Post)('create'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    (0, common_1.Post)('upload'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileFieldsInterceptor)([
+        { name: 'audio', maxCount: 1 },
+        { name: 'pdf', maxCount: 1 }
+    ])),
     __param(0, (0, common_1.UploadedFile)()),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.Req)()),
@@ -71,14 +76,22 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], SongController.prototype, "CreateSong", null);
 __decorate([
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)('admin'),
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)('status')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], SongController.prototype, "getAllSongs", null);
+__decorate([
+    (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)('status')),
+    __param(3, (0, common_1.Query)('category')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object, String, String]),
+    __metadata("design:returntype", Promise)
+], SongController.prototype, "getSongs", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('admin'),

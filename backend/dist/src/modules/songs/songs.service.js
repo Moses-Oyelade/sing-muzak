@@ -57,7 +57,7 @@ let SongService = class SongService {
         }
         const suggestion = new this.suggestionModel({
             song: song._id,
-            suggestedBy,
+            suggestedBy: new mongoose_2.Types.ObjectId(suggestedBy),
         });
         await suggestion.save();
         return {
@@ -66,10 +66,11 @@ let SongService = class SongService {
             suggestion,
         };
     }
-    async createSong(createSongDto, file, userId) {
+    async uploadSong(createSongDto, files, userId) {
         const { title, artist, category, uploadedBy } = createSongDto;
-        let audioUrl;
-        let sheetMusicUrl;
+        if (!title || !artist || !category) {
+            throw new common_1.BadRequestException('Missing required fields');
+        }
         const existingSong = await this.songModel.findOne({ title, artist });
         if (existingSong) {
             throw new common_1.BadRequestException('Song already exist!');
@@ -78,19 +79,30 @@ let SongService = class SongService {
         if (!songCategory) {
             throw new common_1.NotFoundException(`Category "${category}" does not exist.`);
         }
-        if (file) {
-            const uploadedFile = await this.googleDriveService.uploadFile(file);
-            audioUrl = uploadedFile.webViewLink;
+        let audioUrl;
+        if (files?.audio?.[0]) {
+            const audioUpload = await this.googleDriveService.uploadFile(files.audio[0]);
+            audioUrl = audioUpload.webViewLink;
+        }
+        let sheetMusicUrl;
+        if (files?.pdf?.[0]) {
+            const pdfUpload = await this.googleDriveService.uploadFile(files.pdf[0]);
+            sheetMusicUrl = pdfUpload.webViewLink;
         }
         const newSong = new this.songModel({
             ...createSongDto,
-            uploadedBy: new mongoose_2.Types.ObjectId(uploadedBy),
-            suggestedBy: 'Not Assigned',
             category: songCategory._id,
-            audioUrl: audioUrl,
+            uploadedBy: new mongoose_2.Types.ObjectId(uploadedBy),
+            suggestedBy: (0, mongoose_2.isValidObjectId)(createSongDto.suggestedBy) ? new mongoose_2.Types.ObjectId(createSongDto.suggestedBy) : null,
+            audioUrl,
+            sheetMusicUrl,
+            status: 'Pending',
             _id: new mongoose_2.Types.ObjectId(),
         });
+        console.log('createSongDto:', createSongDto);
+        console.log('suggestedBy valid:', (0, mongoose_2.isValidObjectId)(createSongDto.suggestedBy));
         await newSong.save();
+        this.notificationGateway.broadcastNewSong(newSong);
         return {
             message: 'Song uploaded successfully',
             newSong,
@@ -98,11 +110,14 @@ let SongService = class SongService {
     }
     async getAllSongs(status) {
         const filter = status ? { status } : {};
-        return this.songModel.find(filter);
+        return this.songModel
+            .find(filter)
+            .populate('suggestedBy', 'name email');
     }
     async getAllSongsByCategory(category) {
         const filter = category ? { category } : {};
-        return this.songModel.find(filter);
+        return this.songModel
+            .find(filter);
     }
     async findById(id) {
         return this.songModel.findById(id).exec();
@@ -114,9 +129,13 @@ let SongService = class SongService {
         const song = await this.songModel.findById(songId);
         if (!song)
             throw new common_1.NotFoundException('Song not found!');
+        const admin = await this.userModel.findById(adminId);
+        if (!admin)
+            throw new common_1.NotFoundException('User not found!');
         song.status = status;
-        song.approvedBy = adminId;
+        song.approvedBy = admin._id;
         await song.save();
+        this.notificationGateway.broadcastStatusUpdate(song);
         const message = `Your song "${song.title}" has been ${status}.`;
         await this.notificationService.sendNotification(song.uploadedBy.toString(), message);
         this.notificationGateway.sendNotification(song.uploadedBy.toString(), message);
@@ -130,6 +149,36 @@ let SongService = class SongService {
         catch (error) {
             throw new Error(`Failed to delete file: ${error.message}`);
         }
+    }
+    async getAllSongsWithFilters(page, limit, status, categoryName) {
+        const filter = {};
+        if (status) {
+            filter.status = status;
+        }
+        if (categoryName) {
+            const category = await this.categoryModel.findOne({ name: categoryName });
+            if (category) {
+                filter.category = category._id;
+            }
+            else {
+                return { data: [], total: 0 };
+            }
+        }
+        const total = await this.songModel.countDocuments(filter);
+        const songs = await this.songModel
+            .find(filter)
+            .populate('category', 'name')
+            .populate('suggestedBy', 'fullName email')
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .sort({ createdAt: -1 });
+        return {
+            data: songs,
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit),
+        };
     }
 };
 exports.SongService = SongService;

@@ -29,14 +29,6 @@ __decorate([
     __metadata("design:type", mongoose_2.Types.ObjectId)
 ], Song.prototype, "category", void 0);
 __decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", String)
-], Song.prototype, "audioUrl", void 0);
-__decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", String)
-], Song.prototype, "sheetMusicUrl", void 0);
-__decorate([
     (0, mongoose_1.Prop)({ default: 'Pending', enum: ['Pending', 'Approved', 'Postponed'] }),
     __metadata("design:type", String)
 ], Song.prototype, "status", void 0);
@@ -45,12 +37,20 @@ __decorate([
     __metadata("design:type", mongoose_2.Types.ObjectId)
 ], Song.prototype, "uploadedBy", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: 'User', required: false }),
+    (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: 'User', default: null }),
     __metadata("design:type", mongoose_2.Types.ObjectId)
 ], Song.prototype, "suggestedBy", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: 'User', required: false }),
+    (0, mongoose_1.Prop)({ required: false }),
     __metadata("design:type", String)
+], Song.prototype, "audioUrl", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: false }),
+    __metadata("design:type", String)
+], Song.prototype, "sheetMusicUrl", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: 'User', required: false }),
+    __metadata("design:type", Object)
 ], Song.prototype, "approvedBy", void 0);
 exports.Song = Song = __decorate([
     (0, mongoose_1.Schema)({ timestamps: true })

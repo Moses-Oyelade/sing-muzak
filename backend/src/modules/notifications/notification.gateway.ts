@@ -28,7 +28,8 @@ import { Server } from 'socket.io';
 import { NotificationsService } from './notifications.service';
 import { Inject, forwardRef } from '@nestjs/common';
 
-@WebSocketGateway({ cors: true })
+// @WebSocketGateway({ cors: true })
+@WebSocketGateway({ cors: { origin: '*', }, })
 export class NotificationGateway {
   @WebSocketServer()
   server: Server;
@@ -36,12 +37,29 @@ export class NotificationGateway {
   constructor(@Inject(forwardRef(() => NotificationsService)) private notificationsService: NotificationsService) {} // Fix DI issue
 
   sendNotification(userId: string, message: string) {
-    this.server.to(userId).emit('newNotification', message);
+    // this.server.to(userId).emit('newNotification', message);
+    this.server.emit(`Notification: ${userId}`, {message});
   }
 
   @SubscribeMessage('join')
   handleJoin(@MessageBody() userId: string, client: any) {
     client.join(userId);
+  }
+
+  broadcastNewSong(song: any) {
+    this.server.emit('notification', {
+      type: 'new_upload',
+      songId: song._id,
+      song,
+    });
+  }
+
+  broadcastStatusUpdate(song: any) {
+    this.server.emit('notification', {
+      type: 'status_update',
+      songId: song._id,
+      status: song.status,
+    });
   }
 }
 
