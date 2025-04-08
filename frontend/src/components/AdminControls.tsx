@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchFilterSongs } from "@/utils/api";
+// import { fetchFilterSongs } from "@/utils/api";
 import io from "socket.io-client";
 
 const socket = io("http://localhost:3000");
@@ -70,7 +70,7 @@ export default function AdminDash() {
         >
           <option value="">All Status</option>
           <option value="Approved">Approved</option>
-          {/* <option value="Pending">Pending</option> */}
+          <option value="Pending">Pending</option>
           <option value="Postponed">Postponed</option>
         </select>
 
