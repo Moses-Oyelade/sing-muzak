@@ -33,9 +33,20 @@ export class SongController {
     return this.songService.uploadSong(createSongDto, file, req.user.id);
   }
 
+  // GET /songs?search=choir
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'user')
+  @Get()
+  async findAll(@Query('search') search?: string) {
+    if (search) {
+      return this.songService.searchSongs(search);
+    }
+    return this.songService.getAllSongs();
+  }
+
   // Get all songs (Admins can filter by status)
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('admin', 'user')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'user')
   @Get()
   getAllSongs(@Query('status') status?: string) {
     return this.songService.getAllSongs(status);

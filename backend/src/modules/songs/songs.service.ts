@@ -157,8 +157,25 @@ export class SongService {
       // .populate('category');
   }
 
+  //Search songs by title, artist and category
+  async searchSongs(term: string) {
+    return this.songModel.find({
+      $or: [
+        { title: new RegExp(term, 'i') },
+        { artist: new RegExp(term, 'i') },
+        { category: new RegExp(term, 'i') },
+      ],
+    });
+  }
+  
+
   async findById(id: string): Promise<Song | null> {
     return this.songModel.findById(id).exec();
+  }
+
+  // Get Suggestions by User
+  async getSuggestionsByUser(userId: string) {
+    return this.songModel.find({ suggestedBy: userId });
   }
 
   // Approve or reject a song (Admin only)
