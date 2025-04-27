@@ -4,24 +4,22 @@
 
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const LogoutPage = () => {
   const router = useRouter();
 
-  const handleLogout = () => {
-    signOut({ callbackUrl: "/" }); // Redirect to home after logging out
-  };
+  useEffect(() => {
+    const handleLogout = async () => {
+      await signOut({ redirect: false }); // Redirect to home after logging out
+      router.push('/')
+    };
 
-  return (
-    <div className="flex justify-center items-center h-screen">
-      <button
-        onClick={handleLogout}
-        className="bg-red-500 text-white py-2 px-6 rounded"
-      >
-        Logout
-      </button>
-    </div>
-  );
+    handleLogout();
+  }, [router]);
+
+
+  return <p>Logging out...</p>;
 };
 
 export default LogoutPage;

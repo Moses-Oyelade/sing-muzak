@@ -15,6 +15,7 @@
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hot-toast": "^2.5.2",
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
@@ -33,7 +34,7 @@
   "description": "This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).",
   "main": "index.js",
   "keywords": [],
-  "author": "",
+  "author": "Moses Oyelade",
   "license": "ISC",
   "type": "commonjs"
 }

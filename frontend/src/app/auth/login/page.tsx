@@ -9,11 +9,13 @@ import { useRouter } from "next/navigation";
 const LoginPage = () => {
   const router = useRouter();
 //   const [email, setEmail] = useState("");
-    const [phone, setPhone] = useState('')
+  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+
   const handleLogin = async (e: React.FormEvent) => {
+
     e.preventDefault();
 
     const res = await signIn("credentials", {
@@ -22,7 +24,7 @@ const LoginPage = () => {
       phone,
       password,
     });
-
+    
     if (res?.error) {
       setError("Invalid phone number or password");
     } else {
@@ -31,7 +33,12 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex flex-col justify-center items-center h-screen">
+        <a href= '/'>
+          <p className="w-10 p-3 border rounded">
+          <b>X</b>
+          </p>
+        </a>
         <form
             onSubmit={handleLogin}
             className="max-w-sm w-full bg-white p-8 rounded shadow-lg"

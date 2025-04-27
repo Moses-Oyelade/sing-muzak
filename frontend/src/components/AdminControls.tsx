@@ -1,52 +1,63 @@
 "use client";
 
+import axiosInstance from "@/utils/axios";
 import { useEffect, useState } from "react";
-// import { fetchFilterSongs } from "@/utils/api";
+import { toast } from "react-hot-toast";
 import io from "socket.io-client";
 
 const socket = io("http://localhost:3000");
 
-export default function AdminDash() {
+export default function AdminControls() {
   const [songs, setSongs] = useState([]);
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusTab, setStatusTab] = useState("All");
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [categories, setCategories] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   const getSongs = async () => {
-    // try {
-    //   const data = await fetchFilterSongs({
-    //     page,
-    //     status: statusFilter,
-    //     category: categoryFilter,
-    //   });
-    //   setSongs(data.data);
-    //   setTotalPages(data.totalPages);
-    // } catch (err) {
-    //   console.error("Error loading songs:", err);
-    // }
+    setLoading(true);
     try {
-      const res = await fetch(`/api/songs?page=${page}&status=${statusFilter}&category=${categoryFilter}`);
-      const data = await res.json();
-      setSongs(data.data);
-      setTotalPages(data.totalPages);
+      const data = await axiosInstance.get(
+        `/songs?page=${page}&status=${statusTab}&search=${categoryFilter}`
+      );
+      // const data = await res.json();
+      setSongs(data.data || []);
+      setTotalPages(data.data.totalPages || 1);
     } catch (err) {
       console.error("Error loading songs:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getCategories = async () => {
+    try {
+      const res = await axiosInstance.get("/songs/category");
+      const data = res.data
+      setCategories(data || []);
+    } catch (err) {
+      console.error("Failed to load categories", err);
     }
   };
 
   useEffect(() => {
     getSongs();
-  }, [statusFilter, categoryFilter, page]);
+  }, [statusTab, categoryFilter, page]);
 
   useEffect(() => {
+    getCategories();
+
     socket.on("song:uploaded", (newSong) => {
-      alert(`🎶 New song uploaded: ${newSong.title}`);
+      toast.success(`🎶 New song uploaded: ${newSong.title}`);
       getSongs();
     });
 
     socket.on("song:status-updated", (updatedSong) => {
-      alert(`✅ Song status updated: ${updatedSong.title} is now ${updatedSong.status}`);
+      toast.success(
+        `✅ ${updatedSong.title} status updated to ${updatedSong.status}`
+      );
       getSongs();
     });
 
@@ -56,64 +67,125 @@ export default function AdminDash() {
     };
   }, []);
 
+  const updateSongStatus = async (songId: string, newStatus: string) => {
+    const confirmAction = window.confirm(`Are you sure you want to ${newStatus.toLowerCase()} this song?`);
+
+    if (!confirmAction) return; // If user cancels, do nothing
+    
+    try {
+      await axiosInstance.patch(`/songs/${songId}/status`, {
+        status: newStatus,
+      });
+      toast.success(`Song ${newStatus.toLowerCase()} successfully`);
+      getSongs();
+    } catch (err) {
+      toast.error("Failed to update song status");
+    }
+  };
 
   return (
-    <div className="p-6">
+    <div className="p-6 max-w-5xl mx-auto ">
       <h2 className="text-xl font-bold mb-4">Admin Dashboard</h2>
+
+      {/* Tabs */}
+      <div className="flex gap-4 mb-4">
+        {["All", "Approved", "Pending", "Postponed"].map((tab) => (
+          <button
+            key={tab}
+            className={`px-3 py-1 rounded ${
+              statusTab === tab
+                ? "bg-purple-600 text-white"
+                : "bg-gray-200 text-black"
+            }`}
+            onClick={() => {
+              setStatusTab(tab);
+              setPage(1);
+            }}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
 
       {/* Filters */}
       <div className="flex gap-4 mb-4">
         <select
           className="border p-2"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
-          <option value="">All Status</option>
-          <option value="Approved">Approved</option>
-          <option value="Pending">Pending</option>
-          <option value="Postponed">Postponed</option>
-        </select>
-
-        <select
-          className="border p-2"
           value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
+          onChange={(e) => {
+            setCategoryFilter(e.target.value);
+            setPage(1);
+          }}
         >
           <option value="">All Categories</option>
-          <option value="Worship">Worship</option>
-          <option value="Praise">Praise</option>
-          {/* Dynamically load from backend later */}
+          {categories.map((cat: any) => (
+            <option key={cat._id} value={cat.name}>
+              {cat.name}
+            </option>
+          ))}
         </select>
       </div>
 
       {/* Song List */}
-      <div className="grid gap-4">
-        {songs.map((song: any) => (
-          <div key={song._id} className="border p-4 rounded shadow-sm bg-white">
-            <h3 className="text-lg font-semibold">{song.title}</h3>
-            <p className="text-sm">Artist: {song.artist}</p>
-            <p className="text-sm">Category: {song.category?.name}</p>
-            <p className="text-sm">Status: {song.status}</p>
+      {loading ? (
+        <p className="text-center text-gray-600 animate-spin rounded-full h-4 w-4 border-t-2 border-white">Loading songs...</p>
+      ) : songs.length === 0 ? (
+        <p className="text-center text-gray-500">No songs found.</p>
+      ) : (
+        <div className="grid gap-4">
+          {songs.map((song: any) => (
+            <div
+              key={song._id}
+              className="border p-4 rounded shadow-sm bg-white"
+            >
+              <h3 className="text-lg font-semibold">{song.title}</h3>
+              <p className="text-sm">Artist: {song.artist}</p>
+              <p className="text-sm">Category: {song.category?.name}</p>
+              <p className="text-sm">Status: {song.status}</p>
 
-            {/* Actions */}
-            <div className="mt-2 flex gap-2">
-              <button className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
-                Approve
-              </button>
-              <button className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">
-                Postpone
-              </button>
+              {/* PDF Preview */}
+              {song.sheetMusicUrl && (
+                <iframe
+                  src={song.sheetMusicUrl}
+                  className="w-full h-40 border mt-2"
+                  title={`Sheet music for ${song.title}`}
+                />
+              )}
+
+              {/* Audio Preview */}
+              {song.audioUrl && (
+                <audio controls className="mt-2 w-full">
+                  <source src={song.audioUrl} type="audio/mpeg" />
+                  Your browser does not support the audio element.
+                </audio>
+              )}
+
+              {/* Actions */}
+              <div className="mt-3 flex gap-2">
+                <button
+                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                  onClick={() => updateSongStatus(song._id, "Approved")}
+                >
+                  Approve
+                </button>
+                <button
+                  className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
+                  onClick={() => updateSongStatus(song._id, "Postponed")}
+                >
+                  Postpone
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Pagination */}
       <div className="mt-6 flex justify-center gap-4">
         <button
           disabled={page <= 1}
           onClick={() => setPage((p) => p - 1)}
-          className="bg-gray-300 px-3 py-1 rounded"
+          className="bg-gray-300 px-3 py-1 rounded disabled:opacity-50"
         >
           Prev
         </button>
@@ -123,7 +195,7 @@ export default function AdminDash() {
         <button
           disabled={page >= totalPages}
           onClick={() => setPage((p) => p + 1)}
-          className="bg-gray-300 px-3 py-1 rounded"
+          className="bg-gray-300 px-3 py-1 rounded disabled:opacity-50"
         >
           Next
         </button>

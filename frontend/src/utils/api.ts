@@ -1,5 +1,5 @@
 export const api = async (endpoint: string, options = {}) => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
+    const res = await fetch(`${process.env.NEXTAUTH_URL}${endpoint}`, {
       headers: { 'Content-Type': 'application/json' },
       ...options,
     });

@@ -1,21 +1,64 @@
-import axios from "axios";
+
+// dashboard/admin/page.tsx
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import AdminDashboard from "@/components/AdminDashboard";
+import createAxiosWithAuth from "@/utils/axiosServer";
+import { redirect } from "next/navigation";
 
 
-export default async function AdminPage() {
+interface AdminPageProps {
+  searchParams: {
+    status?: string;
+    search?: string;
+    page?: string;
+  };
+}
 
-    const { data } = await axios.get("http://localhost:3000/songs?status=Pending");
+export default async function AdminPage({ searchParams }: AdminPageProps) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user?.token) {
+    redirect("/auth/login");
+  }
+
+  const axios = createAxiosWithAuth(session.user.token);
+  if (!axios) {
+    return <div className="p-4 text-red-600">Axios not configured</div>;
+  }
+
+  // const page = searchParams.page || "1";
+  // const search = searchParams.search || "";
+  // const status = searchParams.status || "Pending";
+  const resolvedSearchParams = await searchParams;
+
+  const page = typeof resolvedSearchParams.page === "string" ? resolvedSearchParams.page : "1";
+  const search = typeof resolvedSearchParams.search === "string" ? resolvedSearchParams.search : "";
+  const status = typeof resolvedSearchParams.status === "string" ? resolvedSearchParams.status : "Pending";
+
+
+  try {
+    const res = await axios.get(`/songs?status=${status}&search=${search}&page=${page}`);
+    // const res = await axios.get(`/songs`, {
+    //   params: {
+    //     status: status === "All" ? undefined : status,
+    //     search,
+    //     page,
+    //   },
+    // });
     
-    const songs = await data.json();
+    const { data: songs, meta } = res.data;
 
-  return (
-    <div className="max-w-3xl mx-auto p-6">
-      <div>
-        <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
-        <AdminDashboard songs={songs} />
+    return (
+      <div className="max-w-5xl mx-auto p-2">
+        {/* <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1> */}
+        <AdminDashboard songs={songs || []} meta={meta || {}} />
       </div>
-    </div>
-  );
+    );
+  } catch (err) {
+    console.error("❌ Failed to fetch admin songs:", err);
+    return <p className="text-red-600">Failed to load songs.</p>;
+  }
 }
 
 

@@ -4,6 +4,9 @@
 import { useEffect, useState } from "react";
 import FilterBar from "@/components/FilterBar";
 import SongCard from "@/components/SongCard";
+import axiosInstance from "@/utils/axios";
+// import axiosInstance from "@/utils/axios";
+
 
 export default function AdminDashboardPage() {
   const [songs, setSongs] = useState([]);
@@ -11,10 +14,13 @@ export default function AdminDashboardPage() {
 
   const fetchSongs = async (term = "") => {
     try {
-      const res = await fetch(`http://localhost:3000/songs?search=${term}`, {
-        cache: "no-store",
+      const endpoint = `/songs?search=${term}`
+      const res = await axiosInstance.get(endpoint, {
+      // const res = await fetch(`http://localhost:3000/songs?search=${term}`, {
+        // cache: "no-store",
       });
-      const data = await res.json();
+      // const data = await res.json();
+      const data = await res.data;
       setSongs(data);
     } catch (err) {
       console.error("Failed to fetch songs:", err);

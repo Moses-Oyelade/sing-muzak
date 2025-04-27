@@ -6,8 +6,8 @@ import { usePathname } from "next/navigation";
 import clsx from "clsx";
 
 const tabs = [
-  { label: "Song Details", href: "/dashboard/admin/songDetails" },
-  { label: "Members", href: "/dashboard/admin/approved" },
+  { label: "Song List", href: "/dashboard/admin" },
+  { label: "Upload song", href: "/dashboard/admin/approved" },
   { label: "Performances", href: "/dashboard/admin/pending" },
   { label: "Rehearsals", href: "/dashboard/admin/pending" },
   { label: "Announcement", href: "/dashboard/admin/pending" },

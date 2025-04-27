@@ -1,6 +1,7 @@
 'use client';
 
-import axios from "axios";
+// import axios from "axios";
+import axiosInstance from "@/utils/axios";
 
 
 export default function AdminSongCard({ song, session }: any) {
@@ -13,7 +14,7 @@ export default function AdminSongCard({ song, session }: any) {
     }
 
     try {
-      await axios.put(`http://localhost:3000/songs/${songId}/status`, {
+      await axiosInstance.patch(`songs/${songId}/status`, {
         status,
         adminId: session?.user?.id,
       });

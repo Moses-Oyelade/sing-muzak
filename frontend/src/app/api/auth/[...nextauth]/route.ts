@@ -21,18 +21,25 @@ export const authOptions : NextAuthOptions = {
             password: credentials?.password,
           });
 
-          if (data) {
+          console.log("🚀 Auth response:", data);
+
+          // if (data && data.token && data.user) {
+          if (data?.access_token && data?.user) {
             return {
               id: data.user._id,
               phone: data.user.phone,
               name: data.user.name,
-              token: data.token,
               role: data.user.role,
+              token: data.access_token,
             };
           }
           return null;
-        } catch (error) {
-          console.error("Error logging in", error);
+        } catch (error: unknown ) {
+          if (axios.isAxiosError(error)) {
+            console.error("❌ Login error in authorize():", error?.response?.data || error.message);
+          } else {
+            console.error("Error logging in", error);
+          }
           return null;
         }
       },
@@ -46,22 +53,31 @@ export const authOptions : NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user } : any) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.phone = user.phone;
         token.name = user.name;
+        token.role = user.role;
         token.token = user.token; // Store token in JWT
       }
       return token;
     },
-    async session({ session, token } : any) {
-      session.user.id = token.id;
-      session.user.phone = token.phone;
-      session.user.name = token.name;
-      session.user.token = token.token; // Add token to session
-      return session;
-    },
+
+    async session({ session, token }) {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id,
+          name: token.name,
+          phone: token.phone,
+          role: token.role,
+          token: token.token, // ✅ This is the JWT you need
+        },
+      };
+    }
+    
   },
 };
 
