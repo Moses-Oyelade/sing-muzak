@@ -6,7 +6,8 @@ export declare enum VoicePart {
     SOPRANO = "soprano",
     ALTO = "alto",
     TENOR = "tenor",
-    BASS = "bass"
+    BASS = "bass",
+    NotSpecified = "Not Specified!"
 }
 export interface User {
     name: string;

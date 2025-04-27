@@ -31,6 +31,7 @@ let AuthService = class AuthService {
         console.log('Validating user with phone:', phone);
         const user = await this.usersService.findByPhoneNumber(phone);
         if (!user) {
+            console.log('User not found!');
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
         console.log('User found:', user);

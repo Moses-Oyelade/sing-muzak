@@ -23,7 +23,7 @@ let JwtAuthGuard = class JwtAuthGuard {
         console.log('Authorization Header:', authHeader);
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             console.error('JWT is missing or malformed!');
-            return false;
+            throw new common_1.UnauthorizedException('Authorization token is missing or malformed');
         }
         const token = authHeader?.split(' ')[1];
         console.log('Decoded JWT:', this.jwtService.decode(token));
@@ -38,12 +38,12 @@ let JwtAuthGuard = class JwtAuthGuard {
             const decoded = this.jwtService.verify(token);
             console.log('Verified JWT:', decoded);
             request.user = decoded;
-            console.log('User after settings:', request.user);
+            console.log('🔥 Incoming user from JWT:', request.user);
             return true;
         }
         catch (e) {
             console.error('JWT verification failed:', e.message);
-            return false;
+            throw new common_1.UnauthorizedException();
         }
     }
 };

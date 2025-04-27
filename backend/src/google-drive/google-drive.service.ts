@@ -57,31 +57,6 @@ export class GoogleDriveService {
     }
   }
 
-
-// async uploadFile(file: Express.Multer.File) {
-//     const fileMetadata = {
-//       name: file.originalname,
-//       parents: [this.configService.get('GOOGLE_DRIVE_FOLDER_ID')], // Set folder ID
-//     };
-
-//     const media = {
-//       mimeType: file.mimetype,
-//       body: file.buffer, // Use buffer if storing in memory
-//     };
-
-//     const response = await this.drive.files.create({
-//       requestBody: fileMetadata,
-//       media,
-//       fields: 'id, name, webViewLink',
-//     });
-
-//     return {
-//       fileId: response.data.id,
-//       fileName: response.data.name,
-//       webViewLink: response.data.webViewLink,
-//     };
-//   }
-
 //   To download Files
 async downloadFile(fileId: string, res: Response) {
     try {

@@ -34,6 +34,7 @@ let AuthController = class AuthController {
     }
     async login(loginDto) {
         const user = await this.authService.validateUser(loginDto.phone, loginDto.password);
+        console.log("🚀 Login payload received:", loginDto);
         return this.authService.login(user);
     }
     getProfile(req) {

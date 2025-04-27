@@ -8,6 +8,7 @@ export enum VoicePart {
     ALTO = 'alto',
     TENOR = 'tenor',
     BASS = 'bass',
+    NotSpecified = 'Not Specified!'
 }
 
 export interface User {

@@ -42,13 +42,15 @@ export class UsersController {
 
   //Get User's Song Suggestions
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'user')
+  @Roles('admin', 'member')
   @Get( 'me/suggestions')
   async getMySuggestions(@Request() req: any ) {
+    console.log("🔥 Authenticated user:", req.user);
     try{
-      const userId = req.user.userId
-      const users = await this.songService.getSuggestionsByUser(userId);
-      return users;
+        // const userId = req.user.userId
+        const userId = req.user.userId
+        const users = await this.songService.getSuggestionsByUser(userId);
+        return users;
     } catch (error){
       throw new BadRequestException(error.message);
       // return `Only admins can see this, ${message}`

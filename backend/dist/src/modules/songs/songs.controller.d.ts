@@ -1,6 +1,7 @@
 import { SongService } from './songs.service';
 import { Song } from './schema/song.schema';
 import { CreateSongDto, SuggestSongDto } from './dto/create-song.dto';
+import { UpdateSongStatusDto } from './dto/update-song';
 export declare class SongController {
     private readonly songService;
     constructor(songService: SongService);
@@ -24,27 +25,22 @@ export declare class SongController {
             __v: number;
         };
     }>;
-    getAllSongs(status?: string): Promise<(import("mongoose").Document<unknown, {}, Song> & Song & Required<{
+    findAll(search?: string): Promise<(import("mongoose").Document<unknown, {}, Song> & Song & Required<{
         _id: import("mongoose").Types.ObjectId;
     }> & {
         __v: number;
     })[]>;
-    getSongs(page?: number, limit?: number, status?: string, category?: string): Promise<{
-        data: never[];
-        total: number;
-        page?: undefined;
-        limit?: undefined;
-        totalPages?: undefined;
-    } | {
+    searchAll(status?: string, search?: string, page?: number, limit?: number): Promise<{
         data: (import("mongoose").Document<unknown, {}, Song> & Song & Required<{
             _id: import("mongoose").Types.ObjectId;
         }> & {
             __v: number;
         })[];
-        total: number;
-        page: number;
-        limit: number;
-        totalPages: number;
+        meta: {
+            currentPage: number;
+            totalPages: number;
+            totalItems: number;
+        };
     }>;
     getAllSongsByCategory(category?: string): Promise<(import("mongoose").Document<unknown, {}, Song> & Song & Required<{
         _id: import("mongoose").Types.ObjectId;
@@ -52,8 +48,8 @@ export declare class SongController {
         __v: number;
     })[]>;
     getSongById(id: string): Promise<Song | null>;
-    updateSongStatus(id: string, body: any, req: any): Promise<{
-        song: import("mongoose").Document<unknown, {}, Song> & Song & Required<{
+    updateSongStatus(id: string, updateSongStatusDto: UpdateSongStatusDto, req: any): Promise<{
+        updatedStatus: import("mongoose").Document<unknown, {}, Song> & Song & Required<{
             _id: import("mongoose").Types.ObjectId;
         }> & {
             __v: number;

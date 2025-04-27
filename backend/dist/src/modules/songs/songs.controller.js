@@ -20,6 +20,8 @@ const roles_guard_1 = require("../auth/roles/roles.guard");
 const roles_decorator_1 = require("../auth/roles/roles.decorator");
 const create_song_dto_1 = require("./dto/create-song.dto");
 const platform_express_1 = require("@nestjs/platform-express");
+const update_song_1 = require("./dto/update-song");
+const mongoose_1 = require("mongoose");
 let SongController = class SongController {
     constructor(songService) {
         this.songService = songService;
@@ -30,11 +32,14 @@ let SongController = class SongController {
     CreateSong(file, createSongDto, req) {
         return this.songService.uploadSong(createSongDto, file, req.user.id);
     }
-    getAllSongs(status) {
-        return this.songService.getAllSongs(status);
+    async findAll(search) {
+        if (search) {
+            return this.songService.searchSongs(search);
+        }
+        return this.songService.getAllSongs();
     }
-    async getSongs(page = 1, limit = 10, status, category) {
-        return this.songService.getAllSongsWithFilters(+page, +limit, status, category);
+    async searchAll(status, search, page = 1, limit = 10) {
+        return this.songService.findAll({ status, search, page, limit });
     }
     getAllSongsByCategory(category) {
         return this.songService.getAllSongsByCategory(category);
@@ -46,8 +51,12 @@ let SongController = class SongController {
         }
         return song;
     }
-    updateSongStatus(id, body, req) {
-        return this.songService.updateSongStatus(id, body.status, req.user.id);
+    updateSongStatus(id, updateSongStatusDto, req) {
+        if (!(0, mongoose_1.isValidObjectId)(id)) {
+            throw new common_1.BadRequestException('Invalid song ID format.');
+        }
+        const adminId = req.user.id;
+        return this.songService.updateSongStatus(id, updateSongStatusDto, adminId);
     }
     async delete(songId) {
         return await this.songService.deleteSong(songId);
@@ -63,6 +72,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], SongController.prototype, "suggestSong", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
     (0, common_1.Post)('upload'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileFieldsInterceptor)([
         { name: 'audio', maxCount: 1 },
@@ -76,22 +86,26 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], SongController.prototype, "CreateSong", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('admin', 'member'),
     (0, common_1.Get)(),
-    __param(0, (0, common_1.Query)('status')),
+    __param(0, (0, common_1.Query)('search')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], SongController.prototype, "getAllSongs", null);
+    __metadata("design:returntype", Promise)
+], SongController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(),
-    __param(0, (0, common_1.Query)('page')),
-    __param(1, (0, common_1.Query)('limit')),
-    __param(2, (0, common_1.Query)('status')),
-    __param(3, (0, common_1.Query)('category')),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('admin', 'member'),
+    __param(0, (0, common_1.Query)('status')),
+    __param(1, (0, common_1.Query)('search')),
+    __param(2, (0, common_1.Query)('page')),
+    __param(3, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, String, String]),
+    __metadata("design:paramtypes", [String, String, Number, Number]),
     __metadata("design:returntype", Promise)
-], SongController.prototype, "getSongs", null);
+], SongController.prototype, "searchAll", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('admin'),
@@ -103,7 +117,7 @@ __decorate([
 ], SongController.prototype, "getAllSongsByCategory", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)('admin', 'user'),
+    (0, roles_decorator_1.Roles)('admin', 'member'),
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -118,7 +132,7 @@ __decorate([
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:paramtypes", [String, update_song_1.UpdateSongStatusDto, Object]),
     __metadata("design:returntype", void 0)
 ], SongController.prototype, "updateSongStatus", null);
 __decorate([

@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Patch, Body, Param, Query, UseGuards, Request, Delete, NotFoundException, UseInterceptors, UploadedFile, Req } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Body, Param, Query, UseGuards, Request, Delete, NotFoundException, UseInterceptors, UploadedFile, Req, BadRequestException } from '@nestjs/common';
 import { SongService } from './songs.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { RolesGuard } from '../auth/roles/roles.guard';
@@ -6,6 +6,8 @@ import { Roles } from '../auth/roles/roles.decorator';
 import { Song } from './schema/song.schema';
 import { CreateSongDto, SuggestSongDto } from './dto/create-song.dto';
 import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { UpdateSongStatusDto } from './dto/update-song';
+import { isValidObjectId } from 'mongoose';
 
 @Controller('songs')
 export class SongController {
@@ -19,7 +21,7 @@ export class SongController {
   }
 
   // Upload/Create a song (Any authenticated user)
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('upload')
   @UseInterceptors(FileFieldsInterceptor([
     { name: 'audio', maxCount: 1 },
@@ -35,7 +37,7 @@ export class SongController {
 
   // GET /songs?search=choir
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'user')
+  @Roles('admin', 'member')
   @Get()
   async findAll(@Query('search') search?: string) {
     if (search) {
@@ -44,25 +46,38 @@ export class SongController {
     return this.songService.getAllSongs();
   }
 
-  // Get all songs (Admins can filter by status)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'user')
+  // // Get all songs (Admins can filter by status)
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles('admin', 'member')
+  // @Get()
+  // getAllSongs(@Query('status') status?: string) {
+  //   return this.songService.getAllSongs(status);
+  // }
+
   @Get()
-  getAllSongs(@Query('status') status?: string) {
-    return this.songService.getAllSongs(status);
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'member')
+  async searchAll(
+    @Query('status') status?: string,
+    @Query('search') search?: string,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10
+  ) {
+    return this.songService.findAll({ status, search, page, limit });
   }
+
 
   // @UseGuards(JwtAuthGuard, RolesGuard)
   // @Roles('admin')
-  @Get()
-  async getSongs(
-    @Query('page') page = 1,
-    @Query('limit') limit = 10,
-    @Query('status') status?: string,
-    @Query('category') category?: string,
-  ) {
-    return this.songService.getAllSongsWithFilters(+page, +limit, status, category);
-  }
+  // @Get()
+  // async getSongs(
+  //   @Query('page') page = 1,
+  //   @Query('limit') limit = 10,
+  //   @Query('status') status?: string,
+  //   @Query('category') category?: string,
+  // ) {
+  //   return this.songService.getAllSongsWithFilters(+page, +limit, status, category);
+  // }
 
   // Get all songs (Admins can filter by status)
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -74,7 +89,7 @@ export class SongController {
   
   // Get a song by id
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'user')
+  @Roles('admin', 'member')
   @Get(':id')
   getSongById(@Param('id') id: string) {
     const song = this.songService.findById(id);
@@ -88,8 +103,16 @@ export class SongController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Patch(':id/status')
-  updateSongStatus(@Param('id') id: string, @Body() body: any, @Request() req: any) {
-    return this.songService.updateSongStatus(id, body.status, req.user.id);
+  updateSongStatus(
+    @Param('id') id: string, 
+    @Body() updateSongStatusDto: UpdateSongStatusDto, 
+    @Request() req: any
+  ) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException('Invalid song ID format.');
+    }
+    const adminId = req.user.id
+    return this.songService.updateSongStatus(id, updateSongStatusDto, adminId);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -100,3 +123,4 @@ export class SongController {
   }
 
 }
+

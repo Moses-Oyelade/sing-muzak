@@ -21,12 +21,9 @@ export class AuthService {
     
     const user = await this.usersService.findByPhoneNumber(phone);
     if (!user) {
-      // console.log('User not found!');
+      console.log('User not found!');
       throw new UnauthorizedException('Invalid credentials');
     }
-
-    // user.password = await bcrypt.hash('newpassword', 10);
-    // await user.save();
 
 
     console.log('User found:', user);
@@ -45,9 +42,7 @@ export class AuthService {
 
 
   // Login handle/function
-  // async login(phone: string, password: string) {
   async login(user: any) {
-    // const user = await this.validateUser(phone, password)
     const payload = { sub: user._id, phone: user.phone, role: user.role };
     
     const token = this.jwtService.sign(payload);

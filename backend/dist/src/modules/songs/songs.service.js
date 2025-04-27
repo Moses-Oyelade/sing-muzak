@@ -36,6 +36,8 @@ let SongService = class SongService {
     async suggestSong(suggestSongDto) {
         const { title, artist, suggestedBy, songId } = suggestSongDto;
         let song;
+        const normTitle = title?.trim().toLowerCase();
+        const normArtist = artist?.trim().toLowerCase();
         if (songId) {
             song = await this.songModel.findById(songId);
             if (!song) {
@@ -43,7 +45,7 @@ let SongService = class SongService {
             }
         }
         else {
-            song = await this.songModel.findOne({ title, artist });
+            song = await this.songModel.findOne({ title: normTitle, artist: normArtist, });
             if (!song) {
                 song = new this.songModel({
                     ...suggestSongDto,
@@ -60,6 +62,7 @@ let SongService = class SongService {
             suggestedBy: new mongoose_2.Types.ObjectId(suggestedBy),
         });
         await suggestion.save();
+        this.notificationGateway.broadcastNewSong(suggestion);
         return {
             message: 'Song suggestion submitted successfully',
             song,
@@ -119,27 +122,43 @@ let SongService = class SongService {
         return this.songModel
             .find(filter);
     }
+    async searchSongs(term) {
+        return this.songModel.find({
+            $or: [
+                { title: new RegExp(term, 'i') },
+                { artist: new RegExp(term, 'i') },
+                { category: new RegExp(term, 'i') },
+            ],
+        });
+    }
     async findById(id) {
         return this.songModel.findById(id).exec();
     }
-    async updateSongStatus(songId, status, adminId) {
+    async getSuggestionsByUser(userId) {
+        const user = await this.userModel.findById(userId);
+        if (user?.role === 'admin') {
+            return this.songModel.find();
+        }
+        else {
+            return this.songModel.find({ suggestedBy: userId });
+        }
+    }
+    async updateSongStatus(songId, updateSongStatusDto, adminId) {
+        const { status } = updateSongStatusDto;
         if (!['Approved', 'Postponed'].includes(status)) {
             throw new common_1.ForbiddenException('Invalid status');
         }
         const song = await this.songModel.findById(songId);
         if (!song)
             throw new common_1.NotFoundException('Song not found!');
-        const admin = await this.userModel.findById(adminId);
-        if (!admin)
-            throw new common_1.NotFoundException('User not found!');
         song.status = status;
-        song.approvedBy = admin._id;
+        song.approvedBy = adminId;
         await song.save();
         this.notificationGateway.broadcastStatusUpdate(song);
         const message = `Your song "${song.title}" has been ${status}.`;
         await this.notificationService.sendNotification(song.uploadedBy.toString(), message);
         this.notificationGateway.sendNotification(song.uploadedBy.toString(), message);
-        return { song };
+        return { updatedStatus: song };
     }
     async deleteSong(songId) {
         try {
@@ -150,34 +169,27 @@ let SongService = class SongService {
             throw new Error(`Failed to delete file: ${error.message}`);
         }
     }
-    async getAllSongsWithFilters(page, limit, status, categoryName) {
-        const filter = {};
+    async findAll({ status, search, page = 1, limit = 10, }) {
+        const query = this.songModel.find();
         if (status) {
-            filter.status = status;
+            query.where('status').equals(status);
         }
-        if (categoryName) {
-            const category = await this.categoryModel.findOne({ name: categoryName });
-            if (category) {
-                filter.category = category._id;
-            }
-            else {
-                return { data: [], total: 0 };
-            }
+        if (search) {
+            query.where('title', new RegExp(search, 'i'));
         }
-        const total = await this.songModel.countDocuments(filter);
-        const songs = await this.songModel
-            .find(filter)
-            .populate('category', 'name')
-            .populate('suggestedBy', 'fullName email')
+        const totalItems = await query.clone().countDocuments();
+        const songs = await query
             .skip((page - 1) * limit)
             .limit(limit)
             .sort({ createdAt: -1 });
+        const totalPages = Math.ceil(totalItems / limit);
         return {
             data: songs,
-            total,
-            page,
-            limit,
-            totalPages: Math.ceil(total / limit),
+            meta: {
+                currentPage: page,
+                totalPages,
+                totalItems,
+            },
         };
     }
 };

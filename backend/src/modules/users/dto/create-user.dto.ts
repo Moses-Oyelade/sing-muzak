@@ -43,6 +43,7 @@ export class CreateUserDto {
     phone: string;
   
     @IsNotEmpty()
+    @IsString()
     password: string;
 
     @IsOptional()

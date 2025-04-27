@@ -20,9 +20,13 @@ const roles_guard_1 = require("../auth/roles/roles.guard");
 const users_service_1 = require("./users.service");
 const create_user_dto_1 = require("./dto/create-user.dto");
 const update_user_dto_1 = require("./dto/update-user.dto");
+const users_schema_1 = require("./schema/users.schema");
+const get_user_decorator_1 = require("../auth/get-user.decorator");
+const songs_service_1 = require("../songs/songs.service");
 let UsersController = class UsersController {
-    constructor(userService) {
+    constructor(userService, songService) {
         this.userService = userService;
+        this.songService = songService;
     }
     async getAllUsers() {
         try {
@@ -33,8 +37,20 @@ let UsersController = class UsersController {
             throw new common_1.BadRequestException(error.message);
         }
     }
-    getProfile(req) {
-        return { message: 'Profile Data', user: req.user };
+    ;
+    async getMySuggestions(req) {
+        console.log("🔥 Authenticated user:", req.user);
+        try {
+            const userId = req.user.userId;
+            const users = await this.songService.getSuggestionsByUser(userId);
+            return users;
+        }
+        catch (error) {
+            throw new common_1.BadRequestException(error.message);
+        }
+    }
+    getProfile(user) {
+        return { message: 'Profile Data', user: user };
     }
     async getAllPhoneNumbers() {
         const users = await this.userService.getAllPhoneNumbers();
@@ -83,10 +99,19 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('admin', 'member'),
-    (0, common_1.Get)('profile'),
+    (0, common_1.Get)('me/suggestions'),
     __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "getMySuggestions", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('admin', 'member'),
+    (0, common_1.Get)('profile'),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [users_schema_1.User]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "getProfile", null);
 __decorate([
@@ -145,6 +170,7 @@ __decorate([
 ], UsersController.prototype, "deleteFile", null);
 exports.UsersController = UsersController = __decorate([
     (0, common_1.Controller)('users'),
-    __metadata("design:paramtypes", [users_service_1.UsersService])
+    __metadata("design:paramtypes", [users_service_1.UsersService,
+        songs_service_1.SongService])
 ], UsersController);
 //# sourceMappingURL=users.controller.js.map

@@ -21,6 +21,9 @@ let NotificationGateway = class NotificationGateway {
     constructor(notificationsService) {
         this.notificationsService = notificationsService;
     }
+    afterInit(client) {
+        console.log('WebSocket Gateway initialized:', client.id);
+    }
     sendNotification(userId, message) {
         this.server.emit(`Notification: ${userId}`, { message });
     }
@@ -29,7 +32,7 @@ let NotificationGateway = class NotificationGateway {
     }
     broadcastNewSong(song) {
         this.server.emit('notification', {
-            type: 'new_upload',
+            type: 'new_song',
             songId: song._id,
             song,
         });
@@ -39,6 +42,13 @@ let NotificationGateway = class NotificationGateway {
             type: 'status_update',
             songId: song._id,
             status: song.status,
+        });
+    }
+    broadcastSongRemove(song) {
+        this.server.emit('notification', {
+            type: 'song_removed',
+            songId: song._id,
+            song,
         });
     }
 };
@@ -54,6 +64,24 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], NotificationGateway.prototype, "handleJoin", null);
+__decorate([
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], NotificationGateway.prototype, "broadcastNewSong", null);
+__decorate([
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], NotificationGateway.prototype, "broadcastStatusUpdate", null);
+__decorate([
+    __param(0, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], NotificationGateway.prototype, "broadcastSongRemove", null);
 exports.NotificationGateway = NotificationGateway = __decorate([
     (0, websockets_1.WebSocketGateway)({ cors: { origin: '*', }, }),
     __param(0, (0, common_1.Inject)((0, common_1.forwardRef)(() => notifications_service_1.NotificationsService))),

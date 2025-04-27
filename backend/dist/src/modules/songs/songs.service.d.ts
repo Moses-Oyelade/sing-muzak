@@ -7,6 +7,7 @@ import { NotificationGateway } from '../notifications/notification.gateway';
 import { CreateSongDto, SuggestSongDto } from './dto/create-song.dto';
 import { GoogleDriveService } from 'src/google-drive/google-drive.service';
 import { User } from '../users/schema/users.schema';
+import { UpdateSongStatusDto } from './dto/update-song';
 export declare class SongService {
     private categoryModel;
     private songModel;
@@ -46,30 +47,40 @@ export declare class SongService {
     }> & {
         __v: number;
     })[]>;
+    searchSongs(term: string): Promise<(import("mongoose").Document<unknown, {}, Song> & Song & Required<{
+        _id: Types.ObjectId;
+    }> & {
+        __v: number;
+    })[]>;
     findById(id: string): Promise<Song | null>;
-    updateSongStatus(songId: string, status: string, adminId: string): Promise<{
-        song: import("mongoose").Document<unknown, {}, Song> & Song & Required<{
+    getSuggestionsByUser(userId: string): Promise<(import("mongoose").Document<unknown, {}, Song> & Song & Required<{
+        _id: Types.ObjectId;
+    }> & {
+        __v: number;
+    })[]>;
+    updateSongStatus(songId: string, updateSongStatusDto: UpdateSongStatusDto, adminId: any): Promise<{
+        updatedStatus: import("mongoose").Document<unknown, {}, Song> & Song & Required<{
             _id: Types.ObjectId;
         }> & {
             __v: number;
         };
     }>;
     deleteSong(songId: string): Promise<string>;
-    getAllSongsWithFilters(page: number, limit: number, status?: string, categoryName?: string): Promise<{
-        data: never[];
-        total: number;
-        page?: undefined;
-        limit?: undefined;
-        totalPages?: undefined;
-    } | {
+    findAll({ status, search, page, limit, }: {
+        status?: string;
+        search?: string;
+        page?: number;
+        limit?: number;
+    }): Promise<{
         data: (import("mongoose").Document<unknown, {}, Song> & Song & Required<{
             _id: Types.ObjectId;
         }> & {
             __v: number;
         })[];
-        total: number;
-        page: number;
-        limit: number;
-        totalPages: number;
+        meta: {
+            currentPage: number;
+            totalPages: number;
+            totalItems: number;
+        };
     }>;
 }

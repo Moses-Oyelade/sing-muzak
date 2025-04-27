@@ -9,11 +9,10 @@ import { NotificationGateway } from '../notifications/notification.gateway';
 import { CreateSongDto, SuggestSongDto, } from './dto/create-song.dto';
 import { GoogleDriveService } from 'src/google-drive/google-drive.service';
 import { User } from '../users/schema/users.schema';
+import { UpdateSongStatusDto } from './dto/update-song';
 
 @Injectable()
 export class SongService {
-  
-
   constructor(
     @InjectModel(Category.name) private categoryModel: Model<Category>,
     @InjectModel(Song.name) private songModel: Model<Song>,
@@ -24,18 +23,12 @@ export class SongService {
     private readonly googleDriveService: GoogleDriveService, //Inject Google drive service
   ) {}
 
-  // Suggest a new song (Default: Pending)
-  // async suggestSong(title: string, artist: string, category: string, userId: string) {
-  //   const existingCategory = await this.categoryModel.findOne({ name: category });
-  //   if (!existingCategory) throw new NotFoundException('Category does not exist');
-  //   const newSong = new this.songModel({ title, artist, category, suggestedBy: userId });
-  //   return await newSong.save();
-  // }
-
   async suggestSong(suggestSongDto: SuggestSongDto) {
     const { title, artist, suggestedBy, songId } = suggestSongDto;
   
     let song: any;
+    const normTitle = title?.trim().toLowerCase();
+    const normArtist = artist?.trim().toLowerCase();
   
     if (songId) {
       // Check if song exists
@@ -45,8 +38,8 @@ export class SongService {
       }
     } else {
       // Check if a song with the same title & artist exists
-      song = await this.songModel.findOne({ title, artist });
-  
+      song = await this.songModel.findOne({ title: normTitle, artist: normArtist, });
+      
       if (!song) {
         // If song does not exist, create it
         song = new this.songModel({
@@ -60,6 +53,7 @@ export class SongService {
   
         await song.save();
       }
+
     }
   
     // Save the suggestion entry
@@ -69,6 +63,7 @@ export class SongService {
     });
   
     await suggestion.save();
+    this.notificationGateway.broadcastNewSong(suggestion); 
   
     return {
       message: 'Song suggestion submitted successfully',
@@ -175,11 +170,18 @@ export class SongService {
 
   // Get Suggestions by User
   async getSuggestionsByUser(userId: string) {
-    return this.songModel.find({ suggestedBy: userId });
+    const user = await this.userModel.findById(userId)
+    if (user?.role === 'admin') {
+      return this.songModel.find(); // All songs
+    } else {
+      return this.songModel.find({ suggestedBy: userId });
+    }
   }
 
-  // Approve or reject a song (Admin only)
-  async updateSongStatus(songId: string, status: string, adminId: string) {
+  // Approve or Postpone a song (Admin only)
+  async updateSongStatus(songId: string, updateSongStatusDto: UpdateSongStatusDto, adminId: any) {
+    const { status } = updateSongStatusDto;
+
     if (!['Approved', 'Postponed'].includes(status)) {
       throw new ForbiddenException('Invalid status');
     }
@@ -187,12 +189,10 @@ export class SongService {
     const song = await this.songModel.findById(songId);
     if (!song) throw new NotFoundException('Song not found!');
 
-    const admin = await this.userModel.findById(adminId)
-    if (!admin) throw new NotFoundException('User not found!');
-
     song.status = status;
-    song.approvedBy = admin._id;
-    // song.approvedBy = adminId;
+    song.approvedBy = adminId;
+
+  
     await song.save();
 
     this.notificationGateway.broadcastStatusUpdate(song); // after approving/postponing
@@ -205,7 +205,7 @@ export class SongService {
       message
     );
     this.notificationGateway.sendNotification(song.uploadedBy.toString(), message);
-    return { song };
+    return { updatedStatus: song };
   }
 
   async deleteSong(songId: string): Promise<string> {
@@ -217,45 +217,86 @@ export class SongService {
     }
   }
 
-  //songs with filters and pagination
-  async getAllSongsWithFilters(
-    page: number,
-    limit: number,
-    status?: string,
-    categoryName?: string,
-  ) {
-    const filter: any = {};
+  // Songs with filter, status and pagination
+  async findAll({
+    status,
+    search,
+    page = 1,
+    limit = 10,
+  }: {
+    status?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }) {
+    const query = this.songModel.find();
   
     if (status) {
-      filter.status = status;
+      query.where('status').equals(status);
     }
   
-    if (categoryName) {
-      const category = await this.categoryModel.findOne({ name: categoryName });
-      if (category) {
-        filter.category = category._id;
-      } else {
-        // No category match found
-        return { data: [], total: 0 };
-      }
+    if (search) {
+      query.where('title', new RegExp(search, 'i')); // Case-insensitive search
     }
   
-    const total = await this.songModel.countDocuments(filter);
-    const songs = await this.songModel
-      .find(filter)
-      .populate('category', 'name')
-      .populate('suggestedBy', 'fullName email')
+    const totalItems = await query.clone().countDocuments();
+    const songs = await query
       .skip((page - 1) * limit)
       .limit(limit)
-      .sort({ createdAt: -1 }); // Latest first
+      .sort({ createdAt: -1 }) // Optional: most recent first
+  
+    const totalPages = Math.ceil(totalItems / limit);
   
     return {
       data: songs,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
+      meta: {
+        currentPage: page,
+        totalPages,
+        totalItems,
+      },
     };
   }
+  
+
+  //songs with filters and pagination
+  // async getAllSongsWithFilters(
+  //   page: number,
+  //   limit: number,
+  //   status?: string,
+  //   categoryName?: string,
+  // ) {
+  //   const filter: any = {};
+  
+  //   if (status) {
+  //     filter.status = status;
+  //   }
+  
+  //   if (categoryName) {
+  //     const category = await this.categoryModel.findOne({ name: categoryName });
+  //     if (category) {
+  //       filter.category = category._id;
+  //     } else {
+  //       // No category match found
+  //       return { data: [], total: 0 };
+  //     }
+  //   }
+  
+  //   const total = await this.songModel.countDocuments(filter);
+  //   const songs = await this.songModel
+  //     .find(filter)
+  //     .populate('category', 'name')
+  //     .populate('suggestedBy', 'name email')
+  //     .skip((page - 1) * limit)
+  //     .limit(limit)
+  //     .sort({ createdAt: -1 }); // Latest first
+  
+  //   return {
+  //     data: songs,
+  //     total,
+  //     page,
+  //     limit,
+  //     totalPages: Math.ceil(total / limit),
+  //   };
+  // }
   
 }
