@@ -5,14 +5,20 @@ import { UpdateSongStatusDto } from './dto/update-song';
 export declare class SongController {
     private readonly songService;
     constructor(songService: SongService);
-    suggestSong(suggestSongDto: SuggestSongDto): Promise<{
+    suggestSong(suggestSongDto: SuggestSongDto, req: any): Promise<{
         message: string;
-        song: any;
+        data: any;
+        existingSong?: undefined;
+        suggestion?: undefined;
+    } | {
+        message: string;
+        existingSong: any;
         suggestion: import("mongoose").Document<unknown, {}, import("./schema/suggestion.schema").Suggestion> & import("./schema/suggestion.schema").Suggestion & {
             _id: import("mongoose").Types.ObjectId;
         } & {
             __v: number;
         };
+        data?: undefined;
     }>;
     CreateSong(file: {
         audio?: Express.Multer.File[];
@@ -48,6 +54,16 @@ export declare class SongController {
         __v: number;
     })[]>;
     getSongById(id: string): Promise<Song | null>;
+    getSuggestions(): Promise<(import("mongoose").Document<unknown, {}, import("./schema/suggestion.schema").Suggestion> & import("./schema/suggestion.schema").Suggestion & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    })[]>;
+    getMySuggestions(req: any): Promise<(import("mongoose").Document<unknown, {}, Song> & Song & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    })[]>;
     updateSongStatus(id: string, updateSongStatusDto: UpdateSongStatusDto, req: any): Promise<{
         updatedStatus: import("mongoose").Document<unknown, {}, Song> & Song & Required<{
             _id: import("mongoose").Types.ObjectId;

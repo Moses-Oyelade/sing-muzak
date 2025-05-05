@@ -10,6 +10,7 @@ export declare class CreateSongDto {
 export declare class SuggestSongDto {
     title?: string;
     artist?: string;
+    category: string;
     suggestedBy: string;
     songId?: string;
 }

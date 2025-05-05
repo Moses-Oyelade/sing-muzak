@@ -16,8 +16,12 @@ export class SongController {
   // Suggest a song (Any authenticated user)
   @UseGuards(JwtAuthGuard)
   @Post('suggest')
-  suggestSong(@Body() suggestSongDto: SuggestSongDto) {
-    return this.songService.suggestSong(suggestSongDto);
+  suggestSong(
+    @Body() suggestSongDto: SuggestSongDto,
+    @Request() req: any
+  ) {
+    const userId = req.user.sub
+    return this.songService.suggestOrCreateSong(suggestSongDto, userId);
   }
 
   // Upload/Create a song (Any authenticated user)
@@ -32,7 +36,7 @@ export class SongController {
     @Body() createSongDto: CreateSongDto,
     @Req() req: any,
   ) {
-    return this.songService.uploadSong(createSongDto, file, req.user.id);
+    return this.songService.uploadSong(createSongDto, file, req.user.sub);
   }
 
   // GET /songs?search=choir
@@ -54,7 +58,7 @@ export class SongController {
   //   return this.songService.getAllSongs(status);
   // }
 
-  @Get()
+  @Get("/filter")
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'member')
   async searchAll(
@@ -97,6 +101,34 @@ export class SongController {
       throw new NotFoundException(`Song not found`);
     }
     return song;
+  }
+
+  //Get Suggestions
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Get('suggestions')
+  async getSuggestions(){
+    return this.songService.getSuggestions()
+  }
+
+  //Get User's Song Suggestions
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'member')
+  @Get( 'me/suggestions')
+  async getMySuggestions(@Request() req: any ) {
+    console.log("🔥 Authenticated user:", req.user);
+    try{
+        // const userId = req.user.userId
+        const userId = req.user.sub
+        // if (!userId) {
+        //   throw new BadRequestException('User not authenticated');
+        // }
+        const suggestions = await this.songService.getSuggestionsByUser(userId);
+        return suggestions;
+    } catch (error){
+      throw new BadRequestException(error.message);
+      // return `Only admins can see this, ${message}`
+    }
   }
 
   // Approve or postponed a song (Admin only)

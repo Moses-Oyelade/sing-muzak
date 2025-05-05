@@ -58,7 +58,8 @@ export class GoogleDriveService {
   }
 
 //   To download Files
-async downloadFile(fileId: string, res: Response) {
+// async downloadFile(fileId: string, res: Response) {
+async downloadFile(fileId: string, res: Response, inline = true) {
     try {
       // Get file metadata (name and MIME type)
       const fileMetadata = await this.driveClient.files.get({
@@ -79,14 +80,14 @@ async downloadFile(fileId: string, res: Response) {
       res.setHeader('Content-Type', mimeType);
 
       if (mimeType === 'application/pdf') {
-        // Display PDFs in the browser but allow download
-        res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
+        // Display PDFs in the browser or download
+        res.setHeader('Content-Disposition', `${inline ? 'inline':'attachment'}; filename="${fileName}"`);
       } else if (mimeType.startsWith('audio/') || mimeType.startsWith('video/')) {
         // Stream media files (MP3, MP4, etc.)
-        res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
+        res.setHeader('Content-Disposition', `${inline ? 'inline':'attachment'}; filename="${fileName}"`);
       } else {
-        // Default to download for other file types
-        res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+        // Default to view for other file types
+        res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
       }
 
       // Stream the file to response

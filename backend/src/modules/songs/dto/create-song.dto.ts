@@ -40,6 +40,10 @@ export class SuggestSongDto {
     @IsOptional()
     @IsString()
     artist?: string; // For new song
+
+    @IsOptional()
+    @IsString()
+    category: string
     
     @IsMongoId({ message: 'suggestedBy must be a valid MongoDB ObjectId' })
     suggestedBy: string; // User suggesting the song

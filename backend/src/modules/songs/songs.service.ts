@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isValidObjectId, Model, Types } from 'mongoose';
 import { Song } from './schema/song.schema';
@@ -23,51 +23,67 @@ export class SongService {
     private readonly googleDriveService: GoogleDriveService, //Inject Google drive service
   ) {}
 
-  async suggestSong(suggestSongDto: SuggestSongDto) {
-    const { title, artist, suggestedBy, songId } = suggestSongDto;
-  
-    let song: any;
-    const normTitle = title?.trim().toLowerCase();
-    const normArtist = artist?.trim().toLowerCase();
-  
-    if (songId) {
-      // Check if song exists
-      song = await this.songModel.findById(songId);
-      if (!song) {
-        throw new NotFoundException('Song not found');
-      }
-    } else {
-      // Check if a song with the same title & artist exists
-      song = await this.songModel.findOne({ title: normTitle, artist: normArtist, });
-      
-      if (!song) {
-        // If song does not exist, create it
-        song = new this.songModel({
-          ...suggestSongDto,
-          uploadedBy: new Types.ObjectId(suggestedBy), // Set the user who suggested as uploader
-          suggestedBy: new Types.ObjectId(suggestedBy),
-          // suggestedBy: song.suggestedBy.name,
-          status: 'Pending', // You can add a 'pending' status for admin approval
-          _id: new Types.ObjectId()
-        });
-  
-        await song.save();
-      }
+  async suggestOrCreateSong(suggestSongDto: SuggestSongDto, userId: string) {
+    const { title, artist, suggestedBy, category, } = suggestSongDto;
 
-    }
-  
+    userId = suggestedBy;
+    let existingSong: any;
+    // First: Check if a song with same title + artist already exists
+      existingSong = await this.songModel.findOne({ 
+      title: { $regex: new RegExp(`^${title}$`, 'i') }, 
+      artist: { $regex: new RegExp(`^${artist}$`, 'i') },
+    });
+    // Check if Category is the exists if not, add category as "others".
+    const songCategory = await this.categoryModel.findOne({
+      name: { $regex: new RegExp(`^${category}$`, 'i') },
+    })
+
+    if (existingSong) {
+      // If song exists
+      if (existingSong.suggestedBy === userId) {
+        // Already suggested by this user
+        throw new ConflictException('You have already suggested this song.');
+      } else {
+        // Not yet suggested by this user
+        existingSong.suggestedBy = new Types.ObjectId(userId);
+        await existingSong.save();
+        return { message: 'Song already exists, suggestion recorded.', data: existingSong };
+      }
+    } else if (!existingSong && !songCategory){
+      const newCategory = 'Others';
+      existingSong = new this.songModel({
+        ...suggestSongDto,
+        uploadedBy: new Types.ObjectId(userId),
+        suggestedBy: new Types.ObjectId(userId),
+        category: newCategory,
+        status: 'Pending', // You can add a 'pending' status for admin approval
+        _id: new Types.ObjectId()
+      });
+    } else {
+      // If song does NOT exist, create new song with suggestedBy
+      existingSong = new this.songModel({
+        ...suggestSongDto,
+        uploadedBy: new Types.ObjectId(userId),
+        suggestedBy: new Types.ObjectId(userId),
+        category: category,
+        status: 'Pending', // You can add a 'pending' status for admin approval
+        _id: new Types.ObjectId()
+
+      });
+      await existingSong.save();
+    }  
     // Save the suggestion entry
     const suggestion = new this.suggestionModel({
-      song: song._id,
-      suggestedBy: new Types.ObjectId(suggestedBy),
+      song: existingSong._id,
+      suggestedBy: userId,
     });
   
     await suggestion.save();
     this.notificationGateway.broadcastNewSong(suggestion); 
   
     return {
-      message: 'Song suggestion submitted successfully',
-      song,
+      message: 'New song created and suggestion submitted successfully',
+      existingSong,
       suggestion,
     };
   }
@@ -77,14 +93,13 @@ export class SongService {
     files: { audio?: Express.Multer.File[], pdf?: Express.Multer.File[] }, 
     userId: string
   ) {
-    const { title, artist, category, uploadedBy } = createSongDto;
+    const { title, artist, category } = createSongDto;
     
+    const uploadedBy = userId;
     // Basic field validation
     if (!title || !artist || !category) {
       throw new BadRequestException('Missing required fields');
     }
-
-    // const existingSong = await this.songModel.findOne(createSongDto);
     const existingSong = await this.songModel.findOne({ title, artist });
     if (existingSong){
       throw new BadRequestException('Song already exist!');
@@ -113,7 +128,7 @@ export class SongService {
 
     const newSong = new this.songModel({
       ...createSongDto,
-      category: songCategory._id,
+      category: songCategory.name,
       uploadedBy: new Types.ObjectId(uploadedBy),
       suggestedBy: isValidObjectId(createSongDto.suggestedBy) ? new Types.ObjectId(createSongDto.suggestedBy) : null,
       audioUrl,
@@ -141,7 +156,8 @@ export class SongService {
     const filter = status ? { status } : {};
     return this.songModel
       .find(filter)
-      .populate('suggestedBy', 'name email');
+      .populate('suggestedBy', 'name email')
+      .sort({ createdAt: -1 });
   }
 
   // Get all songs (Admin can filter by category)
@@ -150,6 +166,14 @@ export class SongService {
     return this.songModel
       .find(filter);
       // .populate('category');
+  }
+
+  //Get suggestion
+  async getSuggestions(){
+    return this.suggestionModel
+    .find()
+    .populate('song', 'title artist')
+    .sort({ createdAt: -1 });
   }
 
   //Search songs by title, artist and category
@@ -165,17 +189,21 @@ export class SongService {
   
 
   async findById(id: string): Promise<Song | null> {
-    return this.songModel.findById(id).exec();
+    return await this.songModel.findById(id).exec();
   }
 
   // Get Suggestions by User
   async getSuggestionsByUser(userId: string) {
-    const user = await this.userModel.findById(userId)
-    if (user?.role === 'admin') {
-      return this.songModel.find(); // All songs
-    } else {
-      return this.songModel.find({ suggestedBy: userId });
+    
+    const existingUser = await this.userModel.findById(userId) 
+    if (!existingUser) {
+      throw new BadRequestException('User ID is required');
     }
+    const suggestedBy = await this.songModel
+      .find({ suggestedBy: existingUser._id })
+      .populate('suggestedBy')
+      .sort({ createdAt: -1 }).exec();
+    return suggestedBy
   }
 
   // Approve or Postpone a song (Admin only)
@@ -233,6 +261,7 @@ export class SongService {
   
     if (status) {
       query.where('status').equals(status);
+      // query.where('status', new RegExp(status, 'i'));
     }
   
     if (search) {

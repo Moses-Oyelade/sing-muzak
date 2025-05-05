@@ -22,10 +22,16 @@ export class GoogleDriveController {
       return await this.googleDriveService.uploadFile(file);
   }
 
+//   To stream file
+  @Get('stream/:fileId')
+  async streamfile(@Param('fileId') fileId: string, @Res() res: Response) {
+    return this.googleDriveService.downloadFile(fileId, res, true);
+  }
+
 //   To download file
   @Get('download/:fileId')
   async downloadFile(@Param('fileId') fileId: string, @Res() res: Response) {
-    return this.googleDriveService.downloadFile(fileId, res);
+    return this.googleDriveService.downloadFile(fileId, res, false);
   }
   
   // To delete file from google drive

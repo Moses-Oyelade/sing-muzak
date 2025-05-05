@@ -23,8 +23,11 @@ let GoogleDriveController = class GoogleDriveController {
     async uploadFile(file) {
         return await this.googleDriveService.uploadFile(file);
     }
+    async streamfile(fileId, res) {
+        return this.googleDriveService.downloadFile(fileId, res, true);
+    }
     async downloadFile(fileId, res) {
-        return this.googleDriveService.downloadFile(fileId, res);
+        return this.googleDriveService.downloadFile(fileId, res, false);
     }
     async deleteFile(fileId) {
         return this.googleDriveService.deleteFile(fileId);
@@ -39,6 +42,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], GoogleDriveController.prototype, "uploadFile", null);
+__decorate([
+    (0, common_1.Get)('stream/:fileId'),
+    __param(0, (0, common_1.Param)('fileId')),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], GoogleDriveController.prototype, "streamfile", null);
 __decorate([
     (0, common_1.Get)('download/:fileId'),
     __param(0, (0, common_1.Param)('fileId')),

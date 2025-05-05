@@ -33,44 +33,64 @@ let SongService = class SongService {
         this.notificationGateway = notificationGateway;
         this.googleDriveService = googleDriveService;
     }
-    async suggestSong(suggestSongDto) {
-        const { title, artist, suggestedBy, songId } = suggestSongDto;
-        let song;
-        const normTitle = title?.trim().toLowerCase();
-        const normArtist = artist?.trim().toLowerCase();
-        if (songId) {
-            song = await this.songModel.findById(songId);
-            if (!song) {
-                throw new common_1.NotFoundException('Song not found');
+    async suggestOrCreateSong(suggestSongDto, userId) {
+        const { title, artist, suggestedBy, category, } = suggestSongDto;
+        userId = suggestedBy;
+        let existingSong;
+        existingSong = await this.songModel.findOne({
+            title: { $regex: new RegExp(`^${title}$`, 'i') },
+            artist: { $regex: new RegExp(`^${artist}$`, 'i') },
+        });
+        const songCategory = await this.categoryModel.findOne({
+            name: { $regex: new RegExp(`^${category}$`, 'i') },
+        });
+        if (existingSong) {
+            if (existingSong.suggestedBy === userId) {
+                throw new common_1.ConflictException('You have already suggested this song.');
             }
+            else {
+                existingSong.suggestedBy = new mongoose_2.Types.ObjectId(userId);
+                await existingSong.save();
+                return { message: 'Song already exists, suggestion recorded.', data: existingSong };
+            }
+        }
+        else if (!existingSong && !songCategory) {
+            const newCategory = 'Others';
+            existingSong = new this.songModel({
+                ...suggestSongDto,
+                uploadedBy: new mongoose_2.Types.ObjectId(userId),
+                suggestedBy: new mongoose_2.Types.ObjectId(userId),
+                category: newCategory,
+                status: 'Pending',
+                _id: new mongoose_2.Types.ObjectId()
+            });
         }
         else {
-            song = await this.songModel.findOne({ title: normTitle, artist: normArtist, });
-            if (!song) {
-                song = new this.songModel({
-                    ...suggestSongDto,
-                    uploadedBy: new mongoose_2.Types.ObjectId(suggestedBy),
-                    suggestedBy: new mongoose_2.Types.ObjectId(suggestedBy),
-                    status: 'Pending',
-                    _id: new mongoose_2.Types.ObjectId()
-                });
-                await song.save();
-            }
+            existingSong = new this.songModel({
+                ...suggestSongDto,
+                uploadedBy: new mongoose_2.Types.ObjectId(userId),
+                suggestedBy: new mongoose_2.Types.ObjectId(userId),
+                category: category,
+                status: 'Pending',
+                _id: new mongoose_2.Types.ObjectId()
+            });
+            await existingSong.save();
         }
         const suggestion = new this.suggestionModel({
-            song: song._id,
-            suggestedBy: new mongoose_2.Types.ObjectId(suggestedBy),
+            song: existingSong._id,
+            suggestedBy: userId,
         });
         await suggestion.save();
         this.notificationGateway.broadcastNewSong(suggestion);
         return {
-            message: 'Song suggestion submitted successfully',
-            song,
+            message: 'New song created and suggestion submitted successfully',
+            existingSong,
             suggestion,
         };
     }
     async uploadSong(createSongDto, files, userId) {
-        const { title, artist, category, uploadedBy } = createSongDto;
+        const { title, artist, category } = createSongDto;
+        const uploadedBy = userId;
         if (!title || !artist || !category) {
             throw new common_1.BadRequestException('Missing required fields');
         }
@@ -94,7 +114,7 @@ let SongService = class SongService {
         }
         const newSong = new this.songModel({
             ...createSongDto,
-            category: songCategory._id,
+            category: songCategory.name,
             uploadedBy: new mongoose_2.Types.ObjectId(uploadedBy),
             suggestedBy: (0, mongoose_2.isValidObjectId)(createSongDto.suggestedBy) ? new mongoose_2.Types.ObjectId(createSongDto.suggestedBy) : null,
             audioUrl,
@@ -115,12 +135,19 @@ let SongService = class SongService {
         const filter = status ? { status } : {};
         return this.songModel
             .find(filter)
-            .populate('suggestedBy', 'name email');
+            .populate('suggestedBy', 'name email')
+            .sort({ createdAt: -1 });
     }
     async getAllSongsByCategory(category) {
         const filter = category ? { category } : {};
         return this.songModel
             .find(filter);
+    }
+    async getSuggestions() {
+        return this.suggestionModel
+            .find()
+            .populate('song', 'title artist')
+            .sort({ createdAt: -1 });
     }
     async searchSongs(term) {
         return this.songModel.find({
@@ -132,16 +159,18 @@ let SongService = class SongService {
         });
     }
     async findById(id) {
-        return this.songModel.findById(id).exec();
+        return await this.songModel.findById(id).exec();
     }
     async getSuggestionsByUser(userId) {
-        const user = await this.userModel.findById(userId);
-        if (user?.role === 'admin') {
-            return this.songModel.find();
+        const existingUser = await this.userModel.findById(userId);
+        if (!existingUser) {
+            throw new common_1.BadRequestException('User ID is required');
         }
-        else {
-            return this.songModel.find({ suggestedBy: userId });
-        }
+        const suggestedBy = await this.songModel
+            .find({ suggestedBy: existingUser._id })
+            .populate('suggestedBy')
+            .sort({ createdAt: -1 }).exec();
+        return suggestedBy;
     }
     async updateSongStatus(songId, updateSongStatusDto, adminId) {
         const { status } = updateSongStatusDto;

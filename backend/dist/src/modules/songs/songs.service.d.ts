@@ -17,14 +17,20 @@ export declare class SongService {
     private readonly notificationGateway;
     private readonly googleDriveService;
     constructor(categoryModel: Model<Category>, songModel: Model<Song>, suggestionModel: Model<Suggestion>, userModel: Model<User>, notificationService: NotificationsService, notificationGateway: NotificationGateway, googleDriveService: GoogleDriveService);
-    suggestSong(suggestSongDto: SuggestSongDto): Promise<{
+    suggestOrCreateSong(suggestSongDto: SuggestSongDto, userId: string): Promise<{
         message: string;
-        song: any;
+        data: any;
+        existingSong?: undefined;
+        suggestion?: undefined;
+    } | {
+        message: string;
+        existingSong: any;
         suggestion: import("mongoose").Document<unknown, {}, Suggestion> & Suggestion & {
             _id: Types.ObjectId;
         } & {
             __v: number;
         };
+        data?: undefined;
     }>;
     uploadSong(createSongDto: CreateSongDto, files: {
         audio?: Express.Multer.File[];
@@ -45,6 +51,11 @@ export declare class SongService {
     getAllSongsByCategory(category?: string): Promise<(import("mongoose").Document<unknown, {}, Song> & Song & Required<{
         _id: Types.ObjectId;
     }> & {
+        __v: number;
+    })[]>;
+    getSuggestions(): Promise<(import("mongoose").Document<unknown, {}, Suggestion> & Suggestion & {
+        _id: Types.ObjectId;
+    } & {
         __v: number;
     })[]>;
     searchSongs(term: string): Promise<(import("mongoose").Document<unknown, {}, Song> & Song & Required<{

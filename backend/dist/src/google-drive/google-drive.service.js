@@ -43,7 +43,7 @@ let GoogleDriveService = class GoogleDriveService {
             throw error;
         }
     }
-    async downloadFile(fileId, res) {
+    async downloadFile(fileId, res, inline = true) {
         try {
             const fileMetadata = await this.driveClient.files.get({
                 fileId,
@@ -54,13 +54,13 @@ let GoogleDriveService = class GoogleDriveService {
             const response = await this.driveClient.files.get({ fileId, alt: 'media' }, { responseType: 'stream' });
             res.setHeader('Content-Type', mimeType);
             if (mimeType === 'application/pdf') {
-                res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
+                res.setHeader('Content-Disposition', `${inline ? 'inline' : 'attachment'}; filename="${fileName}"`);
             }
             else if (mimeType.startsWith('audio/') || mimeType.startsWith('video/')) {
-                res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
+                res.setHeader('Content-Disposition', `${inline ? 'inline' : 'attachment'}; filename="${fileName}"`);
             }
             else {
-                res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+                res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
             }
             response.data.pipe(res);
         }

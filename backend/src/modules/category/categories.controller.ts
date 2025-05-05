@@ -18,7 +18,7 @@ export class CategoriesController {
   }
 
   // Get all categories
-  @Roles('admin')
+  @Roles('admin', 'member')
   @Get()
   getCategories() {
     return this.categoriesService.getCategories();

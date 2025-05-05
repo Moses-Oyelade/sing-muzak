@@ -26,11 +26,12 @@ let SongController = class SongController {
     constructor(songService) {
         this.songService = songService;
     }
-    suggestSong(suggestSongDto) {
-        return this.songService.suggestSong(suggestSongDto);
+    suggestSong(suggestSongDto, req) {
+        const userId = req.user.sub;
+        return this.songService.suggestOrCreateSong(suggestSongDto, userId);
     }
     CreateSong(file, createSongDto, req) {
-        return this.songService.uploadSong(createSongDto, file, req.user.id);
+        return this.songService.uploadSong(createSongDto, file, req.user.sub);
     }
     async findAll(search) {
         if (search) {
@@ -51,6 +52,20 @@ let SongController = class SongController {
         }
         return song;
     }
+    async getSuggestions() {
+        return this.songService.getSuggestions();
+    }
+    async getMySuggestions(req) {
+        console.log("🔥 Authenticated user:", req.user);
+        try {
+            const userId = req.user.sub;
+            const suggestions = await this.songService.getSuggestionsByUser(userId);
+            return suggestions;
+        }
+        catch (error) {
+            throw new common_1.BadRequestException(error.message);
+        }
+    }
     updateSongStatus(id, updateSongStatusDto, req) {
         if (!(0, mongoose_1.isValidObjectId)(id)) {
             throw new common_1.BadRequestException('Invalid song ID format.');
@@ -67,8 +82,9 @@ __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
     (0, common_1.Post)('suggest'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_song_dto_1.SuggestSongDto]),
+    __metadata("design:paramtypes", [create_song_dto_1.SuggestSongDto, Object]),
     __metadata("design:returntype", void 0)
 ], SongController.prototype, "suggestSong", null);
 __decorate([
@@ -95,7 +111,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SongController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.Get)("/filter"),
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('admin', 'member'),
     __param(0, (0, common_1.Query)('status')),
@@ -124,6 +140,23 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], SongController.prototype, "getSongById", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('admin'),
+    (0, common_1.Get)('suggestions'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], SongController.prototype, "getSuggestions", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('admin', 'member'),
+    (0, common_1.Get)('me/suggestions'),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], SongController.prototype, "getMySuggestions", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('admin'),

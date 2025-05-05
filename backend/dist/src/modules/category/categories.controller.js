@@ -53,7 +53,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], CategoriesController.prototype, "createCategory", null);
 __decorate([
-    (0, roles_decorator_1.Roles)('admin'),
+    (0, roles_decorator_1.Roles)('admin', 'member'),
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),

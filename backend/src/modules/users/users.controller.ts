@@ -8,14 +8,12 @@ import { CreateUserFromAdminDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './schema/users.schema';
 import { GetUser } from '../auth/get-user.decorator';
-import { SongService } from '../songs/songs.service';
 
 
 @Controller('users')
 export class UsersController {
   constructor(
     private readonly userService: UsersService,
-    private readonly songService: SongService,
   ) { }
   
   // Only Admins can access this route
@@ -40,22 +38,7 @@ export class UsersController {
     }
   };
 
-  //Get User's Song Suggestions
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'member')
-  @Get( 'me/suggestions')
-  async getMySuggestions(@Request() req: any ) {
-    console.log("🔥 Authenticated user:", req.user);
-    try{
-        // const userId = req.user.userId
-        const userId = req.user.userId
-        const users = await this.songService.getSuggestionsByUser(userId);
-        return users;
-    } catch (error){
-      throw new BadRequestException(error.message);
-      // return `Only admins can see this, ${message}`
-    }
-  }
+
 
   // Both Admins and Members can access
   @UseGuards(JwtAuthGuard, RolesGuard)
