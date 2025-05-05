@@ -1,18 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from "@/utils/axios";
+import router from "next/router";
 
-interface Category {
-  id: string;
-  name: string;
-}
+
 
 export default function UploadPage() {
   const [title, setTitle] = useState("");
   const [artist, setArtist] = useState("");
   const [category, setCategory] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState([]);
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -21,8 +19,9 @@ export default function UploadPage() {
    useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/categories"); // adjust if needed
-        setCategories(res.data);
+        const res = await axiosInstance.get("/categories"); // adjust if needed
+        const data = res.data
+        setCategories(data || []);
       } catch (error) {
         console.error("Failed to load categories", error);
       }
@@ -31,7 +30,7 @@ export default function UploadPage() {
     fetchCategories();
   }, []);
 
-  const handleUpload = async (e: React.FormEvent) => {
+  const handleUpload = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!title || !artist || !category || (!audioFile && !pdfFile)) {
@@ -53,7 +52,7 @@ export default function UploadPage() {
 
     try {
       setLoading(true);
-      await axios.post("/songs", formData);
+      axiosInstance.post("/songs/upload", formData);
       alert("Song uploaded successfully!");
       setTitle("");
       setArtist("");
@@ -65,6 +64,7 @@ export default function UploadPage() {
       alert("Upload failed!");
     } finally {
       setLoading(false);
+      router.push("/dashboard");
     }
   };
 
@@ -99,24 +99,26 @@ export default function UploadPage() {
           <option value="Praise">Praise</option> */}
 
           <option value="">Select Category</option>
-          {categories.map((cat: Category) => (
-            <option key={cat.id} value={cat.name}>
+          {categories.map((cat: any) => (
+            <option key={cat._id} value={cat.name}>
               {cat.name}
             </option>
           ))}
         </select>
-        <input
-          type="file"
-          className="w-full p-2 border rounded"
-          accept="audio/*"
-          onChange={(e) => setAudioFile(e.target.files?.[0] || null)}
-        />
-        <input
-          type="file"
-          className="w-full p-2 border rounded"
-          accept="application/pdf"
-          onChange={(e) => setPdfFile(e.target.files?.[0] || null)}
-        />
+        <p className="w-full p-2 border rounded">Upload Audio 🎵 : 
+          <input
+            type="file"
+            accept="audio/*, video/*"
+            onChange={(e) => setAudioFile(e.target.files?.[0] || null)}
+          />
+        </p>
+        <p className="w-full p-2 border rounded">Upload PDF 📋 : 
+          <input
+            type="file"
+            accept="application/pdf"
+            onChange={(e) => setPdfFile(e.target.files?.[0] || null)}
+          />
+        </p>
         <button
           type="submit"
           className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
@@ -125,6 +127,7 @@ export default function UploadPage() {
           {loading ? "Uploading..." : "Upload Song"}
         </button>
       </form>
+      <button>back</button>
     </div>
   );
 }

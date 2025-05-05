@@ -9,7 +9,7 @@ export default function Navbar() {
     <nav className="bg-gray-800 text-white px-6 py-3 flex justify-between items-center">
       <div className="font-bold text-lg">🎵 SongManager</div>
       <div className="flex items-center gap-4">
-        <Link href="/dashboard" className="hover:underline">Home</Link>
+        <Link href="/dashboard" className="hover:underline">Song List</Link>
         <Link href ="/auth/logout">
           <button  className="hover:underline">
             Logout

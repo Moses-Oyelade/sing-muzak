@@ -51,6 +51,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
               <Link href ="/songs">Song List</Link>
             </li>
             <li>
+              <Link href ="/upload">Upload Song</Link>
+            </li>
+            <li>
               <Link href ="/auth/logout">Logout</Link>
             </li>
           </ul>

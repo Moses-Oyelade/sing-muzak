@@ -18,12 +18,22 @@ export default function AdminControls() {
 
   const getSongs = async () => {
     setLoading(true);
+    let url = `/songs?page=${page}`;
+
+    if (statusTab !== "All") {
+      url += `&status=${statusTab}`;
+    }
+
+    if (categoryFilter) {
+      url += `&search=${categoryFilter}`;
+    }
     try {
-      const data = await axiosInstance.get(
-        `/songs?page=${page}&status=${statusTab}&search=${categoryFilter}`
-      );
+      const data = await axiosInstance.get(url);
+      // const data = await axiosInstance.get(
+      //   `/songs?page=${page}&status=${statusTab}&search=${categoryFilter}`
+      // );
       // const data = await res.json();
-      setSongs(data.data || []);
+      setSongs(data.data.songs || data.data);
       setTotalPages(data.data.totalPages || 1);
     } catch (err) {
       console.error("Error loading songs:", err);
@@ -34,7 +44,7 @@ export default function AdminControls() {
 
   const getCategories = async () => {
     try {
-      const res = await axiosInstance.get("/songs/category");
+      const res = await axiosInstance.get("/categories");
       const data = res.data
       setCategories(data || []);
     } catch (err) {
@@ -67,6 +77,10 @@ export default function AdminControls() {
     };
   }, []);
 
+  const handleFilter = async(term: string) => {
+    setStatusTab(term);
+  }
+
   const updateSongStatus = async (songId: string, newStatus: string) => {
     const confirmAction = window.confirm(`Are you sure you want to ${newStatus.toLowerCase()} this song?`);
 
@@ -89,7 +103,7 @@ export default function AdminControls() {
 
       {/* Tabs */}
       <div className="flex gap-4 mb-4">
-        {["All", "Approved", "Pending", "Postponed"].map((tab) => (
+        {["All", "Approved", "Pending", "Postponed"].map((tab) => ( 
           <button
             key={tab}
             className={`px-3 py-1 rounded ${
@@ -98,6 +112,8 @@ export default function AdminControls() {
                 : "bg-gray-200 text-black"
             }`}
             onClick={() => {
+              console.log(tab)
+              handleFilter(tab);
               setStatusTab(tab);
               setPage(1);
             }}
@@ -140,7 +156,7 @@ export default function AdminControls() {
             >
               <h3 className="text-lg font-semibold">{song.title}</h3>
               <p className="text-sm">Artist: {song.artist}</p>
-              <p className="text-sm">Category: {song.category?.name}</p>
+              <p className="text-sm">Category: {song.category}</p>
               <p className="text-sm">Status: {song.status}</p>
 
               {/* PDF Preview */}

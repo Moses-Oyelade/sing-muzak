@@ -16,8 +16,7 @@ export default function AdminDashboardPage() {
     try {
       const endpoint = `/songs?search=${term}`
       const res = await axiosInstance.get(endpoint, {
-      // const res = await fetch(`http://localhost:3000/songs?search=${term}`, {
-        // cache: "no-store",
+      
       });
       // const data = await res.json();
       const data = await res.data;

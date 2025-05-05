@@ -5,6 +5,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import AdminDashboard from "@/components/AdminDashboard";
 import createAxiosWithAuth from "@/utils/axiosServer";
 import { redirect } from "next/navigation";
+// import axiosInstance from "@/utils/axios";
 
 
 interface AdminPageProps {
@@ -34,11 +35,11 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
   const page = typeof resolvedSearchParams.page === "string" ? resolvedSearchParams.page : "1";
   const search = typeof resolvedSearchParams.search === "string" ? resolvedSearchParams.search : "";
-  const status = typeof resolvedSearchParams.status === "string" ? resolvedSearchParams.status : "Pending";
+  const status = typeof resolvedSearchParams.status === "string" ? resolvedSearchParams.status : "pending";
 
 
   try {
-    const res = await axios.get(`/songs?status=${status}&search=${search}&page=${page}`);
+    const res = await axios.get(`/songs/filter?status=${status}&search=${search}&page=${page}`);
     // const res = await axios.get(`/songs`, {
     //   params: {
     //     status: status === "All" ? undefined : status,

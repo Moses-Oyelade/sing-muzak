@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useSocket } from "../hooks/useSocket"; // Import the custom hook
 import axiosInstance from "src/utils/axios";
+import dayjs from '@/lib/dayjs';
 
 
 interface Song {
@@ -21,6 +22,7 @@ export default function DashboardContent() {
   const [suggestions, setSuggestions] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
   const { data: session } = useSession();
+  const [searchTerm, setSearchTerm] = useState("");
 
   const token = session?.user?.token;
   const role = session?.user?.role;
@@ -61,7 +63,7 @@ export default function DashboardContent() {
       try {
         const endpoint = role === 'admin'
           ? "/songs"
-          : `/users/me/suggestions`;
+          : `/songs/me/suggestions`;
 
         console.log("Session:", session);
         console.log("Token extracted from session:", token);
@@ -86,21 +88,26 @@ export default function DashboardContent() {
 
   return (
     <div className="p-4">
-      <button>Search Songs</button>
       <h1 className="text-2xl font-bold mb-4">
         {role === "admin" ? "All Songs (admin)" : "My Suggestions"}
       </h1>
-      {loading ? (
-        <p>Loading suggestions...</p>
-      ) : suggestions.length === 0 ? (
-        <p>No songs found.</p>
+  
+      {suggestions.length === 0 ? (
+        <p className="text-center text-gray-500">
+          {role === "admin" ? "No songs available." : "No suggestions yet! 🎵"}
+        </p>
       ) : (
         <ul className="space-y-4">
           {suggestions.map((song: any) => (
             <li key={song._id} className="border p-4 rounded">
+              {role === 'admin' ?  (
+              <>
               <h3 className="font-semibold text-lg">{song.title}</h3>
               <p>Artist: {song.artist}</p>
               <p>Status: {song.status}</p>
+              <p>Uploaded By: {song.uploadedBy?.name || "unknown"}</p>
+              <p>Uploaded on: {dayjs(song.createdAt).format('MMMM D, YYYY h:mm A')}</p>
+              <p>Suggested By: {song.suggestedBy?.name || "unknown"} - {dayjs(song.updatedAt).fromNow()}</p>
               {song.sheetMusicUrl && (
                 <a
                   href={song.sheetMusicUrl}
@@ -120,11 +127,41 @@ export default function DashboardContent() {
                 >
                   Listen
                 </a>
+              )}  
+              </>           
+              ) : (
+              <>
+              <h3 className="font-semibold text-lg">{song.title}</h3>
+              <p>Artist: {song.artist}</p>
+              <p>Status: {song.status}</p>
+              <p>Uploaded By: {song.uploadedBy?.name || "unknown"}</p>
+              <p>Uploaded on: {dayjs(song.createdAt).format('MMMM D, YYYY h:mm A')}</p>
+              {song.sheetMusicUrl && (
+                <a
+                href={song.sheetMusicUrl}
+                target="_blank"
+                rel="noopener"
+                className="text-purple-600 underline"
+                >
+                View PDF
+                </a>
               )}
+              {song.audioUrl && (
+                <a
+                href={song.audioUrl}
+                target="_blank"
+                rel="noopener"
+                className="text-blue-600 underline ml-4"
+                >
+                Listen
+                </a>
+              )}
+              </>
+            )}
             </li>
           ))}
         </ul>
       )}
     </div>
   );
-}
+}  
