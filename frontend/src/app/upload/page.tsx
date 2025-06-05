@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "@/utils/axios";
 import router from "next/router";
+import Link from "next/link";
 
 
 
@@ -119,15 +120,21 @@ export default function UploadPage() {
             onChange={(e) => setPdfFile(e.target.files?.[0] || null)}
           />
         </p>
-        <button
-          type="submit"
-          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-          disabled={loading}
-        >
-          {loading ? "Uploading..." : "Upload Song"}
-        </button>
+        <div className="flex justify-between items-center">
+          <button
+            type="submit"
+            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+            disabled={loading}
+            >
+            {loading ? "Uploading..." : "Upload Song"}
+          </button>
+          <Link href ="/dashboard">
+            <button  className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700">
+              Cancel
+            </button>
+          </Link>
+        </div>
       </form>
-      <button>back</button>
     </div>
   );
 }

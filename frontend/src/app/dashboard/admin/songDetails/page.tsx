@@ -1,6 +1,7 @@
 "use client";
 
-import AdminControls from "@/components/AdminControls";
+
+import SongForm from "@/components/SongForm";
 
 
 export default function SongManager(){
@@ -8,6 +9,6 @@ export default function SongManager(){
 
 
     return (
-        <AdminControls/>
+        <SongForm/>
     )
 }

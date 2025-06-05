@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "src/utils/axios";
 import { useSession } from "next-auth/react";
-import SongCard from "@/components/SongCard";
+// import SongCard from "@/components/SongCard";
 import AdminControls from "@/components/AdminControls";
 import Link from "next/link";
+import SearchSong from "../dashboard/SearchSongs";
 
 
 export default function SongsListPage() {
@@ -37,10 +38,8 @@ export default function SongsListPage() {
         { isAdmin ? (
           <AdminControls />
         ) : (
-          songs || []).map((song: any) => (
-          <SongCard key={song._id} song={song} />
-          )
-        )}
+        <SearchSong />
+      )}
       </div>
     </div>
   );

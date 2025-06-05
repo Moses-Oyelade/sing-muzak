@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useSocket } from "../hooks/useSocket"; // Import the custom hook
 import axiosInstance from "src/utils/axios";
 import dayjs from '@/lib/dayjs';
+import FilterBar from "@/components/FilterBar";
 
 
 interface Song {
@@ -50,25 +51,29 @@ export default function DashboardContent() {
         setSuggestions((prev: any) => prev.filter((song: any) => song._id !== data.songId));
       }
     });
-  
+
   useEffect(() => {
-    const fetchSuggestions = async() => {
+
+    // const fetchSuggestions = async() => {
+    const fetchSuggestions = async(term = "") => {
       if (!session || !token) {
         console.warn("Session or token not ready, skipping fetch.");
         return;
       }
-
-    // const headers = { Authorization: `Bearer ${token}` };
         
       try {
         const endpoint = role === 'admin'
-          ? "/songs"
+          // ? "/songs"
+          ? `/songs?search=${term}`
           : `/songs/me/suggestions`;
 
         console.log("Session:", session);
         console.log("Token extracted from session:", token);
         
-        const response = await axiosInstance.get(endpoint);
+        // const response = await axiosInstance.get(endpoint);
+        const response = role === 'admin'
+        ? await axiosInstance.get(endpoint, { })
+        : await axiosInstance.get(endpoint);
         console.log("Fetching songs:", response.data);
         
         setSuggestions(response.data?.data || response.data ); // handle both paginated and non-paginated
@@ -80,16 +85,25 @@ export default function DashboardContent() {
       }
     };
 
-    fetchSuggestions();
+    fetchSuggestions(searchTerm);
   // }, [token, role]);
-  }, [session]);
+  }, [session, searchTerm]);
+
+  const handleFilter = (term: string) => {
+    setSearchTerm(term);
+  };
 
   if (loading) return <p className="p-4 animate-spin rounded-full h-4 w-4 border-t-2 border-white">Checking session...</p>;
 
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">
-        {role === "admin" ? "All Songs (admin)" : "My Suggestions"}
+        {role === "admin" ? 
+        <>
+        <p>"All Songs (admin)"</p>
+        <FilterBar onFilter={handleFilter} /> 
+        </>
+        : "My Suggestions"}
       </h1>
   
       {suggestions.length === 0 ? (
@@ -107,7 +121,7 @@ export default function DashboardContent() {
               <p>Status: {song.status}</p>
               <p>Uploaded By: {song.uploadedBy?.name || "unknown"}</p>
               <p>Uploaded on: {dayjs(song.createdAt).format('MMMM D, YYYY h:mm A')}</p>
-              <p>Suggested By: {song.suggestedBy?.name || "unknown"} - {dayjs(song.updatedAt).fromNow()}</p>
+              <p>Suggested By: {song.suggestedBy?.name || "unknown"}</p>
               {song.sheetMusicUrl && (
                 <a
                   href={song.sheetMusicUrl}

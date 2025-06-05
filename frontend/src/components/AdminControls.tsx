@@ -15,10 +15,11 @@ export default function AdminControls() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [updatingSongId, setUpdatingSongId] = useState<string | null>(null);
 
   const getSongs = async () => {
     setLoading(true);
-    let url = `/songs?page=${page}`;
+    let url = `/songs/filter?page=${page}`;
 
     if (statusTab !== "All") {
       url += `&status=${statusTab}`;
@@ -28,12 +29,14 @@ export default function AdminControls() {
       url += `&search=${categoryFilter}`;
     }
     try {
-      const data = await axiosInstance.get(url);
+      const res = await axiosInstance.get(url);
       // const data = await axiosInstance.get(
       //   `/songs?page=${page}&status=${statusTab}&search=${categoryFilter}`
       // );
-      // const data = await res.json();
-      setSongs(data.data.songs || data.data);
+      const data = await res.data;
+      // setSongs(data.data.songs || data.data );
+      console.log(`data: ${data.songs}, next: ${data.data.songs}`)
+      setSongs(Array.isArray(data.songs) ? data.data.songs: [] );
       setTotalPages(data.data.totalPages || 1);
     } catch (err) {
       console.error("Error loading songs:", err);
@@ -86,14 +89,18 @@ export default function AdminControls() {
 
     if (!confirmAction) return; // If user cancels, do nothing
     
+    setUpdatingSongId(songId); // Start loading.
+
     try {
-      await axiosInstance.patch(`/songs/${songId}/status`, {
+      await axiosInstance.patch(`/songs/${songId}`, {
         status: newStatus,
       });
       toast.success(`Song ${newStatus.toLowerCase()} successfully`);
       getSongs();
-    } catch (err) {
-      toast.error("Failed to update song status");
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Failed to update song status");
+    } finally {
+      setUpdatingSongId(null); // Stop loading
     }
   };
 
@@ -109,12 +116,12 @@ export default function AdminControls() {
             className={`px-3 py-1 rounded ${
               statusTab === tab
                 ? "bg-purple-600 text-white"
-                : "bg-gray-200 text-black"
+                : "bg-gray-400 text-black"
             }`}
             onClick={() => {
               console.log(tab)
               handleFilter(tab);
-              setStatusTab(tab);
+              // setStatusTab(tab);
               setPage(1);
             }}
           >
@@ -146,7 +153,7 @@ export default function AdminControls() {
       {loading ? (
         <p className="text-center text-gray-600 animate-spin rounded-full h-4 w-4 border-t-2 border-white">Loading songs...</p>
       ) : songs.length === 0 ? (
-        <p className="text-center text-gray-500">No songs found.</p>
+        <p className="text-center text-red-500">No songs found.</p>
       ) : (
         <div className="grid gap-4">
           {songs.map((song: any) => (
@@ -179,16 +186,24 @@ export default function AdminControls() {
               {/* Actions */}
               <div className="mt-3 flex gap-2">
                 <button
-                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                  className={`text-white px-3 py-1 rounded
+                    ${ updatingSongId === song._id ? "bg-green-300"
+                    : "bg-green-500 hover:bg-green-300 cursor-not-allowed"
+                  }`}
+                  disabled={updatingSongId === song._Id}
                   onClick={() => updateSongStatus(song._id, "Approved")}
                 >
-                  Approve
+                  {updatingSongId === song._Id ? "updating..." : "Approve"}
                 </button>
                 <button
-                  className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
+                  className={`text-white px-3 py-1 rounded
+                    ${ updatingSongId === song._id ? "bg-yellow-300"
+                    : "bg-yellow-500 hover:bg-yellow-300 cursor-not-allowed"
+                  }`}
+                  disabled={updatingSongId === song._Id}
                   onClick={() => updateSongStatus(song._id, "Postponed")}
                 >
-                  Postpone
+                  {updatingSongId === song._Id ? "updating..." : "Postpone"}
                 </button>
               </div>
             </div>

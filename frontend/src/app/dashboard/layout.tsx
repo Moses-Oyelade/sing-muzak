@@ -30,10 +30,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
           {isAdmin ? (
           <ul>
             <li>
-              <Link href="/dashboard/admin">Admin Panel</Link>
+              <Link href="/dashboard" >Home</Link>
             </li>
             <li>
-              <Link href="" >Add User</Link>
+              <Link href="/dashboard/admin">Admin Panel</Link>
             </li>
             <li>
               <Link href="" ></Link>
@@ -42,7 +42,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           ) : (
           <ul>
             <li>
-              <Link href="" >Profile</Link>
+              <Link href="/dashboard/user" >Profile</Link>
             </li>
             <li>
               <Link href="/dashboard">My Suggestions</Link>

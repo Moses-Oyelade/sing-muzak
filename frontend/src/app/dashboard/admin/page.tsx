@@ -12,6 +12,7 @@ interface AdminPageProps {
   searchParams: {
     status?: string;
     search?: string;
+    category?: string;
     page?: string;
   };
 }
@@ -31,16 +32,17 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   // const page = searchParams.page || "1";
   // const search = searchParams.search || "";
   // const status = searchParams.status || "Pending";
-  const resolvedSearchParams = await searchParams;
+  const resolvedSearchParams = searchParams;
 
   const page = typeof resolvedSearchParams.page === "string" ? resolvedSearchParams.page : "1";
   const search = typeof resolvedSearchParams.search === "string" ? resolvedSearchParams.search : "";
-  const status = typeof resolvedSearchParams.status === "string" ? resolvedSearchParams.status : "pending";
+  const status = typeof resolvedSearchParams.status === "string" ? resolvedSearchParams.status : "All";
+  const category = typeof resolvedSearchParams.category === "string" ? resolvedSearchParams.category : "All";
 
 
   try {
-    const res = await axios.get(`/songs/filter?status=${status}&search=${search}&page=${page}`);
-    // const res = await axios.get(`/songs`, {
+    const res = await axios.get(`/songs/filter?status=${status}&search=${search}&category${category}&page=${page}`);
+    // const res = await axios.get(`/songs/filter`, {
     //   params: {
     //     status: status === "All" ? undefined : status,
     //     search,

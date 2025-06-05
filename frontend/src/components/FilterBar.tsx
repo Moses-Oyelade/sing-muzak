@@ -15,7 +15,7 @@ export default function FilterBar({ onFilter }: { onFilter: (term: string) => vo
       <input
         type="text"
         placeholder="Search songs..."
-        className="border rounded px-2 py-1 w-full"
+        className="border rounded px-2 py-1 w-auto"
         value={term}
         onChange={(e) => setTerm(e.target.value)}
       />

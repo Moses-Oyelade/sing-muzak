@@ -7,11 +7,11 @@ import clsx from "clsx";
 
 const tabs = [
   { label: "Song Details", href: "/dashboard/admin/songDetails" },
-  { label: "Members", href: "/dashboard/admin/approved" },
-  { label: "Performances", href: "/dashboard/admin/pending" },
-  { label: "Rehearsals", href: "/dashboard/admin/pending" },
-  { label: "Announcement", href: "/dashboard/admin/pending" },
-  { label: "Attendance", href: "/dashboard/admin/pending" },
+  { label: "Members", href: "/dashboard/admin/members" },
+  { label: "Performances", href: "/dashboard/admin/performances" },
+  { label: "Rehearsals", href: "/dashboard/admin/reheasal" },
+  { label: "Announcement", href: "/dashboard/admin/announcement" },
+  { label: "Attendance", href: "/dashboard/admin/attendance" },
 ];
 
 export default function AdminTabs() {

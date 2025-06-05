@@ -8,7 +8,7 @@ import axiosInstance from "@/utils/axios";
 // import axiosInstance from "@/utils/axios";
 
 
-export default function AdminDashboardPage() {
+export default function SearchSong() {
   const [songs, setSongs] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -37,7 +37,7 @@ export default function AdminDashboardPage() {
   return (
     <div>
       <FilterBar onFilter={handleFilter} />
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
         {songs.length > 0 ? (
           songs.map((song: any) => <SongCard key={song._id} song={song} />)
         ) : (
