@@ -96,4 +96,51 @@ export class UsersService {
     }
   }
 
+  async findAll({
+    vocalPart,
+    search,
+    role,
+    page = 1,
+    limit = 10,
+  } : {
+    vocalPart?: string;
+    search?: string;
+    role?: string;
+    page?: number;
+    limit?: number;
+  }) {
+    const query = this.userModel.find()
+
+        if (vocalPart && vocalPart !== 'All') {
+      query.where('status').equals(vocalPart);
+    }
+  
+    if (search) {
+      query.where('name', new RegExp(search, 'i')); // Case-insensitive search
+    }
+
+    if (role && role !== "All") {
+      query.where("category").equals(role);
+    }
+
+    const totalItems = await query.clone().countDocuments();
+    const users = await query
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort({ createdAt: -1 }) // Optional: most recent first
+      
+  
+    const totalPages = Math.ceil(totalItems / limit);
+  
+    return {
+      data: users,
+      meta: {
+        currentPage: page,
+        totalPages,
+        totalItems,
+      },
+    };
+  }
+
+
 }

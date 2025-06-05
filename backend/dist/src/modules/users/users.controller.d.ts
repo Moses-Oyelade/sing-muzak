@@ -17,4 +17,16 @@ export declare class UsersController {
     createUserFromAdmin(createUserFromAdminDto: CreateUserFromAdminDto): Promise<User>;
     updateUser(userId: string, updateData: UpdateUserDto): Promise<User>;
     deleteFile(userId: string): Promise<string>;
+    searchAll(vocalPart?: string, search?: string, role?: string, page?: number, limit?: number): Promise<{
+        data: (import("mongoose").Document<unknown, {}, User> & User & Required<{
+            _id: import("mongoose").Types.ObjectId;
+        }> & {
+            __v: number;
+        })[];
+        meta: {
+            currentPage: number;
+            totalPages: number;
+            totalItems: number;
+        };
+    }>;
 }

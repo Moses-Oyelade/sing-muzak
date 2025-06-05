@@ -44,6 +44,10 @@ let SongService = class SongService {
         const songCategory = await this.categoryModel.findOne({
             name: { $regex: new RegExp(`^${category}$`, 'i') },
         });
+        if (!songCategory) {
+            const newCategory = "Others";
+            return newCategory;
+        }
         if (existingSong) {
             if (existingSong.suggestedBy === userId) {
                 throw new common_1.ConflictException('You have already suggested this song.');
@@ -94,7 +98,10 @@ let SongService = class SongService {
         if (!title || !artist || !category) {
             throw new common_1.BadRequestException('Missing required fields');
         }
-        const existingSong = await this.songModel.findOne({ title, artist });
+        const existingSong = await this.songModel.findOne({
+            title: { $regex: new RegExp(`^${title}$`, 'i') },
+            artist: { $regex: new RegExp(`^${artist}$`, 'i') },
+        });
         if (existingSong) {
             throw new common_1.BadRequestException('Song already exist!');
         }
@@ -198,13 +205,16 @@ let SongService = class SongService {
             throw new Error(`Failed to delete file: ${error.message}`);
         }
     }
-    async findAll({ status, search, page = 1, limit = 10, }) {
-        const query = this.songModel.find();
-        if (status) {
+    async findAll({ status, search, page = 1, limit = 10, category, }) {
+        const query = this.songModel.find().populate("suggestedBy", "name");
+        if (status && status !== 'All') {
             query.where('status').equals(status);
         }
         if (search) {
             query.where('title', new RegExp(search, 'i'));
+        }
+        if (category && category !== "All") {
+            query.where("category").equals(category);
         }
         const totalItems = await query.clone().countDocuments();
         const songs = await query

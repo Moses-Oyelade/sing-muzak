@@ -1,5 +1,5 @@
 import { User } from './schema/users.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateUserFromAdminDto } from './dto/create-user.dto';
 export declare class UsersService {
     private readonly userModel;
@@ -15,4 +15,22 @@ export declare class UsersService {
     createUser(createUserFromAdminDto: CreateUserFromAdminDto): Promise<User>;
     updateRefreshToken(userId: string, refreshToken: string | null): Promise<void>;
     deleteUser(userId: string): Promise<string>;
+    findAll({ vocalPart, search, role, page, limit, }: {
+        vocalPart?: string;
+        search?: string;
+        role?: string;
+        page?: number;
+        limit?: number;
+    }): Promise<{
+        data: (import("mongoose").Document<unknown, {}, User> & User & Required<{
+            _id: Types.ObjectId;
+        }> & {
+            __v: number;
+        })[];
+        meta: {
+            currentPage: number;
+            totalPages: number;
+            totalItems: number;
+        };
+    }>;
 }

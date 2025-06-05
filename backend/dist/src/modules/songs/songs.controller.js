@@ -39,8 +39,8 @@ let SongController = class SongController {
         }
         return this.songService.getAllSongs();
     }
-    async searchAll(status, search, page = 1, limit = 10) {
-        return this.songService.findAll({ status, search, page, limit });
+    async searchAll(status, search, category, page = 1, limit = 10) {
+        return this.songService.findAll({ status, search, category, page, limit });
     }
     getAllSongsByCategory(category) {
         return this.songService.getAllSongsByCategory(category);
@@ -116,10 +116,11 @@ __decorate([
     (0, roles_decorator_1.Roles)('admin', 'member'),
     __param(0, (0, common_1.Query)('status')),
     __param(1, (0, common_1.Query)('search')),
-    __param(2, (0, common_1.Query)('page')),
-    __param(3, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)('category')),
+    __param(3, (0, common_1.Query)('page')),
+    __param(4, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, Number, Number]),
+    __metadata("design:paramtypes", [String, String, String, Number, Number]),
     __metadata("design:returntype", Promise)
 ], SongController.prototype, "searchAll", null);
 __decorate([
@@ -160,7 +161,7 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('admin'),
-    (0, common_1.Patch)(':id/status'),
+    (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.Request)()),

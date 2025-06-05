@@ -64,10 +64,11 @@ export class SongController {
   async searchAll(
     @Query('status') status?: string,
     @Query('search') search?: string,
+    @Query('category') category?: string,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10
   ) {
-    return this.songService.findAll({ status, search, page, limit });
+    return this.songService.findAll({ status, search, category, page, limit });
   }
 
 
@@ -83,7 +84,7 @@ export class SongController {
   //   return this.songService.getAllSongsWithFilters(+page, +limit, status, category);
   // }
 
-  // Get all songs (Admins can filter by status)
+  // Get all songs (Admins can filter by category)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Get('category')
@@ -134,7 +135,7 @@ export class SongController {
   // Approve or postponed a song (Admin only)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  @Patch(':id/status')
+  @Patch(':id')
   updateSongStatus(
     @Param('id') id: string, 
     @Body() updateSongStatusDto: UpdateSongStatusDto, 

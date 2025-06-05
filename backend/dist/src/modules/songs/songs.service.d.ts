@@ -17,7 +17,7 @@ export declare class SongService {
     private readonly notificationGateway;
     private readonly googleDriveService;
     constructor(categoryModel: Model<Category>, songModel: Model<Song>, suggestionModel: Model<Suggestion>, userModel: Model<User>, notificationService: NotificationsService, notificationGateway: NotificationGateway, googleDriveService: GoogleDriveService);
-    suggestOrCreateSong(suggestSongDto: SuggestSongDto, userId: string): Promise<{
+    suggestOrCreateSong(suggestSongDto: SuggestSongDto, userId: string): Promise<"Others" | {
         message: string;
         data: any;
         existingSong?: undefined;
@@ -77,11 +77,12 @@ export declare class SongService {
         };
     }>;
     deleteSong(songId: string): Promise<string>;
-    findAll({ status, search, page, limit, }: {
+    findAll({ status, search, page, limit, category, }: {
         status?: string;
         search?: string;
         page?: number;
         limit?: number;
+        category?: string;
     }): Promise<{
         data: (import("mongoose").Document<unknown, {}, Song> & Song & Required<{
             _id: Types.ObjectId;

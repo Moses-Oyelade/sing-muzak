@@ -80,6 +80,32 @@ let UsersService = class UsersService {
             throw new Error(`Failed to delete file: ${error.message}`);
         }
     }
+    async findAll({ vocalPart, search, role, page = 1, limit = 10, }) {
+        const query = this.userModel.find();
+        if (vocalPart && vocalPart !== 'All') {
+            query.where('status').equals(vocalPart);
+        }
+        if (search) {
+            query.where('name', new RegExp(search, 'i'));
+        }
+        if (role && role !== "All") {
+            query.where("category").equals(role);
+        }
+        const totalItems = await query.clone().countDocuments();
+        const users = await query
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .sort({ createdAt: -1 });
+        const totalPages = Math.ceil(totalItems / limit);
+        return {
+            data: users,
+            meta: {
+                currentPage: page,
+                totalPages,
+                totalItems,
+            },
+        };
+    }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([

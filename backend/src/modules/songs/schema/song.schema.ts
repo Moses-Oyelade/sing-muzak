@@ -26,10 +26,10 @@ export class Song extends AbstractDocument {
   @Prop({ type: Types.ObjectId, ref: 'User', default: null })
   suggestedBy: Types.ObjectId;
 
-  @Prop({ required: false })
+  @Prop({ type: String, required: false })
   audioUrl: string; // Optional: link to an audio file
 
-  @Prop({ required: false })
+  @Prop({ type: String, required: false })
   sheetMusicUrl: string; // Optional: link to sheet music
   
   @Prop({ type: Types.ObjectId, ref: 'User', required: false })

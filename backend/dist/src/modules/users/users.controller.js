@@ -73,6 +73,9 @@ let UsersController = class UsersController {
     async deleteFile(userId) {
         return this.userService.deleteUser(userId);
     }
+    async searchAll(vocalPart, search, role, page = 1, limit = 10) {
+        return this.userService.findAll({ vocalPart, search, role, page, limit });
+    }
 };
 exports.UsersController = UsersController;
 __decorate([
@@ -146,6 +149,19 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "deleteFile", null);
+__decorate([
+    (0, common_1.Get)("/filter"),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('admin', 'member'),
+    __param(0, (0, common_1.Query)('vocalPart')),
+    __param(1, (0, common_1.Query)('search')),
+    __param(2, (0, common_1.Query)('role')),
+    __param(3, (0, common_1.Query)('page')),
+    __param(4, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, Number, Number]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "searchAll", null);
 exports.UsersController = UsersController = __decorate([
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [users_service_1.UsersService])

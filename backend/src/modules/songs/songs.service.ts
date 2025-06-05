@@ -11,6 +11,7 @@ import { GoogleDriveService } from 'src/google-drive/google-drive.service';
 import { User } from '../users/schema/users.schema';
 import { UpdateSongStatusDto } from './dto/update-song';
 
+
 @Injectable()
 export class SongService {
   constructor(
@@ -33,10 +34,15 @@ export class SongService {
       title: { $regex: new RegExp(`^${title}$`, 'i') }, 
       artist: { $regex: new RegExp(`^${artist}$`, 'i') },
     });
-    // Check if Category is the exists if not, add category as "others".
+    // Check if Category is of the existing list if not, add category as "others".
     const songCategory = await this.categoryModel.findOne({
       name: { $regex: new RegExp(`^${category}$`, 'i') },
     })
+
+    if(!songCategory){
+      const newCategory = "Others";
+      return newCategory;
+    }
 
     if (existingSong) {
       // If song exists
@@ -49,7 +55,7 @@ export class SongService {
         await existingSong.save();
         return { message: 'Song already exists, suggestion recorded.', data: existingSong };
       }
-    } else if (!existingSong && !songCategory){
+    } else if (!existingSong && !songCategory ){
       const newCategory = 'Others';
       existingSong = new this.songModel({
         ...suggestSongDto,
@@ -100,7 +106,12 @@ export class SongService {
     if (!title || !artist || !category) {
       throw new BadRequestException('Missing required fields');
     }
-    const existingSong = await this.songModel.findOne({ title, artist });
+    // const existingSong = await this.songModel.findOne({ title, artist });
+    const existingSong = await this.songModel.findOne({ 
+      title: { $regex: new RegExp(`^${title}$`, 'i') }, 
+      artist: { $regex: new RegExp(`^${artist}$`, 'i') },
+     });
+     
     if (existingSong){
       throw new BadRequestException('Song already exist!');
     }
@@ -251,15 +262,17 @@ export class SongService {
     search,
     page = 1,
     limit = 10,
+    category,
   }: {
     status?: string;
     search?: string;
     page?: number;
     limit?: number;
+    category?: string;
   }) {
-    const query = this.songModel.find();
+    const query = this.songModel.find().populate("suggestedBy", "name");
   
-    if (status) {
+    if (status && status !== 'All') {
       query.where('status').equals(status);
       // query.where('status', new RegExp(status, 'i'));
     }
@@ -267,12 +280,17 @@ export class SongService {
     if (search) {
       query.where('title', new RegExp(search, 'i')); // Case-insensitive search
     }
-  
+
+    if (category && category !== "All") {
+      query.where("category").equals(category);
+    }
+
     const totalItems = await query.clone().countDocuments();
     const songs = await query
       .skip((page - 1) * limit)
       .limit(limit)
       .sort({ createdAt: -1 }) // Optional: most recent first
+      
   
     const totalPages = Math.ceil(totalItems / limit);
   

@@ -5,7 +5,7 @@ import { UpdateSongStatusDto } from './dto/update-song';
 export declare class SongController {
     private readonly songService;
     constructor(songService: SongService);
-    suggestSong(suggestSongDto: SuggestSongDto, req: any): Promise<{
+    suggestSong(suggestSongDto: SuggestSongDto, req: any): Promise<"Others" | {
         message: string;
         data: any;
         existingSong?: undefined;
@@ -36,7 +36,7 @@ export declare class SongController {
     }> & {
         __v: number;
     })[]>;
-    searchAll(status?: string, search?: string, page?: number, limit?: number): Promise<{
+    searchAll(status?: string, search?: string, category?: string, page?: number, limit?: number): Promise<{
         data: (import("mongoose").Document<unknown, {}, Song> & Song & Required<{
             _id: import("mongoose").Types.ObjectId;
         }> & {

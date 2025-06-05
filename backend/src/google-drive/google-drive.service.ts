@@ -17,16 +17,6 @@ export class GoogleDriveService {
         ['https://www.googleapis.com/auth/drive']
       );
 
-    // this.driveClient = this.initializeDriveClient();
-//   }
-
-//   private initializeDriveClient() {
-//     const auth = new google.auth.GoogleAuth({
-//       keyFile: 'path/to/your-service-account.json', // Update with the correct path
-//       scopes: ['https://www.googleapis.com/auth/drive'],
-//     });
-
-    // return google.drive({ version: 'v3', auth });
     this.driveClient = google.drive({ version: 'v3', auth });
   }
 

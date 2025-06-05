@@ -41,11 +41,11 @@ __decorate([
     __metadata("design:type", mongoose_2.Types.ObjectId)
 ], Song.prototype, "suggestedBy", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ required: false }),
+    (0, mongoose_1.Prop)({ type: String, required: false }),
     __metadata("design:type", String)
 ], Song.prototype, "audioUrl", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ required: false }),
+    (0, mongoose_1.Prop)({ type: String, required: false }),
     __metadata("design:type", String)
 ], Song.prototype, "sheetMusicUrl", void 0);
 __decorate([

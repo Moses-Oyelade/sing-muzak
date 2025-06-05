@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Request, Delete, Param, NotFoundException, Post, Body, Put, BadRequestException } from '@nestjs/common';
+import { Controller, Get, UseGuards, Request, Delete, Param, NotFoundException, Post, Body, Put, BadRequestException, Query } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { Roles } from '../auth/roles/roles.decorator';
 import { RolesGuard } from '../auth/roles/roles.guard';
@@ -61,7 +61,6 @@ export class UsersController {
     return this.userService.getAllPhoneNumbersOwners();
   }
   
-
   @Get(':id')
   async getUser(@Param('id') id: string): Promise<User> {
     const user = await this.userService.findById(id);
@@ -108,6 +107,19 @@ export class UsersController {
   async deleteFile(@Param('userId') userId: string) {
     return this.userService.deleteUser(userId);
   }
+
+   @Get("/filter")
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('admin', 'member')
+    async searchAll(
+      @Query('vocalPart') vocalPart?: string,
+      @Query('search') search?: string,
+      @Query('role') role?: string,
+      @Query('page') page: number = 1,
+      @Query('limit') limit: number = 10
+    ) {
+      return this.userService.findAll({ vocalPart, search, role, page, limit });
+    }
   
 }
 
