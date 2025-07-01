@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import axiosInstance from "@/utils/axios";
-import router from "next/router";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 
 
@@ -15,6 +15,8 @@ export default function UploadPage() {
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+
+   const router = useRouter();
 
    // Fetch categories on mount
    useEffect(() => {

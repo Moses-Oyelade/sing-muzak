@@ -82,7 +82,10 @@ export default function AdminDashboard({ songs: initialSongs, meta: initialMeta 
       await axiosInstance.patch(`/songs/${songId}`, {
         status: newStatus,
       });
-      toast.success(`Song ${newStatus.toLowerCase()} successfully`);
+      songs.filter((song) =>
+        songId === song._id ?
+        toast.success(`Song ${newStatus.toLowerCase()} successfully`) : undefined
+      )
       fetchSongs();
     } catch (err: any) {
       toast.error(err?.response?.data?.message || "Failed to update song status");
@@ -98,8 +101,11 @@ export default function AdminDashboard({ songs: initialSongs, meta: initialMeta 
     });
 
     socket.on("status_update", ({ songId, status }) => {
-      toast.success(
-        `✅ ${songId.title} status updated to ${status}`
+      songs.filter((song) =>
+        songId === song._id ?
+        toast.success(
+          `✅ ${songId} status updated to ${status}`
+        ) : undefined
       );
       setSongs((prev) =>
         prev.map((song) => (song._id === songId ? { ...song, status } : song))

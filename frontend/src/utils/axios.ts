@@ -1,39 +1,34 @@
 // utils/axios.ts
-
 import axios from 'axios';
 import { getSession } from 'next-auth/react';
-import { redirect } from 'next/navigation';
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:3000',
-    // withCredentials: true,
+  baseURL: 'http://localhost:3000',
 });
 
 axiosInstance.interceptors.request.use(
   async (config) => {
-    const session = await getSession(); // from next-auth/react only on the client
-
-    if (typeof window !== 'undefined') {
-      console.log('Token attached (window defined)')
-    } else {
+    if (typeof window === 'undefined') {
       console.warn("🚨 Server Axios: Not attaching token (window is undefined)");
       return config;
     }
 
-    if (!session) {
-      redirect("/auth/login");
-    }
-    
-    
-    const token = session?.user?.token;
-    console.log('🚀 Axios Interceptor Token:', session?.user?.token);
+    const session = await getSession();
 
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-        console.log("🚀 Axios Interceptor: Set Authorization Header");
-    } else {
-        console.warn("🚨 Axios Interceptor: No token found!");
+    if (!session) {
+      console.warn("No session, redirecting to login...");
+      window.location.href = "/auth/login";
+      return Promise.reject(new Error("Not authenticated"));
     }
+
+    const token = session?.user?.token;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+      console.log("🚀 Axios Interceptor: Token attached");
+    } else {
+      console.warn("🚨 Axios Interceptor: No token found!");
+    }
+
     return config;
   },
   (error) => Promise.reject(error)
