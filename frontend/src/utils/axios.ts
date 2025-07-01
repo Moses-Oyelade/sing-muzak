@@ -34,4 +34,18 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      console.warn("🔒 Session expired or unauthorized. Redirecting to login...");
+      if (typeof window !== 'undefined') {
+        window.location.href = '/auth/login';
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
 export default axiosInstance;
