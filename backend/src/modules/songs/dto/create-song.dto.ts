@@ -10,7 +10,7 @@ export class CreateSongDto {
     artist: string;
   
     @IsOptional()
-    @IsString()
+     @IsString()
     category: string
     
     @IsOptional()

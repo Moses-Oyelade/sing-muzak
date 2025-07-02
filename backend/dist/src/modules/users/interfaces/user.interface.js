@@ -12,6 +12,6 @@ var VoicePart;
     VoicePart["ALTO"] = "alto";
     VoicePart["TENOR"] = "tenor";
     VoicePart["BASS"] = "bass";
-    VoicePart["NotSpecified"] = "Not Specified!";
+    VoicePart["PENDING"] = "pending";
 })(VoicePart || (exports.VoicePart = VoicePart = {}));
 //# sourceMappingURL=user.interface.js.map

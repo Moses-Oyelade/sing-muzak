@@ -52,20 +52,19 @@ let GoogleDriveService = class GoogleDriveService {
             const fileName = fileMetadata.data.name;
             const mimeType = fileMetadata.data.mimeType;
             const response = await this.driveClient.files.get({ fileId, alt: 'media' }, { responseType: 'stream' });
-            res.setHeader('Content-Type', mimeType);
-            if (mimeType === 'application/pdf') {
-                res.setHeader('Content-Disposition', `${inline ? 'inline' : 'attachment'}; filename="${fileName}"`);
-            }
-            else if (mimeType.startsWith('audio/') || mimeType.startsWith('video/')) {
-                res.setHeader('Content-Disposition', `${inline ? 'inline' : 'attachment'}; filename="${fileName}"`);
-            }
-            else {
-                res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
-            }
-            response.data.pipe(res);
+            res.header('Content-Type', mimeType);
+            res.header('Content-Disposition', `${inline ? 'inline' : 'attachment'}; filename="${fileName}"`);
+            response.data
+                .on('end', () => res.end())
+                .on('error', (err) => {
+                console.error('Streaming error:', err);
+                res.status(500).send('Stream failed.');
+            })
+                .pipe(res);
         }
         catch (error) {
-            throw new common_1.NotFoundException('File not found');
+            console.error('Download error:', error?.message || error);
+            throw new common_1.NotFoundException('File not found or inaccessible');
         }
     }
     async deleteFile(fileId) {

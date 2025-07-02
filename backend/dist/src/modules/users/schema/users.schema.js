@@ -45,7 +45,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "role", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: String, enum: user_interface_1.VoicePart, default: 'Not Specified!', required: false }),
+    (0, mongoose_1.Prop)({ type: String, enum: user_interface_1.VoicePart, default: user_interface_1.VoicePart.PENDING, required: false }),
     __metadata("design:type", String)
 ], User.prototype, "voicePart", void 0);
 __decorate([

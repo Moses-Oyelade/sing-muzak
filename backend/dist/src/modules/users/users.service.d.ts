@@ -15,8 +15,8 @@ export declare class UsersService {
     createUser(createUserFromAdminDto: CreateUserFromAdminDto): Promise<User>;
     updateRefreshToken(userId: string, refreshToken: string | null): Promise<void>;
     deleteUser(userId: string): Promise<string>;
-    findAll({ vocalPart, search, role, page, limit, }: {
-        vocalPart?: string;
+    findAll({ voicePart, search, role, page, limit, }: {
+        voicePart?: string;
         search?: string;
         role?: string;
         page?: number;

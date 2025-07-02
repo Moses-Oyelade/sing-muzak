@@ -10,14 +10,7 @@ export declare class UsersController {
         message: string;
         user: User;
     };
-    getAllPhoneNumbers(): Promise<string[]>;
-    getAllPhoneNumbersOwners(): Promise<{}>;
-    getUser(id: string): Promise<User>;
-    findByPhoneNumber(phone: string): Promise<User>;
-    createUserFromAdmin(createUserFromAdminDto: CreateUserFromAdminDto): Promise<User>;
-    updateUser(userId: string, updateData: UpdateUserDto): Promise<User>;
-    deleteFile(userId: string): Promise<string>;
-    searchAll(vocalPart?: string, search?: string, role?: string, page?: number, limit?: number): Promise<{
+    searchAll(voicePart?: string, search?: string, role?: string, page?: number, limit?: number): Promise<{
         data: (import("mongoose").Document<unknown, {}, User> & User & Required<{
             _id: import("mongoose").Types.ObjectId;
         }> & {
@@ -29,4 +22,11 @@ export declare class UsersController {
             totalItems: number;
         };
     }>;
+    getAllPhoneNumbers(): Promise<string[]>;
+    getAllPhoneNumbersOwners(): Promise<{}>;
+    getUser(id: string): Promise<User>;
+    findByPhoneNumber(phone: string): Promise<User>;
+    createUserFromAdmin(createUserFromAdminDto: CreateUserFromAdminDto): Promise<User>;
+    updateUser(userId: string, updateData: UpdateUserDto): Promise<User>;
+    deleteFile(userId: string): Promise<string>;
 }

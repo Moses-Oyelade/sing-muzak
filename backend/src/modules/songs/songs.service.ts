@@ -23,7 +23,9 @@ export class SongService {
     private readonly notificationGateway: NotificationGateway,
     private readonly googleDriveService: GoogleDriveService, //Inject Google drive service
   ) {}
+  
 
+  //To Suggest/Create a song
   async suggestOrCreateSong(suggestSongDto: SuggestSongDto, userId: string) {
     const { title, artist, suggestedBy, category, } = suggestSongDto;
 
@@ -94,6 +96,7 @@ export class SongService {
     };
   }
 
+  // To Upload a song
   async uploadSong(
     createSongDto: CreateSongDto, 
     files: { audio?: Express.Multer.File[], pdf?: Express.Multer.File[] }, 
@@ -167,7 +170,8 @@ export class SongService {
     const filter = status ? { status } : {};
     return this.songModel
       .find(filter)
-      .populate('suggestedBy', 'name email')
+      .populate('suggestedBy')
+      .populate('uploadedBy', 'name email')
       .sort({ createdAt: -1 });
   }
 
@@ -183,7 +187,7 @@ export class SongService {
   async getSuggestions(){
     return this.suggestionModel
     .find()
-    .populate('song', 'title artist')
+    .populate('song', 'title artist uploadedBy')
     .sort({ createdAt: -1 });
   }
 
@@ -213,6 +217,7 @@ export class SongService {
     const suggestedBy = await this.songModel
       .find({ suggestedBy: existingUser._id })
       .populate('suggestedBy')
+      .populate('uploadedBy')
       .sort({ createdAt: -1 }).exec();
     return suggestedBy
   }
@@ -304,46 +309,30 @@ export class SongService {
     };
   }
   
+  //To Download Song File
+  async downloadSongFile(songId: string, res: any, inline = true) {
 
-  //songs with filters and pagination
-  // async getAllSongsWithFilters(
-  //   page: number,
-  //   limit: number,
-  //   status?: string,
-  //   categoryName?: string,
-  // ) {
-  //   const filter: any = {};
+    let fileId: string;
+    const song = await this.songModel.findById(songId);
+    if (!song || !song.audioUrl || !song.sheetMusicUrl) {
+      throw new NotFoundException('Song or file not found');
+    }
+
+    fileId = song.sheetMusicUrl;
+    fileId = song.audioUrl
   
-  //   if (status) {
-  //     filter.status = status;
-  //   }
+    return this.googleDriveService.downloadFile(fileId, res, inline);
+  }
   
-  //   if (categoryName) {
-  //     const category = await this.categoryModel.findOne({ name: categoryName });
-  //     if (category) {
-  //       filter.category = category._id;
-  //     } else {
-  //       // No category match found
-  //       return { data: [], total: 0 };
-  //     }
-  //   }
-  
-  //   const total = await this.songModel.countDocuments(filter);
-  //   const songs = await this.songModel
-  //     .find(filter)
-  //     .populate('category', 'name')
-  //     .populate('suggestedBy', 'name email')
-  //     .skip((page - 1) * limit)
-  //     .limit(limit)
-  //     .sort({ createdAt: -1 }); // Latest first
-  
-  //   return {
-  //     data: songs,
-  //     total,
-  //     page,
-  //     limit,
-  //     totalPages: Math.ceil(total / limit),
-  //   };
-  // }
-  
+  async unsuggestSong(songId: string, userId: string) {
+  const song = await this.songModel.findById(songId);
+  if (!song) throw new NotFoundException('Song not found');
+
+  if (song.suggestedBy?.toString() !== userId.toString()) {
+    throw new ForbiddenException('You cannot cancel another user’s suggestion.');
+  }
+
+  song.suggestedBy = null;
+  return song.save();
+}
 }

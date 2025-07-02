@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Patch, Body, Param, Query, UseGuards, Request, Delete, NotFoundException, UseInterceptors, UploadedFile, Req, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Body, Param, Query, UseGuards, Request, Delete, NotFoundException, UseInterceptors, UploadedFile, Req, BadRequestException, Res } from '@nestjs/common';
 import { SongService } from './songs.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { RolesGuard } from '../auth/roles/roles.guard';
@@ -24,6 +24,16 @@ export class SongController {
     return this.songService.suggestOrCreateSong(suggestSongDto, userId);
   }
 
+  //Unsuggest a song (Any authenticated user)
+  @Post('unsuggest')
+  @UseGuards(JwtAuthGuard)
+  async unsuggestSong(
+    @Body() body: { songId: string }, 
+    @Request() req: any
+  ) {
+    return this.songService.unsuggestSong(body.songId, req.user._id);
+  }
+
   // Upload/Create a song (Any authenticated user)
   @UseGuards(JwtAuthGuard)
   @Post('upload')
@@ -31,12 +41,13 @@ export class SongController {
     { name: 'audio', maxCount: 1 },
     { name: 'pdf', maxCount: 1 }
   ]))
-  CreateSong(
+  uploadSong(
     @UploadedFile() file: { audio?: Express.Multer.File[], pdf?: Express.Multer.File[] },
     @Body() createSongDto: CreateSongDto,
     @Req() req: any,
   ) {
-    return this.songService.uploadSong(createSongDto, file, req.user.sub);
+    const userId = req.user.sub
+    return this.songService.uploadSong(createSongDto, file, userId);
   }
 
   // GET /songs?search=choir
@@ -50,39 +61,22 @@ export class SongController {
     return this.songService.getAllSongs();
   }
 
-  // // Get all songs (Admins can filter by status)
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('admin', 'member')
-  // @Get()
-  // getAllSongs(@Query('status') status?: string) {
-  //   return this.songService.getAllSongs(status);
-  // }
-
-  @Get("/filter")
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'member')
-  async searchAll(
-    @Query('status') status?: string,
-    @Query('search') search?: string,
-    @Query('category') category?: string,
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10
-  ) {
-    return this.songService.findAll({ status, search, category, page, limit });
+@Get("/filter")
+async filterSongs(
+  @Query('status') status?: string,
+  @Query('search') search?: string,
+  @Query('category') category?: string,
+  @Query('page') page = 1,
+  @Query('limit') limit = 10
+) {
+  try {
+    console.log({ status, search, category, page, limit });
+    return await this.songService.findAll({ status, search, category, page, limit });
+  } catch (err) {
+    console.error("FILTER ERROR:", err);
+    throw new BadRequestException("Invalid query parameters");
   }
-
-
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('admin')
-  // @Get()
-  // async getSongs(
-  //   @Query('page') page = 1,
-  //   @Query('limit') limit = 10,
-  //   @Query('status') status?: string,
-  //   @Query('category') category?: string,
-  // ) {
-  //   return this.songService.getAllSongsWithFilters(+page, +limit, status, category);
-  // }
+}
 
   // Get all songs (Admins can filter by category)
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -121,9 +115,6 @@ export class SongController {
     try{
         // const userId = req.user.userId
         const userId = req.user.sub
-        // if (!userId) {
-        //   throw new BadRequestException('User not authenticated');
-        // }
         const suggestions = await this.songService.getSuggestionsByUser(userId);
         return suggestions;
     } catch (error){
@@ -153,6 +144,17 @@ export class SongController {
   @Delete(':songId')
   async delete(@Param('id') songId: string) {
     return await this.songService.deleteSong(songId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id/download')
+  async downloadSong(
+    @Param('id') songId: string,
+    @Res() res: Response,
+    @Query('inline') inline?: string,
+  ) {
+    const displayInline = inline === 'false' ? false : true; // defaults to true
+    return this.songService.downloadSongFile(songId, res, displayInline);
   }
 
 }

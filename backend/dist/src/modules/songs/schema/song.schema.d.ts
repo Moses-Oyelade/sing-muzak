@@ -7,7 +7,7 @@ export declare class Song extends AbstractDocument {
     category: Types.ObjectId;
     status: string;
     uploadedBy: Types.ObjectId;
-    suggestedBy: Types.ObjectId;
+    suggestedBy: Types.ObjectId | null;
     audioUrl: string;
     sheetMusicUrl: string;
     approvedBy?: Types.ObjectId | User;

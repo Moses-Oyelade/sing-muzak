@@ -95,4 +95,10 @@ export declare class SongService {
             totalItems: number;
         };
     }>;
+    downloadSongFile(songId: string, res: any, inline?: boolean): Promise<void>;
+    unsuggestSong(songId: string, userId: string): Promise<import("mongoose").Document<unknown, {}, Song> & Song & Required<{
+        _id: Types.ObjectId;
+    }> & {
+        __v: number;
+    }>;
 }

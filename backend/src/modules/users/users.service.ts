@@ -50,6 +50,10 @@ export class UsersService {
     if (updateData.voicePart) {
       updateData.voicePart = updateData.voicePart as VoicePart;
     }
+
+    if (updateData.role) {
+      updateData.role = updateData.role as UserRole;
+    }
     
     const updatedUser = await this.userModel.findByIdAndUpdate(
       userId,
@@ -76,6 +80,7 @@ export class UsersService {
     const createdUser = new this.userModel({
       ...createUserFromAdminDto,
       role: UserRole.MEMBER,
+      voicePart: VoicePart.PENDING,
       _id: new Types.ObjectId(),
     });
     return createdUser.save();
@@ -97,13 +102,13 @@ export class UsersService {
   }
 
   async findAll({
-    vocalPart,
+    voicePart,
     search,
     role,
     page = 1,
     limit = 10,
   } : {
-    vocalPart?: string;
+    voicePart?: string;
     search?: string;
     role?: string;
     page?: number;
@@ -111,8 +116,8 @@ export class UsersService {
   }) {
     const query = this.userModel.find()
 
-        if (vocalPart && vocalPart !== 'All') {
-      query.where('status').equals(vocalPart);
+        if (voicePart && voicePart !== 'All') {
+      query.where('voicePart').equals(voicePart);
     }
   
     if (search) {
@@ -120,7 +125,7 @@ export class UsersService {
     }
 
     if (role && role !== "All") {
-      query.where("category").equals(role);
+      query.where("role").equals(role);
     }
 
     const totalItems = await query.clone().countDocuments();

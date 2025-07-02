@@ -38,7 +38,7 @@ __decorate([
 ], Song.prototype, "uploadedBy", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: 'User', default: null }),
-    __metadata("design:type", mongoose_2.Types.ObjectId)
+    __metadata("design:type", Object)
 ], Song.prototype, "suggestedBy", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ type: String, required: false }),

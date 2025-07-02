@@ -24,7 +24,7 @@ import { AbstractDocument } from 'src/modules/common/abstract.schema';
     @Prop({ type: String, enum: UserRole, default: UserRole.MEMBER })
     role: UserRole;
 
-    @Prop({ type: String, enum: VoicePart, default: 'Not Specified!' , required: false })
+    @Prop({ type: String, enum: VoicePart, default: VoicePart.PENDING , required: false })
     voicePart: VoicePart;
 
     @Prop({ nullable: true })

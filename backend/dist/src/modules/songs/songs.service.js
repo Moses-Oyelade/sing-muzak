@@ -142,7 +142,8 @@ let SongService = class SongService {
         const filter = status ? { status } : {};
         return this.songModel
             .find(filter)
-            .populate('suggestedBy', 'name email')
+            .populate('suggestedBy')
+            .populate('uploadedBy', 'name email')
             .sort({ createdAt: -1 });
     }
     async getAllSongsByCategory(category) {
@@ -153,7 +154,7 @@ let SongService = class SongService {
     async getSuggestions() {
         return this.suggestionModel
             .find()
-            .populate('song', 'title artist')
+            .populate('song', 'title artist uploadedBy')
             .sort({ createdAt: -1 });
     }
     async searchSongs(term) {
@@ -176,6 +177,7 @@ let SongService = class SongService {
         const suggestedBy = await this.songModel
             .find({ suggestedBy: existingUser._id })
             .populate('suggestedBy')
+            .populate('uploadedBy')
             .sort({ createdAt: -1 }).exec();
         return suggestedBy;
     }
@@ -230,6 +232,26 @@ let SongService = class SongService {
                 totalItems,
             },
         };
+    }
+    async downloadSongFile(songId, res, inline = true) {
+        let fileId;
+        const song = await this.songModel.findById(songId);
+        if (!song || !song.audioUrl || !song.sheetMusicUrl) {
+            throw new common_1.NotFoundException('Song or file not found');
+        }
+        fileId = song.sheetMusicUrl;
+        fileId = song.audioUrl;
+        return this.googleDriveService.downloadFile(fileId, res, inline);
+    }
+    async unsuggestSong(songId, userId) {
+        const song = await this.songModel.findById(songId);
+        if (!song)
+            throw new common_1.NotFoundException('Song not found');
+        if (song.suggestedBy?.toString() !== userId.toString()) {
+            throw new common_1.ForbiddenException('You cannot cancel another user’s suggestion.');
+        }
+        song.suggestedBy = null;
+        return song.save();
     }
 };
 exports.SongService = SongService;

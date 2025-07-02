@@ -47,6 +47,9 @@ let UsersService = class UsersService {
         if (updateData.voicePart) {
             updateData.voicePart = updateData.voicePart;
         }
+        if (updateData.role) {
+            updateData.role = updateData.role;
+        }
         const updatedUser = await this.userModel.findByIdAndUpdate(userId, updateData, { new: true });
         if (!updatedUser) {
             throw new common_1.NotFoundException('User not found');
@@ -64,6 +67,7 @@ let UsersService = class UsersService {
         const createdUser = new this.userModel({
             ...createUserFromAdminDto,
             role: user_interface_1.UserRole.MEMBER,
+            voicePart: user_interface_1.VoicePart.PENDING,
             _id: new mongoose_2.Types.ObjectId(),
         });
         return createdUser.save();
@@ -80,16 +84,16 @@ let UsersService = class UsersService {
             throw new Error(`Failed to delete file: ${error.message}`);
         }
     }
-    async findAll({ vocalPart, search, role, page = 1, limit = 10, }) {
+    async findAll({ voicePart, search, role, page = 1, limit = 10, }) {
         const query = this.userModel.find();
-        if (vocalPart && vocalPart !== 'All') {
-            query.where('status').equals(vocalPart);
+        if (voicePart && voicePart !== 'All') {
+            query.where('voicePart').equals(voicePart);
         }
         if (search) {
             query.where('name', new RegExp(search, 'i'));
         }
         if (role && role !== "All") {
-            query.where("category").equals(role);
+            query.where("role").equals(role);
         }
         const totalItems = await query.clone().countDocuments();
         const users = await query

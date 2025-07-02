@@ -30,8 +30,12 @@ let SongController = class SongController {
         const userId = req.user.sub;
         return this.songService.suggestOrCreateSong(suggestSongDto, userId);
     }
-    CreateSong(file, createSongDto, req) {
-        return this.songService.uploadSong(createSongDto, file, req.user.sub);
+    async unsuggestSong(body, req) {
+        return this.songService.unsuggestSong(body.songId, req.user._id);
+    }
+    uploadSong(file, createSongDto, req) {
+        const userId = req.user.sub;
+        return this.songService.uploadSong(createSongDto, file, userId);
     }
     async findAll(search) {
         if (search) {
@@ -39,8 +43,15 @@ let SongController = class SongController {
         }
         return this.songService.getAllSongs();
     }
-    async searchAll(status, search, category, page = 1, limit = 10) {
-        return this.songService.findAll({ status, search, category, page, limit });
+    async filterSongs(status, search, category, page = 1, limit = 10) {
+        try {
+            console.log({ status, search, category, page, limit });
+            return await this.songService.findAll({ status, search, category, page, limit });
+        }
+        catch (err) {
+            console.error("FILTER ERROR:", err);
+            throw new common_1.BadRequestException("Invalid query parameters");
+        }
     }
     getAllSongsByCategory(category) {
         return this.songService.getAllSongsByCategory(category);
@@ -76,6 +87,10 @@ let SongController = class SongController {
     async delete(songId) {
         return await this.songService.deleteSong(songId);
     }
+    async downloadSong(songId, res, inline) {
+        const displayInline = inline === 'false' ? false : true;
+        return this.songService.downloadSongFile(songId, res, displayInline);
+    }
 };
 exports.SongController = SongController;
 __decorate([
@@ -87,6 +102,15 @@ __decorate([
     __metadata("design:paramtypes", [create_song_dto_1.SuggestSongDto, Object]),
     __metadata("design:returntype", void 0)
 ], SongController.prototype, "suggestSong", null);
+__decorate([
+    (0, common_1.Post)('unsuggest'),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], SongController.prototype, "unsuggestSong", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
     (0, common_1.Post)('upload'),
@@ -100,7 +124,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, create_song_dto_1.CreateSongDto, Object]),
     __metadata("design:returntype", void 0)
-], SongController.prototype, "CreateSong", null);
+], SongController.prototype, "uploadSong", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('admin', 'member'),
@@ -112,17 +136,15 @@ __decorate([
 ], SongController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)("/filter"),
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)('admin', 'member'),
     __param(0, (0, common_1.Query)('status')),
     __param(1, (0, common_1.Query)('search')),
     __param(2, (0, common_1.Query)('category')),
     __param(3, (0, common_1.Query)('page')),
     __param(4, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, Number, Number]),
+    __metadata("design:paramtypes", [String, String, String, Object, Object]),
     __metadata("design:returntype", Promise)
-], SongController.prototype, "searchAll", null);
+], SongController.prototype, "filterSongs", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('admin'),
@@ -178,6 +200,16 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], SongController.prototype, "delete", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    (0, common_1.Get)(':id/download'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Res)()),
+    __param(2, (0, common_1.Query)('inline')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Response, String]),
+    __metadata("design:returntype", Promise)
+], SongController.prototype, "downloadSong", null);
 exports.SongController = SongController = __decorate([
     (0, common_1.Controller)('songs'),
     __metadata("design:paramtypes", [songs_service_1.SongService])

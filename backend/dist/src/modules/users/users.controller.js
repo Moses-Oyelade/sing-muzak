@@ -39,6 +39,9 @@ let UsersController = class UsersController {
     getProfile(user) {
         return { message: 'Profile Data', user: user };
     }
+    async searchAll(voicePart, search, role, page = 1, limit = 10) {
+        return this.userService.findAll({ voicePart, search, role, page, limit });
+    }
     async getAllPhoneNumbers() {
         const users = await this.userService.getAllPhoneNumbers();
         console.log(`all phones ${users}`);
@@ -68,13 +71,13 @@ let UsersController = class UsersController {
         if (updateData.voicePart) {
             updateData.voicePart = updateData.voicePart;
         }
+        if (updateData.role) {
+            updateData.role = updateData.role;
+        }
         return this.userService.updateUser(userId, updateData);
     }
     async deleteFile(userId) {
         return this.userService.deleteUser(userId);
-    }
-    async searchAll(vocalPart, search, role, page = 1, limit = 10) {
-        return this.userService.findAll({ vocalPart, search, role, page, limit });
     }
 };
 exports.UsersController = UsersController;
@@ -95,6 +98,19 @@ __decorate([
     __metadata("design:paramtypes", [users_schema_1.User]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "getProfile", null);
+__decorate([
+    (0, common_1.Get)("/filter"),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('admin', 'member'),
+    __param(0, (0, common_1.Query)('voicePart')),
+    __param(1, (0, common_1.Query)('search')),
+    __param(2, (0, common_1.Query)('role')),
+    __param(3, (0, common_1.Query)('page')),
+    __param(4, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, Number, Number]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "searchAll", null);
 __decorate([
     (0, common_1.Get)('all-phone'),
     __metadata("design:type", Function),
@@ -133,7 +149,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "createUserFromAdmin", null);
 __decorate([
-    (0, common_1.Put)(':userId'),
+    (0, common_1.Patch)(':userId'),
     __param(0, (0, common_1.Param)('userId')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -149,19 +165,6 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "deleteFile", null);
-__decorate([
-    (0, common_1.Get)("/filter"),
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)('admin', 'member'),
-    __param(0, (0, common_1.Query)('vocalPart')),
-    __param(1, (0, common_1.Query)('search')),
-    __param(2, (0, common_1.Query)('role')),
-    __param(3, (0, common_1.Query)('page')),
-    __param(4, (0, common_1.Query)('limit')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, Number, Number]),
-    __metadata("design:returntype", Promise)
-], UsersController.prototype, "searchAll", null);
 exports.UsersController = UsersController = __decorate([
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [users_service_1.UsersService])

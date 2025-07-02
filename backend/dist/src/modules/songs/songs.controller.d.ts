@@ -20,7 +20,14 @@ export declare class SongController {
         };
         data?: undefined;
     }>;
-    CreateSong(file: {
+    unsuggestSong(body: {
+        songId: string;
+    }, req: any): Promise<import("mongoose").Document<unknown, {}, Song> & Song & Required<{
+        _id: import("mongoose").Types.ObjectId;
+    }> & {
+        __v: number;
+    }>;
+    uploadSong(file: {
         audio?: Express.Multer.File[];
         pdf?: Express.Multer.File[];
     }, createSongDto: CreateSongDto, req: any): Promise<{
@@ -36,7 +43,7 @@ export declare class SongController {
     }> & {
         __v: number;
     })[]>;
-    searchAll(status?: string, search?: string, category?: string, page?: number, limit?: number): Promise<{
+    filterSongs(status?: string, search?: string, category?: string, page?: number, limit?: number): Promise<{
         data: (import("mongoose").Document<unknown, {}, Song> & Song & Required<{
             _id: import("mongoose").Types.ObjectId;
         }> & {
@@ -72,4 +79,5 @@ export declare class SongController {
         };
     }>;
     delete(songId: string): Promise<string>;
+    downloadSong(songId: string, res: Response, inline?: string): Promise<void>;
 }

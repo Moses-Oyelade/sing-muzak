@@ -67,23 +67,26 @@ async downloadFile(fileId: string, res: Response, inline = true) {
       );
 
       // Set headers based on file type
-      res.setHeader('Content-Type', mimeType);
+      res.header('Content-Type', mimeType);
+      res.header(
+        'Content-Disposition',
+        `${inline ? 'inline' : 'attachment'}; filename="${fileName}"`
+      );
+     
+      // // Stream the file to response
+      // return response.data.pipe(res);
 
-      if (mimeType === 'application/pdf') {
-        // Display PDFs in the browser or download
-        res.setHeader('Content-Disposition', `${inline ? 'inline':'attachment'}; filename="${fileName}"`);
-      } else if (mimeType.startsWith('audio/') || mimeType.startsWith('video/')) {
-        // Stream media files (MP3, MP4, etc.)
-        res.setHeader('Content-Disposition', `${inline ? 'inline':'attachment'}; filename="${fileName}"`);
-      } else {
-        // Default to view for other file types
-        res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
-      }
-
-      // Stream the file to response
-      response.data.pipe(res);
+      // Stream the file
+    response.data
+    .on('end', () => res.end())
+    .on('error', (err: any) => {
+      console.error('Streaming error:', err);
+      res.status(500).send('Stream failed.');
+    })
+    .pipe(res);
     } catch (error) {
-      throw new NotFoundException('File not found');
+      console.error('Download error:', error?.message || error);
+      throw new NotFoundException('File not found or inaccessible');
     }
   }
 

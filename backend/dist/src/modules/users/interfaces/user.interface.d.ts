@@ -7,7 +7,7 @@ export declare enum VoicePart {
     ALTO = "alto",
     TENOR = "tenor",
     BASS = "bass",
-    NotSpecified = "Not Specified!"
+    PENDING = "pending"
 }
 export interface User {
     name: string;
@@ -15,6 +15,8 @@ export interface User {
     phone: string;
     password: string;
     profileImagine?: string;
+    gender?: string;
+    instrument?: string;
     address: string;
     role: UserRole;
     voicePart: VoicePart;

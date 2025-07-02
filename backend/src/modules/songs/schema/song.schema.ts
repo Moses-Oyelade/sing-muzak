@@ -11,8 +11,6 @@ export class Song extends AbstractDocument {
   @Prop({ required: true })
   artist: string;
 
-//   @Prop()
-//   category: string; // e.g., "Worship", "Praise", "Hymn"
   @Prop({ required: true, type: Types.ObjectId, ref: 'Category' })  
   category: Types.ObjectId; // Reference to Category Schema
 
@@ -24,7 +22,7 @@ export class Song extends AbstractDocument {
   
   // @Prop({ default: 'Not Assigned' })
   @Prop({ type: Types.ObjectId, ref: 'User', default: null })
-  suggestedBy: Types.ObjectId;
+  suggestedBy: Types.ObjectId | null;
 
   @Prop({ type: String, required: false })
   audioUrl: string; // Optional: link to an audio file

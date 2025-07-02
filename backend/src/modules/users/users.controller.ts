@@ -1,9 +1,9 @@
-import { Controller, Get, UseGuards, Request, Delete, Param, NotFoundException, Post, Body, Put, BadRequestException, Query } from '@nestjs/common';
+import { Controller, Get, UseGuards, Request, Delete, Param, NotFoundException, Post, Body, BadRequestException, Query, Patch } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { Roles } from '../auth/roles/roles.decorator';
 import { RolesGuard } from '../auth/roles/roles.guard';
 import { UsersService } from './users.service';
-import { VoicePart } from './interfaces/user.interface';
+import { UserRole, VoicePart } from './interfaces/user.interface';
 import { CreateUserFromAdminDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './schema/users.schema';
@@ -48,6 +48,21 @@ export class UsersController {
     return { message: 'Profile Data', user: user };
   }
   
+  // Filter to get voice-part, search and role
+  @Get("/filter")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'member')
+  async searchAll(
+    @Query('voicePart') voicePart?: string,
+    @Query('search') search?: string,
+    @Query('role') role?: string,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10
+  ) {
+    return this.userService.findAll({ voicePart, search, role, page, limit });
+  } 
+
+
   // Find by Phone No.
   @Get('all-phone')
   async getAllPhoneNumbers() {
@@ -89,13 +104,16 @@ export class UsersController {
     return await this.userService.createUser(createUserFromAdminDto);
   }
   
-  @Put(':userId')
+  @Patch(':userId')
   async updateUser(
     @Param('userId') userId: string,
     @Body() updateData: UpdateUserDto,
   ): Promise<User> {
     if (updateData.voicePart){
       updateData.voicePart = updateData.voicePart as VoicePart;
+    }
+    if (updateData.role){
+      updateData.role = updateData.role as UserRole;
     }
     return this.userService.updateUser(userId, updateData);
   }
@@ -108,18 +126,7 @@ export class UsersController {
     return this.userService.deleteUser(userId);
   }
 
-   @Get("/filter")
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('admin', 'member')
-    async searchAll(
-      @Query('vocalPart') vocalPart?: string,
-      @Query('search') search?: string,
-      @Query('role') role?: string,
-      @Query('page') page: number = 1,
-      @Query('limit') limit: number = 10
-    ) {
-      return this.userService.findAll({ vocalPart, search, role, page, limit });
-    }
+   
   
 }
 
