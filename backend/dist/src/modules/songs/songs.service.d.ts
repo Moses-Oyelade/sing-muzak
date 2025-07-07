@@ -17,12 +17,7 @@ export declare class SongService {
     private readonly notificationGateway;
     private readonly googleDriveService;
     constructor(categoryModel: Model<Category>, songModel: Model<Song>, suggestionModel: Model<Suggestion>, userModel: Model<User>, notificationService: NotificationsService, notificationGateway: NotificationGateway, googleDriveService: GoogleDriveService);
-    suggestOrCreateSong(suggestSongDto: SuggestSongDto, userId: string): Promise<"Others" | {
-        message: string;
-        data: any;
-        existingSong?: undefined;
-        suggestion?: undefined;
-    } | {
+    suggestOrCreateSong(suggestSongDto: SuggestSongDto, userId: string): Promise<{
         message: string;
         existingSong: any;
         suggestion: import("mongoose").Document<unknown, {}, Suggestion> & Suggestion & {
@@ -30,7 +25,6 @@ export declare class SongService {
         } & {
             __v: number;
         };
-        data?: undefined;
     }>;
     uploadSong(createSongDto: CreateSongDto, files: {
         audio?: Express.Multer.File[];
@@ -64,9 +58,9 @@ export declare class SongService {
         __v: number;
     })[]>;
     findById(id: string): Promise<Song | null>;
-    getSuggestionsByUser(userId: string): Promise<(import("mongoose").Document<unknown, {}, Song> & Song & Required<{
+    getSuggestionsByUser(userId: string): Promise<(import("mongoose").Document<unknown, {}, Suggestion> & Suggestion & {
         _id: Types.ObjectId;
-    }> & {
+    } & {
         __v: number;
     })[]>;
     updateSongStatus(songId: string, updateSongStatusDto: UpdateSongStatusDto, adminId: any): Promise<{
@@ -77,6 +71,7 @@ export declare class SongService {
         };
     }>;
     deleteSong(songId: string): Promise<string>;
+    sync: any;
     findAll({ status, search, page, limit, category, }: {
         status?: string;
         search?: string;
@@ -96,9 +91,7 @@ export declare class SongService {
         };
     }>;
     downloadSongFile(songId: string, res: any, inline?: boolean): Promise<void>;
-    unsuggestSong(songId: string, userId: string): Promise<import("mongoose").Document<unknown, {}, Song> & Song & Required<{
-        _id: Types.ObjectId;
-    }> & {
-        __v: number;
+    removeSuggestion(suggestionId: string, userId: string): Promise<{
+        message: string;
     }>;
 }

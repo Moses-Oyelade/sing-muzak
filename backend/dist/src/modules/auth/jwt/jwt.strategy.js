@@ -29,7 +29,7 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
     }
     async validate(payload) {
         console.log('Decoded JWT Payload:', payload);
-        return { userId: payload.sub, phone: payload.phone, role: payload.role };
+        return { userId: payload.sub || payload._id || payload.id, phone: payload.phone, role: payload.role };
     }
 };
 exports.JwtStrategy = JwtStrategy;

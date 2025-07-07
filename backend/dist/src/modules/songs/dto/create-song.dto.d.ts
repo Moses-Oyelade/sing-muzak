@@ -1,16 +1,14 @@
-export declare class CreateSongDto {
-    title: string;
-    artist: string;
-    category: string;
+import { BaseSongDto } from "./base-song.dto";
+export declare class CreateSongDto extends BaseSongDto {
     audioUrl: string;
-    sheetMusicUrl: string;
+    pdfUrl: string;
     uploadedBy: string;
     suggestedBy?: string;
 }
 export declare class SuggestSongDto {
     title?: string;
     artist?: string;
-    category: string;
+    category?: string;
     suggestedBy: string;
     songId?: string;
 }

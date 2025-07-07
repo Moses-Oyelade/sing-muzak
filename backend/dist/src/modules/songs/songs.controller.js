@@ -27,11 +27,10 @@ let SongController = class SongController {
         this.songService = songService;
     }
     suggestSong(suggestSongDto, req) {
+        console.log("🔥 Authenticated user:", req.user);
+        suggestSongDto.suggestedBy = req.user.sub;
         const userId = req.user.sub;
         return this.songService.suggestOrCreateSong(suggestSongDto, userId);
-    }
-    async unsuggestSong(body, req) {
-        return this.songService.unsuggestSong(body.songId, req.user._id);
     }
     uploadSong(file, createSongDto, req) {
         const userId = req.user.sub;
@@ -67,9 +66,11 @@ let SongController = class SongController {
         return this.songService.getSuggestions();
     }
     async getMySuggestions(req) {
-        console.log("🔥 Authenticated user:", req.user);
+        console.log("🔥 Authenticated user:", req.user.sub);
         try {
             const userId = req.user.sub;
+            if (!userId)
+                throw new common_1.BadRequestException('User ID is required');
             const suggestions = await this.songService.getSuggestionsByUser(userId);
             return suggestions;
         }
@@ -91,6 +92,10 @@ let SongController = class SongController {
         const displayInline = inline === 'false' ? false : true;
         return this.songService.downloadSongFile(songId, res, displayInline);
     }
+    async unsuggestSong(suggestionId, req) {
+        const userId = req.user.sub;
+        return this.songService.removeSuggestion(suggestionId, userId);
+    }
 };
 exports.SongController = SongController;
 __decorate([
@@ -102,15 +107,6 @@ __decorate([
     __metadata("design:paramtypes", [create_song_dto_1.SuggestSongDto, Object]),
     __metadata("design:returntype", void 0)
 ], SongController.prototype, "suggestSong", null);
-__decorate([
-    (0, common_1.Post)('unsuggest'),
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], SongController.prototype, "unsuggestSong", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
     (0, common_1.Post)('upload'),
@@ -210,6 +206,15 @@ __decorate([
     __metadata("design:paramtypes", [String, Response, String]),
     __metadata("design:returntype", Promise)
 ], SongController.prototype, "downloadSong", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    (0, common_1.Delete)('unsuggest/:suggestionId'),
+    __param(0, (0, common_1.Param)('suggestionId')),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], SongController.prototype, "unsuggestSong", null);
 exports.SongController = SongController = __decorate([
     (0, common_1.Controller)('songs'),
     __metadata("design:paramtypes", [songs_service_1.SongService])

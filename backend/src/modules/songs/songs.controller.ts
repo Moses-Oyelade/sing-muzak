@@ -20,18 +20,11 @@ export class SongController {
     @Body() suggestSongDto: SuggestSongDto,
     @Request() req: any
   ) {
+    console.log("🔥 Authenticated user:", req.user);
+     // Override suggestedBy to prevent spoofing
+    suggestSongDto.suggestedBy = req.user.sub;
     const userId = req.user.sub
     return this.songService.suggestOrCreateSong(suggestSongDto, userId);
-  }
-
-  //Unsuggest a song (Any authenticated user)
-  @Post('unsuggest')
-  @UseGuards(JwtAuthGuard)
-  async unsuggestSong(
-    @Body() body: { songId: string }, 
-    @Request() req: any
-  ) {
-    return this.songService.unsuggestSong(body.songId, req.user._id);
   }
 
   // Upload/Create a song (Any authenticated user)
@@ -111,10 +104,12 @@ async filterSongs(
   @Roles('admin', 'member')
   @Get( 'me/suggestions')
   async getMySuggestions(@Request() req: any ) {
-    console.log("🔥 Authenticated user:", req.user);
+    console.log("🔥 Authenticated user:", req.user.sub);
     try{
         // const userId = req.user.userId
         const userId = req.user.sub
+        if (!userId) throw new BadRequestException('User ID is required');
+
         const suggestions = await this.songService.getSuggestionsByUser(userId);
         return suggestions;
     } catch (error){
@@ -156,6 +151,28 @@ async filterSongs(
     const displayInline = inline === 'false' ? false : true; // defaults to true
     return this.songService.downloadSongFile(songId, res, displayInline);
   }
+
+    // DELETE song from suggestion list
+  @UseGuards(JwtAuthGuard)
+  @Delete('unsuggest/:suggestionId')
+  async unsuggestSong(
+    @Param('suggestionId') suggestionId: string,
+    @Request() req: any
+  ) {
+    const userId = req.user.sub;
+    return this.songService.removeSuggestion(suggestionId, userId);
+  }
+  // // Cancel song immediatly after suggestion
+  // @Patch(':songId/suggestion/cancel')
+  // @UseGuards(JwtAuthGuard)
+  // cancelSuggestion(
+  //   @Param('songId') songId: string,
+  //   @Request() req: any,
+  // ) {
+  //   const userId = req.user?.sub;
+  //   return this.songService.cancelUserSuggestion(songId, userId);
+  // }
+
 
 }
 

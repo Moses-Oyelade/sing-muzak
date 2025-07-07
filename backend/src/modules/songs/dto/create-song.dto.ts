@@ -1,17 +1,7 @@
+import { BaseSongDto } from "./base-song.dto";
 import { IsMongoId, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
-export class CreateSongDto {
-    @IsNotEmpty()
-    @IsString()
-    title: string;
-  
-    @IsNotEmpty()
-    @IsString()
-    artist: string;
-  
-    @IsOptional()
-     @IsString()
-    category: string
+export class CreateSongDto extends BaseSongDto {
     
     @IsOptional()
     @IsString()
@@ -19,7 +9,7 @@ export class CreateSongDto {
     
     @IsOptional()
     @IsString()
-    sheetMusicUrl: string;
+    pdfUrl: string;
   
     @IsNotEmpty()
     @IsMongoId()
@@ -32,19 +22,19 @@ export class CreateSongDto {
   }
 
 export class SuggestSongDto {
-    
     @IsOptional()
     @IsString()
-    title?: string; // For new song
-    
-    @IsOptional()
-    @IsString()
-    artist?: string; // For new song
+    title?: string;
 
     @IsOptional()
     @IsString()
-    category: string
+    artist?: string;
+
+    @IsOptional()
+    @IsString()
+    category?: string; 
     
+    @IsOptional()
     @IsMongoId({ message: 'suggestedBy must be a valid MongoDB ObjectId' })
     suggestedBy: string; // User suggesting the song
     

@@ -10,25 +10,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SuggestSongDto = exports.CreateSongDto = void 0;
+const base_song_dto_1 = require("./base-song.dto");
 const class_validator_1 = require("class-validator");
-class CreateSongDto {
+class CreateSongDto extends base_song_dto_1.BaseSongDto {
 }
 exports.CreateSongDto = CreateSongDto;
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreateSongDto.prototype, "title", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreateSongDto.prototype, "artist", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreateSongDto.prototype, "category", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
@@ -38,7 +24,7 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], CreateSongDto.prototype, "sheetMusicUrl", void 0);
+], CreateSongDto.prototype, "pdfUrl", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsMongoId)(),
@@ -68,6 +54,7 @@ __decorate([
     __metadata("design:type", String)
 ], SuggestSongDto.prototype, "category", void 0);
 __decorate([
+    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsMongoId)({ message: 'suggestedBy must be a valid MongoDB ObjectId' }),
     __metadata("design:type", String)
 ], SuggestSongDto.prototype, "suggestedBy", void 0);
