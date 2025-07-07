@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import FilterBar from "@/components/FilterBar";
 import SongCard from "@/components/SongCard";
 import axiosInstance from "@/utils/axios";
-// import axiosInstance from "@/utils/axios";
+import DownloadButton from "@/components/DownloadButton";
 
 
 export default function SearchSong() {
@@ -18,7 +18,7 @@ export default function SearchSong() {
       const res = await axiosInstance.get(endpoint, {
       
       });
-      // const data = await res.json();
+  
       const data = await res.data;
       setSongs(data);
     } catch (err) {
@@ -39,7 +39,15 @@ export default function SearchSong() {
       <FilterBar onFilter={handleFilter} />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
         {songs.length > 0 ? (
-          songs.map((song: any) => <SongCard key={song._id} song={song} />)
+          songs.map((song: any) => 
+          <div key={song._id} className="p-4 bg-blue-300 border rounded shadow">
+            <SongCard  song={song} />
+            <div   className="flex gap-2 mt-2">
+              <DownloadButton songId={song._id} inline={true} />     {/* View PDF/MP3 in browser */}
+              <DownloadButton songId={song._id} inline={false} />    {/* Trigger file download */}
+            </div>
+          </div>
+        )
         ) : (
           <p>No songs found.</p>
         )}

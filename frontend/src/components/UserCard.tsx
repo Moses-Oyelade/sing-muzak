@@ -283,7 +283,7 @@ export default function UserCard({ users: initialUsers, meta: initialMeta } : { 
               </div>
             ))
           ) : (
-            <p className="text-red-600">No songs found.</p>
+            <p className="text-red-600">No member assigned.</p>
           )}
         </div>
       )}

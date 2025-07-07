@@ -34,14 +34,14 @@ export default function UploadPage() {
     }, []);
 
     const handleRoute = () => {
-        router.push(`/dashboard/admin`)
+        router.push(`/dashboard`)
     }
 
-    const handleUpload = (e: React.FormEvent) => {
+    const handleUpload = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        if (!title || !artist || !category || (!audioFile && !pdfFile)) {
-        alert("Please fill in the fields and upload at least one file (audio or PDF)!");
+        if (!title || !artist || !category) {
+        alert("Please fill in the fields!");
         return;
         }
         
@@ -59,17 +59,20 @@ export default function UploadPage() {
 
         try {
         setLoading(true);
-        axiosInstance.post("/songs/suggest", formData);
+        await axiosInstance.post("/songs/suggest", formData);
         alert("Song uploaded successfully!");
+
         setTitle("");
         setArtist("");
         setCategory("");
         setAudioFile(null);
         setPdfFile(null);
-        router.push("/dashboard/admin");
+
+        // router.push("/dashboard");
+        handleRoute()
         } catch (error) {
         console.error(error);
-        alert("Upload failed!");
+        alert("Failed!");
         } finally {
         setLoading(false);
         }
@@ -77,7 +80,7 @@ export default function UploadPage() {
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg mt-10">
-      <h2 className="text-2xl font-bold mb-4">Upload a Song</h2>
+      <h2 className="text-2xl font-bold mb-4">Suggest new Song</h2>
       <form onSubmit={handleUpload} className="space-y-4">
         <input
           type="text"
@@ -128,7 +131,7 @@ export default function UploadPage() {
             className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
             disabled={loading}
             >
-            {loading ? "Uploading..." : "Upload Song"}
+            {loading ? "loading..." : "Suggest Song"}
           </button>
           {/* <Link href ="/dashboard"> */}
             <button  

@@ -97,9 +97,6 @@ export default function UploadPage() {
           onChange={(e) => setCategory(e.target.value)}
 
         >
-          {/* <option value="">Select Category</option>
-          <option value="Worship">Worship</option>
-          <option value="Praise">Praise</option> */}
 
           <option value="">Select Category</option>
           {categories.map((cat: any) => (
@@ -132,7 +129,7 @@ export default function UploadPage() {
           </button>
           <Link href ="/dashboard">
             <button  className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700">
-              Cancel
+              {loading ? "Canceling..." : "Cancel"}
             </button>
           </Link>
         </div>

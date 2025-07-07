@@ -31,7 +31,7 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({ songId, inline = true }
   return (
     <button
       onClick={handleDownload}
-      className="px-4 py-2 bg-green-400 text-white rounded hover:bg-blue-700"
+      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
     >
       {inline ? 'View File' : 'Download File'}
     </button>

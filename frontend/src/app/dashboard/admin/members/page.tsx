@@ -46,7 +46,7 @@ export default async function MemberPage({ searchParams }: AdminPageProps) {
         </div>
       )
     } catch (err) {
-      console.error("❌ Failed to fetch admin songs:", err);
+      console.error("❌ Failed to fetch users:", err);
       return <p className="text-red-600">Failed to load users.</p>;
     }
 }
