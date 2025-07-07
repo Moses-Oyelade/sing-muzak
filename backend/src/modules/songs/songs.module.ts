@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { AuthModule } from '../auth/auth.module';
 import { Suggestion, SuggestionSchema } from './schema/suggestion.schema';
-import { GoogleDriveModule } from 'src/google-drive/google-drive.module';
+import { GoogleDriveModule } from '../../google-drive/google-drive.module';
 import { User } from '../users/users.module';
 import { UserSchema } from '../users/schema/users.schema';
 

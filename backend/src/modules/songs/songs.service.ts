@@ -7,7 +7,7 @@ import { Category } from '../category/schema/category.schema';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationGateway } from '../notifications/notification.gateway';
 import { CreateSongDto, SuggestSongDto, } from './dto/create-song.dto';
-import { GoogleDriveService } from 'src/google-drive/google-drive.service';
+import { GoogleDriveService } from '../../google-drive/google-drive.service';
 import { User } from '../users/schema/users.schema';
 import { UpdateSongStatusDto } from './dto/update-song';
 

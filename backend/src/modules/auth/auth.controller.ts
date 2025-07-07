@@ -48,10 +48,10 @@ export class AuthController {
     return { message: 'Access granted!' };
   }
 
-  @Post('refresh')
-  async refresh(@Body() refreshDto: { userId: string; refreshToken: string }) {
-    return this.authService.refreshToken(refreshDto.userId, refreshDto.refreshToken);
-  }
+  // @Post('refresh')
+  // async refresh(@Body() refreshDto: { userId: string; refreshToken: string }) {
+  //   return this.authService.refreshToken(refreshDto.userId, refreshDto.refreshToken);
+  // }
 
   @Post('logout')
   @UseGuards(JwtAuthGuard)

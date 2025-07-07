@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { UserRole, VoicePart } from '../interfaces/user.interface';
-import { AbstractDocument } from 'src/modules/common/abstract.schema';
+import { AbstractDocument } from '../../common/abstract.schema';
 
   
   @Schema({ timestamps: true })
@@ -26,9 +26,6 @@ import { AbstractDocument } from 'src/modules/common/abstract.schema';
 
     @Prop({ type: String, enum: VoicePart, default: VoicePart.PENDING , required: false })
     voicePart: VoicePart;
-
-    @Prop({ nullable: true })
-    refreshToken?: string;
 
     async validatePassword(password: string): Promise<boolean> {
       return bcrypt.compare(password, this.password);

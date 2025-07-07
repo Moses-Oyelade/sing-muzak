@@ -2,7 +2,7 @@ import { Controller, Post, Get, Param, Res, UseGuards, UploadedFile, UseIntercep
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GoogleDriveService } from './google-drive.service';
 // import { JwtAuthGuard } from '../modules/auth/jwt/jwt.guard';
-import { Response } from 'express';
+import { Express, Response } from 'express';
 // import { Request } from 'express';
 // import { Multer } from 'multer';  // Import Multer separately
 

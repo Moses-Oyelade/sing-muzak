@@ -3,6 +3,7 @@ import { google } from 'googleapis';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { Readable } from 'stream';
+import { Express } from 'express';
 
 @Injectable()
 export class GoogleDriveService {

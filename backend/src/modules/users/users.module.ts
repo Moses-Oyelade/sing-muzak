@@ -8,7 +8,7 @@ import { AuthModule } from '../auth/auth.module';
 import { Song, SongSchema } from '../songs/schema/song.schema';
 import { Suggestion, SuggestionSchema } from '../songs/schema/suggestion.schema';
 import { Category, CategorySchema } from '../category/schema/category.schema';
-import { GoogleDriveModule } from 'src/google-drive/google-drive.module';
+import { GoogleDriveModule } from '../../google-drive/google-drive.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { SongService } from '../songs/songs.service';
 import { NotificationGateway } from '../notifications/notification.gateway';

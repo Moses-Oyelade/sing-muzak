@@ -120,25 +120,25 @@ export class AuthService {
     return "Password changed successfully!";
   }
 
-  async refreshToken(userId: string, refreshToken: string) {
-    const user = await this.usersService.findById(userId);
-    if (!user || !user.refreshToken) throw new BadRequestException('Invalid token');
+  // async refreshToken(userId: string, refreshToken: string) {
+  //   const user = await this.usersService.findById(userId);
+  //   if (!user ) throw new BadRequestException('Invalid token');
 
-    const isValid = await bcrypt.compare(refreshToken, user.refreshToken);
-    if (!isValid) throw new BadRequestException('Invalid token');
+  //   const isValid = await bcrypt.compare(refreshToken, user.refreshToken);
+  //   if (!isValid) throw new BadRequestException('Invalid token');
 
-    const payload = { sub: user._id, phone: user.phone, role: user.role };
+  //   const payload = { sub: user._id, phone: user.phone, role: user.role };
 
-    const newAccessToken = this.jwtService.sign(payload, { expiresIn: '60m' });
-    const newRefreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+  //   const newAccessToken = this.jwtService.sign(payload, { expiresIn: '60m' });
+  //   const newRefreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
 
-    console.log('New Tokens Generated:', { newAccessToken, newRefreshToken });
+  //   console.log('New Tokens Generated:', { newAccessToken, newRefreshToken });
     
-    const hashedNewRefreshToken = await bcrypt.hash(newRefreshToken, 10);
-    await this.usersService.updateRefreshToken(user._id.toString(), hashedNewRefreshToken);
+  //   const hashedNewRefreshToken = await bcrypt.hash(newRefreshToken, 10);
+  //   await this.usersService.updateRefreshToken(user._id.toString(), hashedNewRefreshToken);
 
-    return { access_token: newAccessToken, refresh_token: newRefreshToken };
-  }
+  //   return { access_token: newAccessToken, refresh_token: newRefreshToken };
+  // }
 
   async logout(userId: string) {
     await this.usersService.updateRefreshToken(userId, null);

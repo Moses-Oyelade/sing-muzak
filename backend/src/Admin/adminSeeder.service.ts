@@ -2,11 +2,11 @@ import { Controller, Get, OnApplicationBootstrap, UseGuards } from '@nestjs/comm
 import { JwtAuthGuard } from '../modules/auth/jwt/jwt.guard';
 import { RolesGuard } from '../modules/auth/roles/roles.guard';
 import { Roles } from '../modules/auth/roles/roles.decorator';
-import { AuthService } from 'src/modules/auth/auth.service';
+import { AuthService } from '../modules/auth/auth.service';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { UsersService } from 'src/modules/users/users.service';
-import { UserRole } from 'src/modules/users/interfaces/user.interface';
+import { UsersService } from '../modules/users/users.service';
+import { UserRole } from '../modules/users/interfaces/user.interface';
 
 // @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('admin')

@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { AbstractDocument } from 'src/modules/common/abstract.schema';
-import { User } from 'src/modules/users/users.module';
+import { AbstractDocument } from "../../common/abstract.schema"
+import { User } from '../../users/users.module';
 
 @Schema({ timestamps: true })
 export class Song extends AbstractDocument {
