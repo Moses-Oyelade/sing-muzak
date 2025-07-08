@@ -5,6 +5,7 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -85,7 +86,7 @@ const LoginPage = () => {
             </button>
         </form>
         <p className="text-center mt-4">
-            Register an account? <a href="/auth/register" className="text-blue-600">Register Here!</a>
+            Register an account? <Link href="/auth/register" className="text-blue-600">Register Here!</Link>
         </p>
 
 

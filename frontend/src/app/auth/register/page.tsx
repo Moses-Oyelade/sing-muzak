@@ -3,6 +3,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const RegisterPage = () => {
   const router = useRouter();
@@ -18,7 +19,7 @@ const RegisterPage = () => {
     setLoading(true);
 
     try {
-      await axios.post("http://localhost:3000/auth/register", {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
         name,
         email,
         phone,
@@ -34,7 +35,7 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex flex-row justify-center items-center h-screen">
         <form
             onSubmit={handleRegister}
             className="max-w-sm w-full bg-white p-8 rounded shadow-lg"
@@ -109,8 +110,8 @@ const RegisterPage = () => {
             {loading ? 'Registering...' : 'Register'}
             </button>
         </form>
-        <p className="text-center mt-4">
-            Already registered? <a href="/auth/login" className="text-blue-600">Login</a>
+        <p className="text-center p-4 mt-4">
+            Already registered? <Link href="/auth/login" className="text-blue-600">Login</Link>
         </p>
 
     </div>

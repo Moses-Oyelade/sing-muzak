@@ -16,7 +16,7 @@ export const authOptions : NextAuthOptions = {
       async authorize(credentials) {
         try {
           // Send login request to your backend
-          const { data } = await axios.post("http://localhost:3000/auth/login", {
+          const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
             phone: credentials?.phone,
             password: credentials?.password,
           });
