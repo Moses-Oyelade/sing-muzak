@@ -21,21 +21,21 @@ export const useSocket = (onEvent: (data: any) => void) => {
       onEvent(data);
     });
 
-    // // Listen for song updates
-    // socket.on('songStatusUpdated', (updatedSong) => {
-    //   onEvent(updatedSong),
-    //   setSongs((prevSongs) =>
-    //     prevSongs.map((song) =>
-    //       song._id === updatedSong._id ? updatedSong : song
-    //     )
-    //   );
-    // });
+    // Listen for song updates
+    socket.on('songStatusUpdated', (updatedSong) => {
+      onEvent(updatedSong),
+      setSongs((prevSongs) =>
+        prevSongs.map((song) =>
+          song._id === updatedSong._id ? updatedSong : song
+        )
+      );
+    });
 
-    // // Listen for new song added
-    // socket.on('newSongAdded', (newSong) => {
-    //   onEvent(newSong)
-    //   setSongs((prevSongs) => [...prevSongs, newSong]); // Add the new song to the list
-    // });
+    // Listen for new song added
+    socket.on('new_song', (newSong) => {
+      onEvent(newSong)
+      setSongs((prevSongs) => [...prevSongs, newSong]); // Add the new song to the list
+    });
 
     // // Listen for BrocastNewSong
     // socket.on('newSongAdded', (newSong) => {
