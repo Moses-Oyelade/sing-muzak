@@ -5,12 +5,12 @@ export declare class RehearsalService {
     private readonly userModel;
     private readonly rehearsalModel;
     constructor(userModel: Model<User>, rehearsalModel: Model<RehearsalDocument>);
-    scheduleRehearsal(date: Date, time: string, location: string, agenda: string, adminId: string): Promise<import("mongoose").Document<unknown, {}, RehearsalDocument> & Rehearsal & import("mongoose").Document<unknown, any, any> & Required<{
+    scheduleRehearsal(date: Date, time: string, location: string, agenda: string, adminId: string): Promise<import("mongoose").Document<unknown, {}, RehearsalDocument, {}> & Rehearsal & import("mongoose").Document<unknown, any, any, Record<string, any>> & Required<{
         _id: unknown;
     }> & {
         __v: number;
     }>;
-    getRehearsals(): Promise<(import("mongoose").Document<unknown, {}, RehearsalDocument> & Rehearsal & import("mongoose").Document<unknown, any, any> & Required<{
+    getRehearsals(): Promise<(import("mongoose").Document<unknown, {}, RehearsalDocument, {}> & Rehearsal & import("mongoose").Document<unknown, any, any, Record<string, any>> & Required<{
         _id: unknown;
     }> & {
         __v: number;

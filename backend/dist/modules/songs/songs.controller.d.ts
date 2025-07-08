@@ -8,7 +8,7 @@ export declare class SongController {
     suggestSong(suggestSongDto: SuggestSongDto, req: any): Promise<{
         message: string;
         existingSong: any;
-        suggestion: import("mongoose").Document<unknown, {}, import("./schema/suggestion.schema").Suggestion> & import("./schema/suggestion.schema").Suggestion & {
+        suggestion: import("mongoose").Document<unknown, {}, import("./schema/suggestion.schema").Suggestion, {}> & import("./schema/suggestion.schema").Suggestion & {
             _id: import("mongoose").Types.ObjectId;
         } & {
             __v: number;
@@ -19,19 +19,19 @@ export declare class SongController {
         pdf?: Express.Multer.File[];
     }, createSongDto: CreateSongDto, req: any): Promise<{
         message: string;
-        newSong: import("mongoose").Document<unknown, {}, Song> & Song & Required<{
+        newSong: import("mongoose").Document<unknown, {}, Song, {}> & Song & Required<{
             _id: import("mongoose").Types.ObjectId;
         }> & {
             __v: number;
         };
     }>;
-    findAll(search?: string): Promise<(import("mongoose").Document<unknown, {}, Song> & Song & Required<{
+    findAll(search?: string): Promise<(import("mongoose").Document<unknown, {}, Song, {}> & Song & Required<{
         _id: import("mongoose").Types.ObjectId;
     }> & {
         __v: number;
     })[]>;
     filterSongs(status?: string, search?: string, category?: string, page?: number, limit?: number): Promise<{
-        data: (import("mongoose").Document<unknown, {}, Song> & Song & Required<{
+        data: (import("mongoose").Document<unknown, {}, Song, {}> & Song & Required<{
             _id: import("mongoose").Types.ObjectId;
         }> & {
             __v: number;
@@ -42,24 +42,24 @@ export declare class SongController {
             totalItems: number;
         };
     }>;
-    getAllSongsByCategory(category?: string): Promise<(import("mongoose").Document<unknown, {}, Song> & Song & Required<{
+    getAllSongsByCategory(category?: string): Promise<(import("mongoose").Document<unknown, {}, Song, {}> & Song & Required<{
         _id: import("mongoose").Types.ObjectId;
     }> & {
         __v: number;
     })[]>;
     getSongById(id: string): Promise<Song | null>;
-    getSuggestions(): Promise<(import("mongoose").Document<unknown, {}, import("./schema/suggestion.schema").Suggestion> & import("./schema/suggestion.schema").Suggestion & {
+    getSuggestions(): Promise<(import("mongoose").Document<unknown, {}, import("./schema/suggestion.schema").Suggestion, {}> & import("./schema/suggestion.schema").Suggestion & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;
     })[]>;
-    getMySuggestions(req: any): Promise<(import("mongoose").Document<unknown, {}, import("./schema/suggestion.schema").Suggestion> & import("./schema/suggestion.schema").Suggestion & {
+    getMySuggestions(req: any): Promise<(import("mongoose").Document<unknown, {}, import("./schema/suggestion.schema").Suggestion, {}> & import("./schema/suggestion.schema").Suggestion & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;
     })[]>;
     updateSongStatus(id: string, updateSongStatusDto: UpdateSongStatusDto, req: any): Promise<{
-        updatedStatus: import("mongoose").Document<unknown, {}, Song> & Song & Required<{
+        updatedStatus: import("mongoose").Document<unknown, {}, Song, {}> & Song & Required<{
             _id: import("mongoose").Types.ObjectId;
         }> & {
             __v: number;

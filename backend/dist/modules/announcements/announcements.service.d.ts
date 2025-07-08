@@ -5,22 +5,22 @@ import { UpdateAnnouncementDto } from './dto/update-announcement.dto';
 export declare class AnnouncementsService {
     private announcementModel;
     constructor(announcementModel: Model<Announcement>);
-    createAnnouncement(createAnnouncementDto: CreateAnnouncementDto): Promise<import("mongoose").Document<unknown, {}, Announcement> & Announcement & Required<{
+    createAnnouncement(createAnnouncementDto: CreateAnnouncementDto): Promise<import("mongoose").Document<unknown, {}, Announcement, {}> & Announcement & Required<{
         _id: unknown;
     }> & {
         __v: number;
     }>;
-    getAnnouncements(): Promise<(import("mongoose").Document<unknown, {}, Announcement> & Announcement & Required<{
+    getAnnouncements(): Promise<(import("mongoose").Document<unknown, {}, Announcement, {}> & Announcement & Required<{
         _id: unknown;
     }> & {
         __v: number;
     })[]>;
-    getAnnouncementById(id: string): Promise<import("mongoose").Document<unknown, {}, Announcement> & Announcement & Required<{
+    getAnnouncementById(id: string): Promise<import("mongoose").Document<unknown, {}, Announcement, {}> & Announcement & Required<{
         _id: unknown;
     }> & {
         __v: number;
     }>;
-    updateAnnouncement(id: string, updateAnnouncementDto: UpdateAnnouncementDto): Promise<import("mongoose").Document<unknown, {}, Announcement> & Announcement & Required<{
+    updateAnnouncement(id: string, updateAnnouncementDto: UpdateAnnouncementDto): Promise<import("mongoose").Document<unknown, {}, Announcement, {}> & Announcement & Required<{
         _id: unknown;
     }> & {
         __v: number;

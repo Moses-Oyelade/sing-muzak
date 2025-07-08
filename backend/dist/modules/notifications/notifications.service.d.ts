@@ -7,42 +7,42 @@ export declare class NotificationsService {
     private notificationModel;
     private notificationGateway;
     constructor(notificationModel: Model<Notification>, notificationGateway: NotificationGateway);
-    createNotification(createNotificationDto: CreateNotificationDto): Promise<import("mongoose").Document<unknown, {}, Notification> & Notification & {
+    createNotification(createNotificationDto: CreateNotificationDto): Promise<import("mongoose").Document<unknown, {}, Notification, {}> & Notification & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;
     }>;
-    getAllNotifications(): Promise<(import("mongoose").Document<unknown, {}, Notification> & Notification & {
+    getAllNotifications(): Promise<(import("mongoose").Document<unknown, {}, Notification, {}> & Notification & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;
     })[]>;
-    sendNotification(userId: string, message: string): Promise<import("mongoose").Document<unknown, {}, Notification> & Notification & {
+    sendNotification(userId: string, message: string): Promise<import("mongoose").Document<unknown, {}, Notification, {}> & Notification & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;
     }>;
-    getUserNotifications(userId: string): Promise<(import("mongoose").Document<unknown, {}, Notification> & Notification & {
+    getUserNotifications(userId: string): Promise<(import("mongoose").Document<unknown, {}, Notification, {}> & Notification & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;
     })[]>;
-    getNotificationById(id: string): Promise<import("mongoose").Document<unknown, {}, Notification> & Notification & {
+    getNotificationById(id: string): Promise<import("mongoose").Document<unknown, {}, Notification, {}> & Notification & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;
     }>;
-    markAsRead(notificationId: string): Promise<import("mongoose").Document<unknown, {}, Notification> & Notification & {
+    markAsRead(notificationId: string): Promise<import("mongoose").Document<unknown, {}, Notification, {}> & Notification & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;
     }>;
-    updateNotification(id: string, updateNotificationDto: UpdateNotificationDto): Promise<import("mongoose").Document<unknown, {}, Notification> & Notification & {
+    updateNotification(id: string, updateNotificationDto: UpdateNotificationDto): Promise<import("mongoose").Document<unknown, {}, Notification, {}> & Notification & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;
     }>;
-    deleteNotification(id: string): Promise<import("mongoose").Document<unknown, {}, Notification> & Notification & {
+    deleteNotification(id: string): Promise<import("mongoose").Document<unknown, {}, Notification, {}> & Notification & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;

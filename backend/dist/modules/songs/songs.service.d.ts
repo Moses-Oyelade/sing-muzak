@@ -20,7 +20,7 @@ export declare class SongService {
     suggestOrCreateSong(suggestSongDto: SuggestSongDto, userId: string): Promise<{
         message: string;
         existingSong: any;
-        suggestion: import("mongoose").Document<unknown, {}, Suggestion> & Suggestion & {
+        suggestion: import("mongoose").Document<unknown, {}, Suggestion, {}> & Suggestion & {
             _id: Types.ObjectId;
         } & {
             __v: number;
@@ -31,40 +31,40 @@ export declare class SongService {
         pdf?: Express.Multer.File[];
     }, userId: string): Promise<{
         message: string;
-        newSong: import("mongoose").Document<unknown, {}, Song> & Song & Required<{
+        newSong: import("mongoose").Document<unknown, {}, Song, {}> & Song & Required<{
             _id: Types.ObjectId;
         }> & {
             __v: number;
         };
     }>;
-    getAllSongs(status?: string): Promise<(import("mongoose").Document<unknown, {}, Song> & Song & Required<{
+    getAllSongs(status?: string): Promise<(import("mongoose").Document<unknown, {}, Song, {}> & Song & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
     })[]>;
-    getAllSongsByCategory(category?: string): Promise<(import("mongoose").Document<unknown, {}, Song> & Song & Required<{
+    getAllSongsByCategory(category?: string): Promise<(import("mongoose").Document<unknown, {}, Song, {}> & Song & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
     })[]>;
-    getSuggestions(): Promise<(import("mongoose").Document<unknown, {}, Suggestion> & Suggestion & {
+    getSuggestions(): Promise<(import("mongoose").Document<unknown, {}, Suggestion, {}> & Suggestion & {
         _id: Types.ObjectId;
     } & {
         __v: number;
     })[]>;
-    searchSongs(term: string): Promise<(import("mongoose").Document<unknown, {}, Song> & Song & Required<{
+    searchSongs(term: string): Promise<(import("mongoose").Document<unknown, {}, Song, {}> & Song & Required<{
         _id: Types.ObjectId;
     }> & {
         __v: number;
     })[]>;
     findById(id: string): Promise<Song | null>;
-    getSuggestionsByUser(userId: string): Promise<(import("mongoose").Document<unknown, {}, Suggestion> & Suggestion & {
+    getSuggestionsByUser(userId: string): Promise<(import("mongoose").Document<unknown, {}, Suggestion, {}> & Suggestion & {
         _id: Types.ObjectId;
     } & {
         __v: number;
     })[]>;
     updateSongStatus(songId: string, updateSongStatusDto: UpdateSongStatusDto, adminId: any): Promise<{
-        updatedStatus: import("mongoose").Document<unknown, {}, Song> & Song & Required<{
+        updatedStatus: import("mongoose").Document<unknown, {}, Song, {}> & Song & Required<{
             _id: Types.ObjectId;
         }> & {
             __v: number;
@@ -79,7 +79,7 @@ export declare class SongService {
         limit?: number;
         category?: string;
     }): Promise<{
-        data: (import("mongoose").Document<unknown, {}, Song> & Song & Required<{
+        data: (import("mongoose").Document<unknown, {}, Song, {}> & Song & Required<{
             _id: Types.ObjectId;
         }> & {
             __v: number;

@@ -11,7 +11,7 @@ export declare class UsersController {
         user: User;
     };
     searchAll(voicePart?: string, search?: string, role?: string, page?: number, limit?: number): Promise<{
-        data: (import("mongoose").Document<unknown, {}, User> & User & Required<{
+        data: (import("mongoose").Document<unknown, {}, User, {}> & User & Required<{
             _id: import("mongoose").Types.ObjectId;
         }> & {
             __v: number;

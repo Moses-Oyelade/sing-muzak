@@ -9,11 +9,11 @@ export declare class Rehearsal {
     createdBy: Types.ObjectId;
     description?: string;
 }
-export declare const RehearsalSchema: import("mongoose").Schema<Rehearsal, import("mongoose").Model<Rehearsal, any, any, any, Document<unknown, any, Rehearsal> & Rehearsal & {
+export declare const RehearsalSchema: import("mongoose").Schema<Rehearsal, import("mongoose").Model<Rehearsal, any, any, any, Document<unknown, any, Rehearsal, any> & Rehearsal & {
     _id: Types.ObjectId;
 } & {
     __v: number;
-}, any>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, Rehearsal, Document<unknown, {}, import("mongoose").FlatRecord<Rehearsal>> & import("mongoose").FlatRecord<Rehearsal> & {
+}, any>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, Rehearsal, Document<unknown, {}, import("mongoose").FlatRecord<Rehearsal>, {}> & import("mongoose").FlatRecord<Rehearsal> & {
     _id: Types.ObjectId;
 } & {
     __v: number;

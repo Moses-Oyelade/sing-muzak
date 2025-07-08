@@ -2,12 +2,12 @@ import { RehearsalService } from './rehearsals.service';
 export declare class RehearsalController {
     private readonly rehearsalService;
     constructor(rehearsalService: RehearsalService);
-    scheduleRehearsal(body: any, req: any): Promise<import("mongoose").Document<unknown, {}, import("./schema/rehearsal.schema").RehearsalDocument> & import("./schema/rehearsal.schema").Rehearsal & import("mongoose").Document<unknown, any, any> & Required<{
+    scheduleRehearsal(body: any, req: any): Promise<import("mongoose").Document<unknown, {}, import("./schema/rehearsal.schema").RehearsalDocument, {}> & import("./schema/rehearsal.schema").Rehearsal & import("mongoose").Document<unknown, any, any, Record<string, any>> & Required<{
         _id: unknown;
     }> & {
         __v: number;
     }>;
-    getRehearsals(): Promise<(import("mongoose").Document<unknown, {}, import("./schema/rehearsal.schema").RehearsalDocument> & import("./schema/rehearsal.schema").Rehearsal & import("mongoose").Document<unknown, any, any> & Required<{
+    getRehearsals(): Promise<(import("mongoose").Document<unknown, {}, import("./schema/rehearsal.schema").RehearsalDocument, {}> & import("./schema/rehearsal.schema").Rehearsal & import("mongoose").Document<unknown, any, any, Record<string, any>> & Required<{
         _id: unknown;
     }> & {
         __v: number;

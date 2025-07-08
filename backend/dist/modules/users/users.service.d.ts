@@ -22,7 +22,7 @@ export declare class UsersService {
         page?: number;
         limit?: number;
     }): Promise<{
-        data: (import("mongoose").Document<unknown, {}, User> & User & Required<{
+        data: (import("mongoose").Document<unknown, {}, User, {}> & User & Required<{
             _id: Types.ObjectId;
         }> & {
             __v: number;
