@@ -5,7 +5,7 @@ import { Model, Types } from 'mongoose';
 import { User } from '../users/schema/users.schema';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { UserRole } from '../users/interfaces/user.interface';
 
 @Injectable()
