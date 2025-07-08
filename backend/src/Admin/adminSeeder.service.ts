@@ -4,7 +4,7 @@ import { RolesGuard } from '../modules/auth/roles/roles.guard';
 import { Roles } from '../modules/auth/roles/roles.decorator';
 import { AuthService } from '../modules/auth/auth.service';
 import { ConfigService } from '@nestjs/config';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../modules/users/users.service';
 import { UserRole } from '../modules/users/interfaces/user.interface';
 

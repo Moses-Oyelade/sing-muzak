@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { UserRole, VoicePart } from '../interfaces/user.interface';
 import { AbstractDocument } from '../../common/abstract.schema';
 
