@@ -2,26 +2,10 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { useSocket } from "../hooks/useSocket"; // Import the custom hook
+import { useSocket } from "../hooks/useSocket";
 import axiosInstance from "src/utils/axios";
-import dayjs from '@/lib/dayjs';
+import dayjs from "@/lib/dayjs";
 import FilterBar from "@/components/FilterBar";
-
-
-interface Suggestion {
-  _id: string;
-  song: {
-    _id: string;
-    title: string;
-    artist: string;
-    uploadedBy?: any;
-  };
-  suggestedBy: {
-    _id: string;
-    name: string;
-  };
-  createdAt: string;
-}
 
 interface Song {
   _id: string;
@@ -31,74 +15,73 @@ interface Song {
   status: string;
   audioUrl?: string;
   pdfUrl?: string;
+  createdAt: string;
+  uploadedBy?: {
+    name?: string;
+  };
+  suggestedBy?: {
+    name?: string;
+  };
 }
 
+interface Suggestion {
+  _id: string;
+  song: Song;
+  suggestedBy: {
+    _id: string;
+    name: string;
+  };
+  createdAt: string;
+}
 
-// export default function DashboardContent({ user }: Props) {
 export default function DashboardContent() {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
-  const { data: session, status } = useSession();
   const [searchTerm, setSearchTerm] = useState("");
 
+  const { data: session, status } = useSession();
   const token = session?.user?.token;
   const role = session?.user?.role;
 
+  useSocket((data: { type: string; songId: string; song?: Suggestion; status?: string }) => {
+    if (data.type === "status_update") {
+      setSuggestions(prev =>
+        prev.map(song =>
+          song._id === data.songId ? { ...song, song: { ...song.song, status: data.status || song.song.status } } : song
+        )
+      );
+    }
 
-    // ✅ Call useSocket here (top-level of component)
-    useSocket((data: any) => {
-      // if (!user) return;
+    if (data.type === "new_song" && data.song) {
+      setSuggestions(prev => [data.song as Suggestion, ...prev]);
+    }
 
-      console.log("Received real-time data:", data);
-  
-      if (data.type === "status_update") {
-        setSuggestions((prev: any) =>
-          prev.map((song: any) =>
-            song._id === data.songId ? { ...song, status: data.status } : song
-          )
-        );
-      }
-  
-      if (data.type === "new_song") {
-        setSuggestions((prev) => [data.song, ...prev]);
-      }
-  
-      if (data.type === "song_removed") {
-        setSuggestions((prev: any) => prev.filter((song: any) => song._id !== data.songId));
-      }
-    });
+    if (data.type === "song_removed") {
+      setSuggestions(prev => prev.filter(song => song._id !== data.songId));
+    }
+  });
 
   useEffect(() => {
-    if (status !== 'authenticated') return;
+    if (status !== "authenticated" || !session || !token || !role) return;
 
-    // const fetchSuggestions = async() => {
-    const fetchSuggestions = async(term = "") => {
-      if (!session || !token) {
-        console.warn("Session or token not ready, skipping fetch.");
-        return;
-      }
-        
+    const fetchSuggestions = async (term = "") => {
       try {
-        const endpoint = role === 'admin'
-          // ? "/songs"
-          ? `/songs?search=${term}`
-          : `/songs/me/suggestions`;
+        const endpoint =
+          role === "admin" ? `/songs?search=${term}` : `/songs/me/suggestions`;
 
-        console.log("Session:", session);
-        console.log("Token extracted from session:", token);
-        
-        // const response = await axiosInstance.get(endpoint);
-        const response = role === 'admin'
-        ? await axiosInstance.get(endpoint, { })
-        : await axiosInstance.get(endpoint);
-        console.log("Fetching songs:", response.data);
-        
-        setSuggestions(response.data?.data || response.data ); // handle both paginated and non-paginated
-        setSongs(response.data?.data || response.data ); // handle both paginated and non-paginated
+        const response = await axiosInstance.get(endpoint);
+
+        const data = response.data?.data || response.data;
+
+        if (role === "admin") {
+          setSongs(data);
+        } else {
+          setSuggestions(data);
+        }
       } catch (error) {
         console.error("Error fetching songs:", error);
-        setSuggestions([]); // Ensure fallback
+        setSuggestions([]);
         setSongs([]);
       } finally {
         setLoading(false);
@@ -106,8 +89,7 @@ export default function DashboardContent() {
     };
 
     fetchSuggestions(searchTerm);
-  // }, [token, role]);
-  }, [status, searchTerm]);
+  }, [status, session, token, role, searchTerm]);
 
   const handleFilter = (term: string) => {
     setSearchTerm(term);
@@ -117,41 +99,52 @@ export default function DashboardContent() {
     try {
       await axiosInstance.delete(`/songs/unsuggest/${suggestionId}`);
       setSuggestions(prev => prev.filter(s => s._id !== suggestionId));
-      alert('Suggestion Removed!');
+      alert("Suggestion Removed!");
     } catch (error) {
       console.error("Failed to delete suggestion:", error);
       alert("Could not cancel suggestion");
     }
   };
 
-  if (loading) return <p className="p-4 animate-spin rounded-full h-4 w-4 border-t-2 border-white">Checking session...</p>;
+  if (loading)
+    return (
+      <p className="p-4 animate-spin rounded-full h-4 w-4 border-t-2 border-white">
+        Checking session...
+      </p>
+    );
 
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">
-        {role === "admin" ? 
-        <>
-        <p>"All Songs (admin)"</p>
-        <FilterBar onFilter={handleFilter} /> 
-        </>
-        : "My Suggestions"}
+        {role === "admin" ? (
+          <>
+            <p>&quot;All Songs (admin)&quot;</p>
+            <FilterBar onFilter={handleFilter} />
+          </>
+        ) : (
+          "My Suggestions"
+        )}
       </h1>
-  
-      {(role === 'admin' && songs.length === 0) || (role !== 'admin' && suggestions.length === 0) ? (
+
+      {(role === "admin" && songs.length === 0) ||
+      (role !== "admin" && suggestions.length === 0) ? (
         <p className="text-center text-gray-500">
           {role === "admin" ? "No songs available." : "No suggestions yet! 🎵"}
         </p>
       ) : (
         <div>
-          {role === 'admin' ? (
+          {role === "admin" ? (
             <ul className="space-y-4">
-              {songs.map((song: any) => (
+              {songs.map(song => (
                 <li key={song._id} className="border p-4 rounded">
                   <h3 className="font-semibold text-lg">{song.title}</h3>
                   <p>Artist: {song.artist}</p>
                   <p>Status: {song.status}</p>
                   <p>Uploaded By: {song.uploadedBy?.name || "unknown"}</p>
-                  <p>Uploaded on: {dayjs(song.createdAt ).format('MMMM D, YYYY h:mm A')}</p>
+                  <p>
+                    Uploaded on:{" "}
+                    {dayjs(song.createdAt).format("MMMM D, YYYY h:mm A")}
+                  </p>
                   <p>Suggested By: {song.suggestedBy?.name || "unknown"}</p>
                   {song.pdfUrl && (
                     <a
@@ -172,23 +165,25 @@ export default function DashboardContent() {
                     >
                       Listen
                     </a>
-                  )}        
+                  )}
                 </li>
               ))}
             </ul>
           ) : (
             <ul className="space-y-4">
-              {suggestions.map((suggestion: any) => (
+              {suggestions.map(suggestion => (
                 <li key={suggestion._id} className="border p-4 rounded">
                   <h3 className="font-semibold text-lg">{suggestion.song.title}</h3>
                   <p>Artist: {suggestion.song.artist}</p>
                   <p>Status: {suggestion.song.status}</p>
                   <p>Suggested By: {suggestion.suggestedBy.name || "unknown"}</p>
-                  <p>Suggested on: {dayjs(suggestion.createdAt ).format('MMMM D, YYYY h:mm A')}</p>
-                  {/* <p>Suggested By: {song.suggestedBy?.name || "unknown"}</p> */}
-                  {suggestion.song.sheetMusicUrl && (
+                  <p>
+                    Suggested on:{" "}
+                    {dayjs(suggestion.createdAt).format("MMMM D, YYYY h:mm A")}
+                  </p>
+                  {suggestion.song.pdfUrl && (
                     <a
-                      href={suggestion.song.sheetMusicUrl}
+                      href={suggestion.song.pdfUrl}
                       target="_blank"
                       rel="noopener"
                       className="text-purple-600 underline"
@@ -205,13 +200,13 @@ export default function DashboardContent() {
                     >
                       Listen
                     </a>
-                  )}    
-                    <button
-                      onClick={() => handleCancelSuggestion(suggestion._id)}
-                      className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                    >
-                      Cancel Suggestion
-                    </button>
+                  )}
+                  <button
+                    onClick={() => handleCancelSuggestion(suggestion._id)}
+                    className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                  >
+                    Cancel Suggestion
+                  </button>
                 </li>
               ))}
             </ul>
@@ -220,4 +215,4 @@ export default function DashboardContent() {
       )}
     </div>
   );
-}  
+}

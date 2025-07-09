@@ -156,7 +156,7 @@ export default function UserCard({ users: initialUsers, meta: initialMeta } : { 
       <div className="flex items-center gap-4 mb-4 flex-wrap">
         <input
           type="text"
-          placeholder="Search by title..."
+          placeholder="Search by name..."
           defaultValue={search}
           onChange={(e) => router.push(`/dashboard/admin/members?search=${e.target.value}&voicePart=${voicePart}&page=1`)}
           className="border px-3 py-2 rounded w-full max-w-sm"
