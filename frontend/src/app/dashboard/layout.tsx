@@ -28,32 +28,32 @@ export default async function DashboardLayout({ children }: { children: React.Re
         {/* <SearchSongs /> */}
         <div className="space-y-2">
           {isAdmin ? (
-          <ul>
-            <li>
+          <ul className="space-y-2 bg-slate-300 font-bold border rounded px-4 py-2 mx-1 mb-4">
+            <li className="px-3 hover:bg-slate-400 hover:underline">
               <Link href="/dashboard" >Home</Link>
             </li>
-            <li>
+            <li className="px-3 hover:bg-slate-400 hover:underline">
               <Link href="/dashboard/admin">Admin Panel</Link>
             </li>
-            <li>
+            <li className="px-3 hover:bg-slate-400 hover:underline">
               <Link href="" ></Link>
             </li>
           </ul>
           ) : (
-          <ul>
-            <li>
+          <ul className="space-y-2 bg-slate-300 font-bold border rounded px-4 py-2 mx-1 mb-4">
+            <li className="px-3 hover:bg-slate-400 hover:underline">
               <Link href="/dashboard/user" >Profile</Link>
             </li>
-            <li>
+            <li className="px-3 hover:bg-slate-400 hover:underline">
               <Link href="/dashboard">My Suggestions</Link>
             </li>
-            <li>
+            <li className="px-3 hover:bg-slate-400 hover:underline">
               <Link href ="/songs">Song List</Link>
             </li>
-            <li>
-              <Link href ="/upload">Upload Song</Link>
+            <li className="px-3 hover:bg-slate-400 hover:underline">
+              <Link href ="">Vocal Members</Link>
             </li>
-            <li>
+            <li className="px-3 hover:bg-slate-400 hover:underline">
               <Link href ="/auth/logout">Logout</Link>
             </li>
           </ul>

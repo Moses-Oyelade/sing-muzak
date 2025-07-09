@@ -17,7 +17,7 @@ interface Song {
 }
 
 const STATUSES = ["All", "Pending", "Approved", "Postponed"];
-const socket = io("http://localhost:3000");
+const socket = io(process.env.NEXT_PUBLIC_API_URL);
 
 export default function AdminDashboard({ songs: initialSongs, meta: initialMeta }: { songs: any[]; meta: any }) {
   const router = useRouter();

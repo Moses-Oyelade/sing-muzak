@@ -22,7 +22,7 @@ interface User {
     voicePart: string;
 }
 
-const socket = io("http://localhost:3000");
+const socket = io(process.env.NEXT_PUBLIC_API_URL);
 
 export default function UserCard({ users: initialUsers, meta: initialMeta } : { users: any[]; meta: any }) {
     const router = useRouter();
@@ -213,7 +213,7 @@ export default function UserCard({ users: initialUsers, meta: initialMeta } : { 
                         ) : (
                           `text-black px-3 py-1 rounded
                           ${ edit === user._id ? "bg-red-300"
-                          : "bg-red-500 hover:bg-red-300"}`)} 
+                          : "bg-slate-400 hover:bg-slate-200"}`)} 
                     >
                       {isToggle === user._id ? "Save" : "Edit"}
                   </button></span>
@@ -241,8 +241,8 @@ export default function UserCard({ users: initialUsers, meta: initialMeta } : { 
                 <div className={isToggle === user._id ? "mt-3 flex gap-2" : "hidden"}>
                 <button
                   className={`text-white px-3 py-1 rounded
-                    ${ updatingUserId === user._id ? "bg-purple-300"
-                    : "bg-purple-500 hover:bg-purple-300"
+                    ${ updatingUserId === user._id ? "bg-cyan-200"
+                    : "bg-slate-500 hover:bg-slate-400"
                   }`}
                   disabled={updatingUserId === user._Id}
                   onClick={() => updateUserVoicePart(user._id, "soprano")}
@@ -252,7 +252,7 @@ export default function UserCard({ users: initialUsers, meta: initialMeta } : { 
                 <button
                   className={`text-black px-3 py-1 rounded
                     ${ updatingUserId === user._id ? "bg-cyan-200"
-                    : "bg-cyan-400 hover:bg-cyan-200"
+                    : "bg-gray-400 hover:bg-gray-200"
                   }`}
                   disabled={updatingUserId === user._Id}
                   onClick={() => updateUserVoicePart(user._id, "alto")}
@@ -261,8 +261,8 @@ export default function UserCard({ users: initialUsers, meta: initialMeta } : { 
                 </button>
                 <button
                   className={`text-white px-3 py-1 rounded
-                    ${ updatingUserId === user._id ? "bg-purple-300"
-                    : "bg-purple-500 hover:bg-purple-300"
+                    ${ updatingUserId === user._id ? "bg-cyan-200"
+                    : "bg-slate-500 hover:bg-slate-400"
                   }`}
                   disabled={updatingUserId === user._Id}
                   onClick={() => updateUserVoicePart(user._id, "tenor")}
@@ -272,7 +272,7 @@ export default function UserCard({ users: initialUsers, meta: initialMeta } : { 
                 <button
                   className={`text-black px-3 py-1 rounded
                     ${ updatingUserId === user._id ? "bg-cyan-200"
-                    : "bg-cyan-400 hover:bg-cyan-200"
+                    : "bg-gray-400 hover:bg-gray-200"
                   }`}
                   disabled={updatingUserId === user._Id}
                   onClick={() => updateUserVoicePart(user._id, "bass")}

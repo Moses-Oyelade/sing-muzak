@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import io from "socket.io-client";
 
-const socket = io("http://localhost:3000");
+const socket = io(process.env.NEXT_PUBLIC_API_URL);
 
 export default function AdminControls() {
   const [songs, setSongs] = useState([]);
