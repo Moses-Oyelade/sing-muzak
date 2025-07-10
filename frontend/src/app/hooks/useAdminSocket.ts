@@ -1,14 +1,27 @@
 // hooks/useAdminSocket.ts
 "use client";
 
-import { useEffect } from "react";
-import { io } from "socket.io-client";
+import { useEffect, useRef } from "react";
+import { io, Socket } from "socket.io-client";
 import toast from "react-hot-toast";
 
-const socket = io("http://localhost:3000");
+const socket = io(process.env.NEXT_PUBLIC_API_URL);
 
-export function useAdminSocket(setSongs: Function) {
+interface AdminSocketCallbackData {
+  type: string;
+  songId: string;
+  status?: string;
+}
+
+type AdminSocketCallback = (data: AdminSocketCallbackData) => void;
+
+
+export function useAdminSocket(setSongs: Function, callback: AdminSocketCallback ) {
+  const socketRef = useRef<Socket | null>(null);
+  
   useEffect(() => {
+    socketRef.current = socket;
+
     socket.on("new_song", (newSong) => {
       setSongs((prev: any) => [newSong, ...prev]);
       toast.success(`🎶 New song uploaded: ${newSong.title}`);
@@ -29,9 +42,7 @@ export function useAdminSocket(setSongs: Function) {
     });
 
     return () => {
-      socket.off("new_song");
-      socket.off("status_update");
-      socket.off("song_removed");
+      socket.off();
     };
   }, [setSongs]);
 }

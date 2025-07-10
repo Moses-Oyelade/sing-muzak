@@ -118,7 +118,8 @@ export default function DashboardContent() {
       <h1 className="text-2xl font-bold mb-4">
         {role === "admin" ? (
           <>
-            <p>&quot;All Songs (admin)&quot;</p>
+            {/* <p>&quot;All Songs (admin)&quot;</p> */}
+            <p>All Songs (admin)</p>
             <FilterBar onFilter={handleFilter} />
           </>
         ) : (

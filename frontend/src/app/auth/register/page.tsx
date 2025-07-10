@@ -26,8 +26,8 @@ const RegisterPage = () => {
         password,
       });
       router.push("/auth/login"); // Redirect to login after registration
-    } catch (error: any) {
-        console.error("Registration error:", error.response?.data || error.message);
+    } catch (error) {
+        console.error("Registration error:", error );
       setError("Error registering. Please try again.");
     } finally {
         setLoading(false)

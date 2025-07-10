@@ -35,11 +35,11 @@ const LoginPage = () => {
 
   return (
     <div className="flex flex-col justify-center items-center h-screen">
-        <a href= '/'>
+        <Link href= '/'>
           <p className="w-10 p-3 border rounded">
           <b>X</b>
           </p>
-        </a>
+        </Link>
         <form
             onSubmit={handleLogin}
             className="max-w-sm w-full bg-white p-8 rounded shadow-lg"
