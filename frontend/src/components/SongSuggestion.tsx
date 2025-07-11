@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "@/utils/axios";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 
 
@@ -15,6 +16,7 @@ export default function UploadPage() {
     const [pdfFile, setPdfFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
 
+    const { data: session } = useSession();
     const router = useRouter();
 
 
@@ -44,11 +46,18 @@ export default function UploadPage() {
         alert("Please fill in the fields!");
         return;
         }
+
+        if (!session?.user?.id || !session.user.token) {
+        alert('You must be logged in.');
+        return;
+      }
         
         const formData = new FormData();
         formData.append("title", title);
         formData.append("artist", artist);
         formData.append("category", category);
+        formData.append('uploadedBy', session.user.id);
+        formData.append('suggestedBy', session.user.id);
 
         if (audioFile) {
         formData.append("audio", audioFile);
@@ -139,7 +148,8 @@ export default function UploadPage() {
                 className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700"
                 disabled={loading}
               >
-              {loading ? "Canceling..." : "Cancel"}
+              {/* {loading ? "Canceling..." : "Cancel"} */}
+              Cancel
             </button>
           {/* </Link> */}
         </div>

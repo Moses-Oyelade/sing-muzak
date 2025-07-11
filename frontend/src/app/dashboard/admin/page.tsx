@@ -28,10 +28,6 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   if (!axios) {
     return <div className="p-4 text-red-600">Axios not configured</div>;
   }
-
-  // const page = searchParams.page || "1";
-  // const search = searchParams.search || "";
-  // const status = searchParams.status || "Pending";
   const resolvedSearchParams = searchParams;
 
   const page = typeof resolvedSearchParams.page === "string" ? resolvedSearchParams.page : "1";
@@ -42,13 +38,6 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
   try {
     const res = await axios.get(`/songs/filter?status=${status}&search=${search}&category${category}&page=${page}`);
-    // const res = await axios.get(`/songs/filter`, {
-    //   params: {
-    //     status: status === "All" ? undefined : status,
-    //     search,
-    //     page,
-    //   },
-    // });
     
     const { data: songs, meta } = res.data;
 

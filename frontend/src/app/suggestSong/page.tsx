@@ -71,13 +71,13 @@ const SuggestSongs = () => {
 
   return (
     <div className="max-w-3xl mx-auto p-6">
+      <button
+        onClick={() => router.back()}
+        className='mb-2 mr-6 px-2 rounded hover:bg-gray-300'
+      >
+        ⇐ Back
+      </button>
       <div className='flex flex-row gap-6 p-4'>
-        <button
-          onClick={() => router.back()}
-          className='mb-4 mr-6 px-2 py-2 rounded hover:bg-gray-300'
-        >
-          ⇐ Back
-        </button>
         <FilterBar onFilter={handleFilter} />
         <button
           onClick={() => setShowSuggestionForm(prev => !prev)}
