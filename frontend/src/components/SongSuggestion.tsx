@@ -44,23 +44,18 @@ export default function UploadPage() {
         if (!title || !artist || !category) {
         alert("Please fill in the fields!");
         return;
-        }
-        
-        const formData = new FormData();
-        formData.append("title", title);
-        formData.append("artist", artist);
-        formData.append("category", category);
+        };
 
-        if (audioFile) {
-        formData.append("audio", audioFile);
-        }
-        if(pdfFile){
-        formData.append("file", pdfFile);
-        }
+        const payload = {
+          title,
+          artist,
+          category,
+        };
+        
 
         try {
         setLoading(true);
-        await axiosInstance.post("/songs/suggest", formData);
+        await axiosInstance.post("/songs/suggest", payload);
         alert("Song uploaded successfully!");
 
         setTitle("");
@@ -112,20 +107,6 @@ export default function UploadPage() {
             </option>
           ))}
         </select>
-        <p className="w-full p-2 border rounded">Upload Audio 🎵 : 
-          <input
-            type="file"
-            accept="audio/*, video/*"
-            onChange={(e) => setAudioFile(e.target.files?.[0] || null)}
-          />
-        </p>
-        <p className="w-full p-2 border rounded">Upload PDF 📋 : 
-          <input
-            type="file"
-            accept="application/pdf"
-            onChange={(e) => setPdfFile(e.target.files?.[0] || null)}
-          />
-        </p>
         <div className="flex justify-between items-center">
           <button
             type="submit"
