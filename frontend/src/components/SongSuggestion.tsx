@@ -16,7 +16,6 @@ export default function UploadPage() {
     const [pdfFile, setPdfFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const { data: session } = useSession();
     const router = useRouter();
 
 
@@ -46,18 +45,11 @@ export default function UploadPage() {
         alert("Please fill in the fields!");
         return;
         }
-
-        if (!session?.user?.id || !session.user.token) {
-        alert('You must be logged in.');
-        return;
-      }
         
         const formData = new FormData();
         formData.append("title", title);
         formData.append("artist", artist);
         formData.append("category", category);
-        formData.append('uploadedBy', session.user.id);
-        formData.append('suggestedBy', session.user.id);
 
         if (audioFile) {
         formData.append("audio", audioFile);
