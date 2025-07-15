@@ -16,21 +16,14 @@ interface Song {
   audioUrl?: string;
   pdfUrl?: string;
   createdAt: string;
-  uploadedBy?: {
-    name?: string;
-  };
-  suggestedBy?: {
-    name?: string;
-  };
+  uploadedBy?: { name?: string };
+  suggestedBy?: { name?: string };
 }
 
 interface Suggestion {
   _id: string;
   song: Song;
-  suggestedBy: {
-    _id: string;
-    name: string;
-  };
+  suggestedBy: { _id: string; name: string };
   createdAt: string;
 }
 
@@ -48,7 +41,9 @@ export default function DashboardContent() {
     if (data.type === "status_update") {
       setSuggestions(prev =>
         prev.map(song =>
-          song._id === data.songId ? { ...song, song: { ...song.song, status: data.status || song.song.status } } : song
+          song._id === data.songId
+            ? { ...song, song: { ...song.song, status: data.status || song.song.status } }
+            : song
         )
       );
     }
@@ -67,11 +62,8 @@ export default function DashboardContent() {
 
     const fetchSuggestions = async (term = "") => {
       try {
-        const endpoint =
-          role === "admin" ? `/songs?search=${term}` : `/songs/me/suggestions`;
-
+        const endpoint = role === "admin" ? `/songs?search=${term}` : `/songs/me/suggestions`;
         const response = await axiosInstance.get(endpoint);
-
         const data = response.data?.data || response.data;
 
         if (role === "admin") {
@@ -91,9 +83,7 @@ export default function DashboardContent() {
     fetchSuggestions(searchTerm);
   }, [status, session, token, role, searchTerm]);
 
-  const handleFilter = (term: string) => {
-    setSearchTerm(term);
-  };
+  const handleFilter = (term: string) => setSearchTerm(term);
 
   const handleCancelSuggestion = async (suggestionId: string) => {
     try {
@@ -113,45 +103,55 @@ export default function DashboardContent() {
       </p>
     );
 
+  const isAdmin = role === "admin";
+
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">
-        {role === "admin" ? (
-          <>
-            {/* <p>&quot;All Songs (admin)&quot;</p> */}
-            <p>All Songs (admin)</p>
-            <FilterBar onFilter={handleFilter} />
-          </>
-        ) : (
-          "My Suggestions"
-        )}
+    <div className="p-4 max-w-4xl mx-auto">
+      <h1 className="text-xl sm:text-2xl font-bold mb-4 text-center sm:text-left">
+        {isAdmin ? "All Songs (admin)" : "My Suggestions"}
       </h1>
 
-      {(role === "admin" && songs.length === 0) ||
-      (role !== "admin" && suggestions.length === 0) ? (
-        <p className="text-center text-gray-500">
-          {role === "admin" ? "No songs available." : "No suggestions yet! 🎵"}
+      {isAdmin && <FilterBar onFilter={handleFilter} />}
+
+      {(isAdmin && songs.length === 0) || (!isAdmin && suggestions.length === 0) ? (
+        <p className="text-center text-gray-500 mt-8">
+          {isAdmin ? "No songs available." : "No suggestions yet! 🎵"}
         </p>
       ) : (
-        <div>
-          {role === "admin" ? (
-            <ul className="space-y-4">
-              {songs.map(song => (
-                <li key={song._id} className="border p-4 rounded">
-                  <h3 className="font-semibold text-lg">{song.title}</h3>
-                  <p>Artist: {song.artist}</p>
-                  <p>Status: {song.status}</p>
-                  <p>Uploaded By: {song.uploadedBy?.name || "unknown"}</p>
-                  <p>
-                    Uploaded on:{" "}
-                    {dayjs(song.createdAt).format("MMMM D, YYYY h:mm A")}
+        <ul className="space-y-4 mt-4">
+          {(isAdmin ? songs : suggestions).map((item: Song | Suggestion) => {
+            const song = isAdmin ? (item as Song) : (item as Suggestion).song;
+            const suggestedBy = isAdmin ? song.suggestedBy?.name : (item as Suggestion).suggestedBy.name;
+
+            return (
+              <li
+                key={isAdmin ? (item as Song)._id : (item as Suggestion)._id}
+                className="border p-4 rounded shadow-sm bg-white"
+              >
+                <h3 className="font-semibold text-lg sm:text-xl mb-1">{song.title}</h3>
+                <p className="text-sm sm:text-base"><strong>Artist:</strong> {song.artist}</p>
+                <p className="text-sm sm:text-base"><strong>Status:</strong> {song.status}</p>
+                {isAdmin && (
+                  <p className="text-sm sm:text-base">
+                    <strong>Uploaded By:</strong> {song.uploadedBy?.name || "Unknown"}
                   </p>
-                  <p>Suggested By: {song.suggestedBy?.name || "unknown"}</p>
+                )}
+                <p className="text-sm sm:text-base">
+                  <strong>{isAdmin ? "Uploaded" : "Suggested"} on:</strong>{" "}
+                  {dayjs(isAdmin ? song.createdAt : (item as Suggestion).createdAt).format(
+                    "MMMM D, YYYY h:mm A"
+                  )}
+                </p>
+                <p className="text-sm sm:text-base">
+                  🙋 <strong>Suggested By:</strong> {suggestedBy || "Unknown"}
+                </p>
+
+                <div className="flex flex-wrap gap-4 mt-2">
                   {song.pdfUrl && (
                     <a
                       href={song.pdfUrl}
                       target="_blank"
-                      rel="noopener"
+                      rel="noopener noreferrer"
                       className="text-purple-600 underline"
                     >
                       View PDF
@@ -161,58 +161,26 @@ export default function DashboardContent() {
                     <a
                       href={song.audioUrl}
                       target="_blank"
-                      rel="noopener"
-                      className="text-blue-600 underline ml-4"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline"
                     >
                       Listen
                     </a>
                   )}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <ul className="space-y-4">
-              {suggestions.map(suggestion => (
-                <li key={suggestion._id} className="border p-4 rounded">
-                  <h3 className="font-semibold text-lg">{suggestion.song.title}</h3>
-                  <p>Artist: {suggestion.song.artist}</p>
-                  <p>Status: {suggestion.song.status}</p>
-                  <p>Suggested By: {suggestion.suggestedBy.name || "unknown"}</p>
-                  <p>
-                    Suggested on:{" "}
-                    {dayjs(suggestion.createdAt).format("MMMM D, YYYY h:mm A")}
-                  </p>
-                  {suggestion.song.pdfUrl && (
-                    <a
-                      href={suggestion.song.pdfUrl}
-                      target="_blank"
-                      rel="noopener"
-                      className="text-purple-600 underline"
-                    >
-                      View PDF
-                    </a>
-                  )}
-                  {suggestion.song.audioUrl && (
-                    <a
-                      href={suggestion.song.audioUrl}
-                      target="_blank"
-                      rel="noopener"
-                      className="text-blue-600 underline ml-4"
-                    >
-                      Listen
-                    </a>
-                  )}
+                </div>
+
+                {!isAdmin && (
                   <button
-                    onClick={() => handleCancelSuggestion(suggestion._id)}
-                    className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                    onClick={() => handleCancelSuggestion((item as Suggestion)._id)}
+                    className="mt-3 px-4 py-2 w-full sm:w-auto bg-red-600 text-white rounded hover:bg-red-700"
                   >
                     Cancel Suggestion
                   </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
       )}
     </div>
   );

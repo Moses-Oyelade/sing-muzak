@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axiosInstance from "src/utils/axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import AdminControls from "@/components/AdminControls";
+// import AdminControls from "@/components/AdminControls";
 import Link from "next/link";
 import SearchSong from "../dashboard/SearchSongs";
 
@@ -14,7 +14,7 @@ export default function SongsListPage() {
   const { data: session } = useSession();
 
   const router = useRouter();
-  const isAdmin = session?.user.role === "admin";
+  // const isAdmin = session?.user.role === "admin";
 
   const handleRoute = () => {
         router.push(`/suggestSong`)
@@ -39,11 +39,12 @@ export default function SongsListPage() {
         </button>
       </div>
       <div className="space-y-4">
-        { isAdmin ? (
+        <SearchSong />
+        {/* { isAdmin ? (
           <AdminControls />
         ) : (
         <SearchSong />
-      )}
+      )} */}
       </div>
     </div>
   );

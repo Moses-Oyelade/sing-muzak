@@ -1,4 +1,3 @@
-// app/dashboard/components/AdminTabs.tsx
 "use client";
 
 import Link from "next/link";
@@ -18,16 +17,16 @@ export default function AdminTabs() {
   const pathname = usePathname();
 
   return (
-    <div className="flex gap-4 border-b mb-4">
+    <div className="flex flex-wrap gap-2 sm:gap-4 border-b pb-2 mb-4 overflow-x-auto no-scrollbar">
       {tabs.map((tab) => (
         <Link
           key={tab.label}
           href={tab.href}
           className={clsx(
-            "py-2 px-4",
+            "px-3 py-1 text-sm whitespace-nowrap rounded transition-colors",
             pathname === tab.href
-              ? "border-b-2 border-blue-500 font-semibold"
-              : "text-gray-600"
+              ? "bg-blue-600 text-white font-semibold shadow"
+              : "text-gray-600 hover:bg-gray-100"
           )}
         >
           {tab.label}
