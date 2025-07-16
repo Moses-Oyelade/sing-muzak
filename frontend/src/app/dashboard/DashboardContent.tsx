@@ -122,10 +122,10 @@ export default function DashboardContent() {
           {(isAdmin ? songs : suggestions).map((item: Song | Suggestion) => {
             const song = isAdmin ? (item as Song) : (item as Suggestion).song;
             const suggestedBy = isAdmin ? song.suggestedBy?.name : (item as Suggestion).suggestedBy.name;
-
+            
             return (
               <li
-                key={isAdmin ? (item as Song)._id : (item as Suggestion)._id}
+              key={isAdmin ? (item as Song)._id : (item as Suggestion)._id}
                 className="border p-4 rounded shadow-sm bg-white"
               >
                 <h3 className="font-semibold text-lg sm:text-xl mb-1">{song.title}</h3>
@@ -135,7 +135,7 @@ export default function DashboardContent() {
                   <p className="text-sm sm:text-base">
                     <strong>Uploaded By:</strong> {song.uploadedBy?.name || "Unknown"}
                   </p>
-                )}
+                  )}
                 <p className="text-sm sm:text-base">
                   <strong>{isAdmin ? "Uploaded" : "Suggested"} on:</strong>{" "}
                   {dayjs(isAdmin ? song.createdAt : (item as Suggestion).createdAt).format(

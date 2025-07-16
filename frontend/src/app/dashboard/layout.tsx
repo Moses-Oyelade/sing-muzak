@@ -40,6 +40,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Link href="">Vocal Members</Link>
           </li>
           <li className="px-3 hover:bg-slate-400 hover:underline">
+            <Link href="/suggestSong">Suggest Song</Link>
+          </li>
+          <li className="px-3 hover:bg-slate-400 hover:underline">
             <Link href="/auth/logout">Logout</Link>
           </li>
         </>
