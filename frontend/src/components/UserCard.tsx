@@ -169,41 +169,42 @@ export default function UserCard({ users: initialUsers, meta: initialMeta } : { 
               users.map((user: any) => (
                 <div key={user._id} className="p-4 border rounded shadow-sm">
                   <h2 className="text-lg font-semibold">{user.name}</h2>
-                  <div className="text-base flex items-center gap-3">
-                    <span>Voice-part:</span>
-                    <span className="uppercase text-base bg-gray-200 px-2 py-1 rounded">{user.voicePart}</span>
-                    {isToggle === user._id ? (
-                      <>
-                        <select
-                          className="border px-2 py-1 rounded"
-                          value={user.voicePart}
-                          onChange={(e) => updateUserVoicePart(user._id, e.target.value)}
-                          disabled={updatingUserId === user._id}
-                        >
-                          <option value="">Select vocal part</option>
-                          <option value="soprano">Soprano</option>
-                          <option value="alto">Alto</option>
-                          <option value="tenor">Tenor</option>
-                          <option value="bass">Bass</option>
-                          <option value="pending">Pending</option>
-                        </select>
+                  <p className="text-base">
+                    Voice-part: <span className="uppercase text-base bg-gray-200 px-2 py-1 rounded">{user.voicePart}</span>
+                    <span className="ml-3 flex gap-2 items-center">
+                      {isToggle === user._id ? (
+                        <>
+                          <select
+                            className="border px-2 py-1 rounded"
+                            value={user.voicePart}
+                            onChange={(e) => updateUserVoicePart(user._id, e.target.value)}
+                            disabled={updatingUserId === user._id}
+                          >
+                            <option value="">Select vocal part</option>
+                            <option value="soprano">Soprano</option>
+                            <option value="alto">Alto</option>
+                            <option value="tenor">Tenor</option>
+                            <option value="bass">Bass</option>
+                            <option value="pending">Pending</option>
+                          </select>
+                          <button
+                            className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-500 disabled:opacity-50"
+                            onClick={() => setIsToggle(null)}
+                            disabled={updatingUserId === user._id}
+                          >
+                            Save
+                          </button>
+                        </>
+                      ) : (
                         <button
-                          className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-500 disabled:opacity-50"
-                          onClick={() => setIsToggle(null)}
-                          disabled={updatingUserId === user._id}
+                          onClick={() => handleClick(user._id)}
+                          className="text-black px-3 py-1 rounded bg-slate-400 hover:bg-slate-200"
                         >
-                          Save
+                          Edit
                         </button>
-                      </>
-                    ) : (
-                      <button
-                        onClick={() => handleClick(user._id)}
-                        className="text-black px-3 py-1 rounded bg-slate-400 hover:bg-slate-200"
-                      >
-                        Edit
-                      </button>
-                    )}
-                  </div>
+                      )}
+                    </span>
+                  </p>
                   {user.phone && (
                     <p className="text-base text-gray-600">Member phone: <span className="font-medium">{user.phone}</span></p>
                   )}
