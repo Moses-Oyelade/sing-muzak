@@ -69,7 +69,7 @@ export default function SuggestSongs() {
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={() => router.back()}
-          className="text-blue-600 hover:underline"
+          className='mb-4 mr-6 px-4 py-2 rounded hover:bg-gray-300'
         >
           ⇐ Back
         </button>
