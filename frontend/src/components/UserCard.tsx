@@ -140,7 +140,7 @@ export default function UserCard({ users: initialUsers, meta: initialMeta } : { 
       };
     
       const handlePageChange = (newPage: number) => {
-        router.push(`/dashboard/admin/Members?search=${search}&voicePart=${voicePart}&role=${role}&page=${newPage}`);
+        router.push(`/dashboard/admin/members?search=${search}&voicePart=${voicePart}&role=${role}&page=${newPage}`);
       };
 
     // Toggle & hidden/display control 

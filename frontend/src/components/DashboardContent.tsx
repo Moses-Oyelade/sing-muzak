@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { useSocket } from "../hooks/useSocket";
+import { useSocket } from "../app/hooks/useSocket";
 import axiosInstance from "src/utils/axios";
 import dayjs from "@/lib/dayjs";
 import FilterBar from "@/components/FilterBar";

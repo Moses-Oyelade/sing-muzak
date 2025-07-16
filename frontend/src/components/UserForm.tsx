@@ -12,6 +12,7 @@ export default function UserForm() {
         phone: '',
         password: '',
         vocalPart: '',
+        role: '',
     });
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
@@ -90,6 +91,16 @@ export default function UserForm() {
                 <option value='alto'>Alto</option>
                 <option value='tenor' >Tenor</option>
                 <option value='bass'>Bass</option>
+            </select>
+            <select
+                name="role"
+                className='w-full p-2 boader rounded'
+                value={formData.role}
+                onChange={handleChange}
+            >
+                <option value="">Select Role</option>
+                <option value="member">Member</option>
+                <option value='admin'>Admin</option>
             </select>
             <button
                 type="submit"

@@ -1,17 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axiosInstance from "src/utils/axios";
+// import axiosInstance from 'src/utils/axios'
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-// import AdminControls from "@/components/AdminControls";
-import Link from "next/link";
 import SearchSong from "../dashboard/SearchSongs";
 
-
 export default function SongsListPage() {
-  const [songs, setSongs] = useState([]);
-  const { data: session } = useSession();
+  // const [songs, setSongs] = useState([]);
+  // const { data: session } = useSession();
 
   const router = useRouter();
   // const isAdmin = session?.user.role === "admin";
@@ -40,11 +37,6 @@ export default function SongsListPage() {
       </div>
       <div className="space-y-4">
         <SearchSong />
-        {/* { isAdmin ? (
-          <AdminControls />
-        ) : (
-        <SearchSong />
-      )} */}
       </div>
     </div>
   );

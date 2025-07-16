@@ -37,7 +37,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Link href="/songs">Song List</Link>
           </li>
           <li className="px-3 hover:bg-slate-400 hover:underline">
-            <Link href="">Vocal Members</Link>
+            <Link href="/dashboard/user">Vocal Members</Link>
           </li>
           <li className="px-3 hover:bg-slate-400 hover:underline">
             <Link href="/suggestSong">Suggest Song</Link>
