@@ -14,7 +14,7 @@ export default function Navbar() {
   const isAdmin = role === "admin";
 
   return (
-    <nav className="bg-gray-800 text-white px-6 py-3 flex justify-between items-center">
+    <nav className="bg-gray-800 text-white px-6 py-2 flex justify-between items-center">
       <div className="font-bold text-lg">
         {isAdmin ? (
         '🎵Song Management.' ): (`🎵 Welcome ${currentUser?.name}.` )

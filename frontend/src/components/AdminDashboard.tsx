@@ -130,7 +130,7 @@ export default function AdminDashboard({
   };
 
   return (
-    <div className="p-4 max-w-6xl mx-auto">
+    <div className="px-4 pb-2 max-w-6xl mx-auto">
       {/* Filters */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
         <input

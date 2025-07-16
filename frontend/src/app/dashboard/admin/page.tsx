@@ -42,7 +42,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     const { data: songs, meta } = res.data;
 
     return (
-      <div className="max-w-5xl mx-auto p-2">
+      <div>
         {/* <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1> */}
         <AdminDashboard songs={songs || []} meta={meta || {}} />
       </div>

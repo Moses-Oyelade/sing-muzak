@@ -93,7 +93,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Mobile Header */}
       <div className="md:hidden fixed top-0 left-0 w-full flex items-center justify-between bg-white px-4 py-3 border-b z-50">
         <h2 className="text-lg font-bold">Dashboard</h2>
-        <button onClick={() => setMenuOpen(true)} className="text-2xl">
+        <button onClick={() => setMenuOpen(true)} className="text-2xl px-3 py-1 focus:outline-none">
           ☰
         </button>
       </div>
@@ -106,7 +106,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       >
         <div className="flex items-center justify-between p-4 border-b">
           <span className="font-semibold text-lg">Menu</span>
-          <button onClick={() => setMenuOpen(false)} className="text-2xl">
+          <button onClick={() => setMenuOpen(false)} className="text-2xl focus:outline-none">
             ✕
           </button>
         </div>
