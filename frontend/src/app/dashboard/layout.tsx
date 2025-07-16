@@ -2,12 +2,34 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { usePathname } from "next/navigation";
+import clsx from "clsx";
 import { useSession } from "next-auth/react";
 
+const tabs = [
+  { label: "Home", href: "/dashboard" },
+  { label: "Admin Panel", href: "/dashboard/admin" },
+  { label: "Song Details", href: "/dashboard/admin/songDetails" },
+  { label: "Members", href: "/dashboard/admin/members" },
+  { label: "Performances", href: "/dashboard/admin/performances" },
+  { label: "Rehearsals", href: "/dashboard/admin/reheasal" },
+  { label: "Announcement", href: "/dashboard/admin/announcement" },
+  { label: "Attendance", href: "/dashboard/admin/attendance" },
+];
+
+const userTabs = [
+  { label: "Profile", href: "/dashboard/user" },
+  { label: "My Suggestions", href: "/dashboard" },
+  { label: "Song List", href: "/songs" },
+  { label: "Vocal Members", href: "/dashboard/user" },
+  { label: "Song Suggestion", href: "/suggestSong" },
+  { label: "Rehearsals", href: "/dashboard/admin/reheasal" },
+  { label: "Announcement", href: "/dashboard/admin/announcement" },
+  { label: "Attendance", href: "/dashboard/admin/attendance" },
+];
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
   const { data: session } = useSession();
 
   if (!session) return <p>Unauthorized</p>;
@@ -18,33 +40,41 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <ul className="space-y-2 font-bold border rounded px-4 py-2 mx-1 mb-4 bg-slate-300">
       {isAdmin ? (
         <>
-          <li className="px-3 hover:bg-slate-400 hover:underline">
-            <Link href="/dashboard">Home</Link>
+          {tabs.map((tab) => (
+          <li 
+            key={tab.href}
+            className={clsx(
+              "py-2 px-4",
+              pathname === tab.href
+                ? "border-b-2 border-blue-500 font-semibold"
+                : "px-3 text-gray-600 hover:bg-slate-400 hover:underline"
+            )}>
+            <Link
+              href={tab.href}
+            >
+              {tab.label}
+            </Link>
           </li>
-          <li className="px-3 hover:bg-slate-400 hover:underline">
-            <Link href="/dashboard/admin">Admin Panel</Link>
-          </li>
+          ))}
         </>
       ) : (
         <>
-          <li className="px-3 hover:bg-slate-400 hover:underline">
-            <Link href="/dashboard/user">Profile</Link>
+          {userTabs.map((tab) => (
+          <li 
+            key={tab.href}
+            className={clsx(
+              "py-2 px-4",
+              pathname === tab.href
+                ? "border-b-2 border-blue-500 font-semibold"
+                : "px-3 text-gray-600 hover:bg-slate-400 hover:underline"
+            )}>
+            <Link
+              href={tab.href}
+            >
+              {tab.label}
+            </Link>
           </li>
-          <li className="px-3 hover:bg-slate-400 hover:underline">
-            <Link href="/dashboard">My Suggestions</Link>
-          </li>
-          <li className="px-3 hover:bg-slate-400 hover:underline">
-            <Link href="/songs">Song List</Link>
-          </li>
-          <li className="px-3 hover:bg-slate-400 hover:underline">
-            <Link href="/dashboard/user">Vocal Members</Link>
-          </li>
-          <li className="px-3 hover:bg-slate-400 hover:underline">
-            <Link href="/suggestSong">Suggest Song</Link>
-          </li>
-          <li className="px-3 hover:bg-slate-400 hover:underline">
-            <Link href="/auth/logout">Logout</Link>
-          </li>
+          ))}
         </>
       )}
     </ul>
