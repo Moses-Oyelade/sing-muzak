@@ -8,54 +8,52 @@ import FilterBar from '@/components/FilterBar';
 import { useRouter } from 'next/navigation';
 import SongSuggestion from '@/components/SongSuggestion';
 
-const SuggestSongs = () => {
+export default function SuggestSongs() {
   const { data: session } = useSession();
+  const userId = session?.user?.id;
+  const router = useRouter();
+
   const [songs, setSongs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [showSuggestionForm, setShowSuggestionForm] = useState(false);
 
-  const router = useRouter();
-  const userId = session?.user?.id;
-
-  // Fetch songs from the backend on component mount
-  const fetchSongs = async (term = "") => {
+  const fetchSongs = async (term = '') => {
     if (!session || !userId) return;
     try {
       setLoading(true);
-      const endpoint = `/songs?search=${term}`
-      const res = await axiosInstance.get(endpoint);
-      const data = await res.data?.data || res.data;
+      const res = await axiosInstance.get(`/songs?search=${term}`);
+      const data = res.data?.data || res.data;
       setSongs(data);
     } catch (err) {
-      console.error("Failed to fetch songs:", err);
+      console.error('Failed to fetch songs:', err);
       setSongs([]);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-      fetchSongs(searchTerm);
+    fetchSongs(searchTerm);
   }, [searchTerm]);
 
   const handleFilter = (term: string) => {
     setSearchTerm(term);
   };
 
-  const handleRoute = () => {
-        router.push(`/dashboard`)
-    }
+  const handleRouteBack = () => {
+    router.push('/dashboard');
+  };
 
   const handleSuggestSong = async (songId: string) => {
     try {
       await axiosInstance.post('/songs/suggest', { songId });
-      const updated = songs.map(song =>
+      const updated = songs.map((song) =>
         song._id === songId ? { ...song, suggestedBy: userId } : song
       );
       setSongs(updated);
       alert('🎵 Song suggested successfully!');
-      handleRoute()
+      handleRouteBack();
     } catch (error: any) {
       if (error.response?.status === 409) {
         alert('You have already suggested this song.');
@@ -66,54 +64,51 @@ const SuggestSongs = () => {
     }
   };
 
-
-  if (loading) return <p className="p-4 text-center">Loading songs...</p>;
-
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <button
-        onClick={() => router.back()}
-        className='mb-2 mr-6 px-2 rounded hover:bg-gray-300'
-      >
-        ⇐ Back
-      </button>
-      <div className='flex flex-row gap-6 p-4'>
-        <FilterBar onFilter={handleFilter} />
+    <div className="max-w-4xl mx-auto p-6">
+      <div className="flex items-center justify-between mb-4">
         <button
-          onClick={() => setShowSuggestionForm(prev => !prev)}
-          className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          onClick={() => router.back()}
+          className="text-blue-600 hover:underline"
+        >
+          ⇐ Back
+        </button>
+        <button
+          onClick={() => setShowSuggestionForm((prev) => !prev)}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
           {showSuggestionForm ? 'Hide Suggest Form' : 'Suggest a New Song'}
         </button>
-        </div>
-        {showSuggestionForm && (
-          <div className="mt-4">
-            <SongSuggestion />
-          </div>
-        )}
-      {/* <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2"> */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {songs.length > 0 ? (
-              songs.map((song) => {
-          return (
-              <div key={song._id} className="border p-4 rounded-lg shadow">
-              <SongCard song={song} />
-                  <button
-                  disabled={!!song.suggestedBy}
-                  onClick={() => handleSuggestSong(song._id)}
-                  className="mt-3 w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                  {song.suggestedBy ? "Already Suggested" : "Suggest Song"}
-                  </button>
-              </div>
-            );
-          })
-        ) : (
-            <p>No songs found.</p>
-        )}
       </div>
+
+      {showSuggestionForm && (
+        <div className="mb-6">
+          <SongSuggestion />
+        </div>
+      )}
+
+      <FilterBar onFilter={handleFilter} />
+
+      {loading ? (
+        <p className="text-center text-gray-500 mt-6">Loading songs...</p>
+      ) : songs.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+          {songs.map((song) => (
+            <div key={song._id} className="border rounded p-4 shadow">
+              <SongCard song={song} />
+              <button
+                disabled={!!song.suggestedBy}
+                onClick={() => handleSuggestSong(song._id)}
+                className="mt-3 w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {song.suggestedBy ? 'Already Suggested' : 'Suggest Song'}
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-center text-red-600 mt-6">No songs found.</p>
+      )}
     </div>
   );
-};
-
-export default SuggestSongs;
+}
