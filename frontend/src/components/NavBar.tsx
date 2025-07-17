@@ -23,7 +23,7 @@ export default function Navbar() {
       <div className="flex items-center gap-4">
         { isAdmin ? 
           <Link href="/dashboard" className="hover:underline">Song List</Link> :
-          <Link href="/songs" className="hover:underline">Song List</Link>
+          <Link href="/dashboard/user/songs" className="hover:underline">Song List</Link>
         }
         <Link href ="/auth/logout">
           <button  className="hover:underline">

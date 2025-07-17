@@ -9,7 +9,7 @@ interface User {
   name: string;
   email?: string;
   phone?: string;
-  vocalPart?: string;
+  voicePart?: string;
   avatarUrl?: string;
 }
 
@@ -30,16 +30,16 @@ export default function MemberCard() {
       // Step 1: Get current user profile to find their vocalPart
       const meRes = await axiosInstance.get(`/users/${userId}`);
       const currentUser: User = meRes.data;
-      console.log(currentUser.vocalPart)
+      console.log(currentUser.voicePart)
 
-      if (!currentUser.vocalPart) {
+      if (!currentUser.voicePart) {
         console.warn("You currently do not have a vocal part set.");
         setUsers([]);
         return;
       }
 
       // Step 2: Fetch users with the same vocalPart
-      const res = await axiosInstance.get(`/users?vocalPart=${currentUser.vocalPart}`);
+      const res = await axiosInstance.get(`/users/filter?voicePart=${currentUser.voicePart}`);
       const data = res.data?.data || res.data;
       setUsers(data);
     } catch (err) {
@@ -71,7 +71,7 @@ export default function MemberCard() {
           <h3 className="text-lg font-semibold text-center">{user.name}</h3>
           <p className="text-sm text-center text-gray-600">{user.email || "No email"}</p>
           <p className="text-sm text-center text-gray-600">{user.phone || "No phone"}</p>
-          <p className="text-xs text-center text-blue-600 font-semibold mt-2">🎵 {user.vocalPart}</p>
+          <p className="text-xs text-center text-blue-600 font-semibold mt-2">🎵 {user.voicePart}</p>
         </div>
       ))}
     </div>
