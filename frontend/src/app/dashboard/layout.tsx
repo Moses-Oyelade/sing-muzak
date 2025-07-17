@@ -20,9 +20,9 @@ const tabs = [
 const userTabs = [
   { label: "Profile", href: "/dashboard/user" },
   { label: "My Suggestions", href: "/dashboard" },
-  { label: "Song List", href: "/songs" },
+  { label: "Song List", href: "/dashboard/user/songs" },
   { label: "Vocal Members", href: "/dashboard/user" },
-  { label: "Song Suggestion", href: "/suggestSong" },
+  { label: "Song Suggestion", href: "/dashboard/user/suggestSong" },
   { label: "Rehearsals", href: "/dashboard/admin/reheasal" },
   { label: "Announcement", href: "/dashboard/admin/announcement" },
   { label: "Attendance", href: "/dashboard/admin/attendance" },
@@ -42,7 +42,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <>
           {tabs.map((tab) => (
           <li 
-            key={tab.href}
+            key={`${tab.href}-${tab.label}`}
             className={clsx(
               "py-2 px-4",
               pathname === tab.href
@@ -62,7 +62,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <>
           {userTabs.map((tab) => (
           <li 
-            key={tab.href}
+            key={`${tab.href}-${tab.label}`}
             className={clsx(
               "py-2 px-4",
               pathname === tab.href
