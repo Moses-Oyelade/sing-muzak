@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 // import axiosInstance from 'src/utils/axios'
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import SearchSong from "../dashboard/SearchSongs";
+import SearchSong from "../../SearchSongs";
 
 export default function SongsListPage() {
   // const [songs, setSongs] = useState([]);
