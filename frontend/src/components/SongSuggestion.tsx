@@ -110,7 +110,7 @@ export default function UploadPage() {
         <div className="flex justify-between items-center">
           <button
             type="submit"
-            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+            className="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600"
             disabled={loading}
             >
             {loading ? "loading..." : "Suggest Song"}
@@ -118,7 +118,7 @@ export default function UploadPage() {
           {/* <Link href ="/dashboard"> */}
             <button  
                 onClick={handleRoute}
-                className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700"
+                className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-700"
                 disabled={loading}
               >
               {/* {loading ? "Canceling..." : "Cancel"} */}

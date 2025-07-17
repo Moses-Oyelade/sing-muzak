@@ -1,6 +1,5 @@
 // app/dashboard/user/layout.tsx
 
-import MemberTab from "@/components/MemberTab";
 import NavBar from "@/components/NavBar";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

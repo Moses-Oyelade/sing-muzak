@@ -65,17 +65,17 @@ export default function SuggestSongs() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto p-2">
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={() => router.back()}
-          className='mb-4 mr-6 px-4 py-2 rounded hover:bg-gray-300'
+          className='mb-4 mr-4 px-4 py-2 rounded hover:bg-gray-300'
         >
           ⇐ Back
         </button>
         <button
           onClick={() => setShowSuggestionForm((prev) => !prev)}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
           {showSuggestionForm ? 'Hide Suggest Form' : 'Suggest a New Song'}
         </button>
@@ -93,7 +93,7 @@ export default function SuggestSongs() {
         <p className="text-center text-gray-500 mt-6">Loading songs...</p>
       ) : songs.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
-          {songs.map((song) => (
+          {songs.map((song: any) => (
             <div key={song._id} className="border rounded p-4 shadow">
               <SongCard song={song} />
               <button
