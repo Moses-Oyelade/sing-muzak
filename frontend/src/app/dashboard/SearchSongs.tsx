@@ -29,7 +29,7 @@ export default function SearchSong() {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-2">
       <FilterBar onFilter={handleFilter} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
