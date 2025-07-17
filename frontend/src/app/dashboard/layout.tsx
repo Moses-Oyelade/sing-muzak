@@ -18,7 +18,7 @@ const tabs = [
 ];
 
 const userTabs = [
-  { label: "Profile", href: "/dashboard/user" },
+  { label: "Profile", href: " " },
   { label: "My Suggestions", href: "/dashboard" },
   { label: "Song List", href: "/dashboard/user/songs" },
   { label: "Vocal Members", href: "/dashboard/user" },
