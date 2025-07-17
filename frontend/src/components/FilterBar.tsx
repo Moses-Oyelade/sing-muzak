@@ -11,7 +11,7 @@ export default function FilterBar({ onFilter }: { onFilter: (term: string) => vo
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-4 flex items-center gap-2">
+    <form onSubmit={handleSubmit} className="mb-4 md:mt-0 md:mr-2 flex items-center mr-4 gap-2">
       <input
         type="text"
         placeholder="Search songs..."
@@ -19,7 +19,7 @@ export default function FilterBar({ onFilter }: { onFilter: (term: string) => vo
         value={term}
         onChange={(e) => setTerm(e.target.value)}
       />
-      <button className="bg-blue-500 text-white px-3 py-1 rounded" type="submit">
+      <button className="bg-blue-500 text-white mr-3 px-3 py-1 rounded" type="submit">
         Search
       </button>
     </form>
