@@ -17,7 +17,7 @@ export default function Navbar() {
     <nav className="bg-gray-800 text-white px-6 py-2 flex justify-between items-center">
       <div className="font-bold text-lg">
         {isAdmin ? (
-        '🎵Song Management.' ): (`🎵 Welcome ${currentUser?.name}.` )
+        '🎵Song Management.' ): (`🎵 Welcome ${currentUser?.name}` )
         }
         </div>
       <div className="flex items-center gap-4">

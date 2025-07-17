@@ -14,13 +14,13 @@ export default function SongsListPage() {
   // const isAdmin = session?.user.role === "admin";
 
   const handleRoute = () => {
-        router.push(`/suggestSong`)
+        router.push(`/dashboard/user/suggestSong`)
     }
 
 
   return (
-    <div className="max-w-3xl mx-auto p-2">
-      <h2 className="text-2xl font-bold mb-4">Songs List </h2>
+    <div className="max-w-3xl mx-auto md:mr-2 p-2">
+      <h2 className="text-2xl md:text-lg font-bold mb-4">Songs List </h2>
       <div className='gap-4 p-2'>
         {/* <button
           onClick={() => router.back()}

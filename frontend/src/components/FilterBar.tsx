@@ -19,7 +19,7 @@ export default function FilterBar({ onFilter }: { onFilter: (term: string) => vo
         value={term}
         onChange={(e) => setTerm(e.target.value)}
       />
-      <button className="bg-blue-500 text-white mr-3 px-3 py-1 rounded" type="submit">
+      <button className="bg-blue-500 text-white md:mr-2 px-3 py-1 rounded" type="submit">
         Search
       </button>
     </form>
