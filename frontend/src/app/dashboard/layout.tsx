@@ -51,6 +51,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             )}>
             <Link
               href={tab.href}
+              onClick={() => setMenuOpen(false)}
             >
               {tab.label}
             </Link>
@@ -70,6 +71,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             )}>
             <Link
               href={tab.href}
+              onClick={() => setMenuOpen(false)}
             >
               {tab.label}
             </Link>
@@ -106,7 +108,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       >
         <div className="flex items-center justify-between p-4 border-b">
           <span className="font-semibold text-lg">Menu</span>
-          <button onClick={() => setMenuOpen(false)} className="text-2xl focus:outline-none">
+          <button 
+            onClick={() => setMenuOpen(false)} 
+            className="text-2xl focus:outline-none"
+          >
             ✕
           </button>
         </div>
