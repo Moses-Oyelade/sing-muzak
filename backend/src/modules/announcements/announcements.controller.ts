@@ -17,7 +17,7 @@ export class AnnouncementsController {
     return this.announcementsService.createAnnouncement(createAnnouncementDto);
   }
 
-  @Roles('admin')
+  @Roles('admin', 'user')
   @Get()
   getAllAnnouncements() {
     return this.announcementsService.getAnnouncements();
