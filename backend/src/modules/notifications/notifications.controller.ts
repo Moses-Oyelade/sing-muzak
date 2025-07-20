@@ -23,13 +23,13 @@ export class NotificationsController {
     return this.notificationsService.getAllNotifications();
   }
   
-  @Roles('admin', 'user')
+  @Roles('admin', 'member')
   @Get('user')
   async getUserNotifications(@Req() req: any) {
     return this.notificationsService.getUserNotifications(req.user.userId);
   }
 
-  @Roles('admin', 'user')
+  @Roles('admin', 'member')
   @Get(':id')
   async getNotificationById(@Param('id') id: string) {
     return this.notificationsService.getNotificationById(id);
@@ -41,13 +41,13 @@ export class NotificationsController {
     return this.notificationsService.updateNotification(id, updateNotificationDto);
   }
 
-  @Roles('admin', 'user')
+  @Roles('admin', 'member')
   @Patch(':id/read')
   async markAsRead(@Param('id') notificationId: string) {
     return this.notificationsService.markAsRead(notificationId);
   }
 
-  @Roles('admin', 'user')
+  @Roles('admin', 'member')
   @Delete(':id')
   async deleteNotification(@Param('id') id: string) {
     return this.notificationsService.deleteNotification(id);

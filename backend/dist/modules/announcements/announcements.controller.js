@@ -24,19 +24,19 @@ let AnnouncementsController = class AnnouncementsController {
     constructor(announcementsService) {
         this.announcementsService = announcementsService;
     }
-    createAnnouncement(createAnnouncementDto) {
+    async createAnnouncement(createAnnouncementDto) {
         return this.announcementsService.createAnnouncement(createAnnouncementDto);
     }
-    getAllAnnouncements() {
+    async getAllAnnouncements() {
         return this.announcementsService.getAnnouncements();
     }
-    getAnnouncement(id) {
+    async getAnnouncement(id) {
         return this.announcementsService.getAnnouncementById(id);
     }
-    updateAnnouncement(id, updateAnnouncementDto) {
+    async updateAnnouncement(id, updateAnnouncementDto) {
         return this.announcementsService.updateAnnouncement(id, updateAnnouncementDto);
     }
-    deleteAnnouncement(id) {
+    async deleteAnnouncement(id) {
         return this.announcementsService.deleteAnnouncement(id);
     }
 };
@@ -47,22 +47,22 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_announcement_dto_1.CreateAnnouncementDto]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], AnnouncementsController.prototype, "createAnnouncement", null);
 __decorate([
-    (0, roles_decorator_1.Roles)('admin'),
+    (0, roles_decorator_1.Roles)('admin', 'member'),
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], AnnouncementsController.prototype, "getAllAnnouncements", null);
 __decorate([
-    (0, roles_decorator_1.Roles)('admin', 'user'),
+    (0, roles_decorator_1.Roles)('admin', 'member'),
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], AnnouncementsController.prototype, "getAnnouncement", null);
 __decorate([
     (0, roles_decorator_1.Roles)('admin'),
@@ -71,7 +71,7 @@ __decorate([
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, update_announcement_dto_1.UpdateAnnouncementDto]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], AnnouncementsController.prototype, "updateAnnouncement", null);
 __decorate([
     (0, roles_decorator_1.Roles)('admin'),
@@ -79,7 +79,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], AnnouncementsController.prototype, "deleteAnnouncement", null);
 exports.AnnouncementsController = AnnouncementsController = __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),

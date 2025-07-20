@@ -54,22 +54,22 @@ export class SongController {
     return this.songService.getAllSongs();
   }
 
-@Get("/filter")
-async filterSongs(
-  @Query('status') status?: string,
-  @Query('search') search?: string,
-  @Query('category') category?: string,
-  @Query('page') page = 1,
-  @Query('limit') limit = 10
-) {
-  try {
-    console.log({ status, search, category, page, limit });
-    return await this.songService.findAll({ status, search, category, page, limit });
-  } catch (err) {
-    console.error("FILTER ERROR:", err);
-    throw new BadRequestException("Invalid query parameters");
+  @Get("/filter")
+  async filterSongs(
+    @Query('status') status?: string,
+    @Query('search') search?: string,
+    @Query('category') category?: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10
+  ) {
+    try {
+      console.log({ status, search, category, page, limit });
+      return await this.songService.findAll({ status, search, category, page, limit });
+    } catch (err) {
+      console.error("FILTER ERROR:", err);
+      throw new BadRequestException("Invalid query parameters");
+    }
   }
-}
 
   // Get all songs (Admins can filter by category)
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -162,17 +162,5 @@ async filterSongs(
     const userId = req.user.sub;
     return this.songService.removeSuggestion(suggestionId, userId);
   }
-  // // Cancel song immediatly after suggestion
-  // @Patch(':songId/suggestion/cancel')
-  // @UseGuards(JwtAuthGuard)
-  // cancelSuggestion(
-  //   @Param('songId') songId: string,
-  //   @Request() req: any,
-  // ) {
-  //   const userId = req.user?.sub;
-  //   return this.songService.cancelUserSuggestion(songId, userId);
-  // }
-
-
 }
 

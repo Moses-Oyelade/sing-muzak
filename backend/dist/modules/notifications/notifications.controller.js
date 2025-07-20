@@ -63,7 +63,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], NotificationsController.prototype, "getAllNotifications", null);
 __decorate([
-    (0, roles_decorator_1.Roles)('admin', 'user'),
+    (0, roles_decorator_1.Roles)('admin', 'member'),
     (0, common_1.Get)('user'),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
@@ -71,7 +71,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], NotificationsController.prototype, "getUserNotifications", null);
 __decorate([
-    (0, roles_decorator_1.Roles)('admin', 'user'),
+    (0, roles_decorator_1.Roles)('admin', 'member'),
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -88,7 +88,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], NotificationsController.prototype, "updateNotification", null);
 __decorate([
-    (0, roles_decorator_1.Roles)('admin', 'user'),
+    (0, roles_decorator_1.Roles)('admin', 'member'),
     (0, common_1.Patch)(':id/read'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -96,7 +96,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], NotificationsController.prototype, "markAsRead", null);
 __decorate([
-    (0, roles_decorator_1.Roles)('admin', 'user'),
+    (0, roles_decorator_1.Roles)('admin', 'member'),
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),

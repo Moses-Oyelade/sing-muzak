@@ -13,31 +13,31 @@ export class AnnouncementsController {
 
   @Roles('admin')
   @Post()
-  createAnnouncement(@Body() createAnnouncementDto: CreateAnnouncementDto) {
+  async createAnnouncement(@Body() createAnnouncementDto: CreateAnnouncementDto) {
     return this.announcementsService.createAnnouncement(createAnnouncementDto);
   }
 
-  @Roles('admin', 'user')
+  @Roles('admin', 'member')
   @Get()
-  getAllAnnouncements() {
+  async getAllAnnouncements() {
     return this.announcementsService.getAnnouncements();
   }
 
-  @Roles('admin', 'user')
+  @Roles('admin', 'member')
   @Get(':id')
-  getAnnouncement(@Param('id') id: string) {
+  async getAnnouncement(@Param('id') id: string) {
     return this.announcementsService.getAnnouncementById(id);
   }
 
   @Roles('admin')
   @Patch(':id')
-  updateAnnouncement(@Param('id') id: string, @Body() updateAnnouncementDto: UpdateAnnouncementDto) {
+  async updateAnnouncement(@Param('id') id: string, @Body() updateAnnouncementDto: UpdateAnnouncementDto) {
     return this.announcementsService.updateAnnouncement(id, updateAnnouncementDto);
   }
 
   @Roles('admin')
   @Delete(':id')
-  deleteAnnouncement(@Param('id') id: string) {
+  async deleteAnnouncement(@Param('id') id: string) {
     return this.announcementsService.deleteAnnouncement(id);
   }
 }
