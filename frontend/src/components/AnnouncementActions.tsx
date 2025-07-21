@@ -31,7 +31,7 @@ export default function AnnouncementActions({
         { title, content }
       );
       toast.success("Announcement updated");
-      route.push("/announcements");
+      route.push("/dashboard/user/announcements");
     } catch (err) {
       toast.error("Update failed");
     } finally {
@@ -45,7 +45,7 @@ export default function AnnouncementActions({
       await axiosInstance.delete(`/announcements/${announcement._id}`);
       toast.success("Announcement deleted");
       //redirect to /announcements
-        route.push("/announcements");
+        route.push("/dashboard/user/announcements");
     } catch (err) {
       toast.error("Delete failed");
     } finally {

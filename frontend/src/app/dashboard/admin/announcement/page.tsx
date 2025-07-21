@@ -9,7 +9,7 @@ export default function CreateAnnouncement() {
 
   const handleCreate = async (data: { title: string; content: string }) => {
     await axiosInstance.post("/announcements", data);
-    router.push("/announcements");
+    router.push("/dashboard/user/announcements");
   };
 
   return (

@@ -59,7 +59,7 @@ export default function AnnouncementsPage() {
             {isAdmin ? (
               <div className="flex justify-between items-center">
                 <strong>{a.title}</strong>
-                <Link href={`/announcements/${a._id}`}>
+                <Link href={`/dashboard/user/announcements/${a._id}`}>
                   <button className="text-blue-600 underline">Edit</button>
                 </Link>
               </div>

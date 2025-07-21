@@ -22,7 +22,7 @@ export default function Navbar() {
         </div>
       <div className="flex items-center gap-4">
         { isAdmin ? 
-          <Link href="/dashboard" className="hover:underline">Song List</Link> :
+          <Link href="/dashboard" className="hover:underline">Home</Link> :
           <Link href="/dashboard/user/songs" className="hover:underline">Song List</Link>
         }
         <Link href ="/auth/logout">

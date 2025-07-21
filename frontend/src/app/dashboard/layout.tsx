@@ -13,7 +13,7 @@ const tabs = [
   { label: "Members", href: "/dashboard/admin/members" },
   { label: "Performances", href: "/dashboard/admin/performances" },
   { label: "Rehearsals", href: "/dashboard/admin/reheasal" },
-  { label: "Announcement", href: "/announcements" },
+  { label: "Announcement", href: "/dashboard/user/announcements" },
   { label: "Attendance", href: "/dashboard/admin/attendance" },
 ];
 
@@ -24,7 +24,7 @@ const userTabs = [
   { label: "Vocal Members", href: "/dashboard/user" },
   { label: "Song Suggestion", href: "/dashboard/user/suggestSong" },
   { label: "Rehearsals", href: "/dashboard/reheasal" },
-  { label: "Announcement", href: "/announcements" },
+  { label: "Announcement", href: "/dashboard/user/announcements" },
   { label: "Attendance", href: "/dashboard/attendance" },
 ];
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

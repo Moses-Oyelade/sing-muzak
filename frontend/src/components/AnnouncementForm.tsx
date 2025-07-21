@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface Props {
@@ -9,10 +10,26 @@ interface Props {
 export default function AnnouncementForm({ onSubmit, initialData, isEdit }: Props) {
   const [title, setTitle] = useState(initialData?.title || "");
   const [content, setContent] = useState(initialData?.content || "");
+  const [loading, setLoading] = useState(false);
+  
+  const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ title, content });
+
+    if ( !title || !content ){
+      alert('Please fill all fields');
+      return;
+    };
+
+    try {
+      onSubmit({ title, content });
+      router.push("/dashboard/user/announcements");
+    } catch (err) {
+      alert(`Announcement failed: ${err}`)
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -32,9 +49,19 @@ export default function AnnouncementForm({ onSubmit, initialData, isEdit }: Prop
         placeholder="Content"
         required
       />
-      <button className="px-4 py-2 bg-blue-600 text-white rounded" type="submit">
-        {"Create"} Announcement
-      </button>
+      <div className="flex justify-between items-center">
+        <button className="px-4 py-2 bg-blue-600 text-white rounded" type="submit">
+          {loading ? "Sending..." : "Create"} Announcement
+        </button>
+        <button
+          type="button"
+          onClick={() => router.push('/dashboard/admin')}
+          className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700"
+          disabled={loading}
+        >
+          Cancel
+        </button>
+      </div>
     </form>
   );
 }
