@@ -142,7 +142,7 @@ export default function SongForm() {
           </button>
           <button
             type="button"
-            onClick={() => router.push('/dashboard/admin')}
+            onClick={() => router.push('/dashboard')}
             className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700"
             disabled={loading}
           >

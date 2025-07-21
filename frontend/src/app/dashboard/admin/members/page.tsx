@@ -42,7 +42,15 @@ export default async function MembersPage({ searchParams }: AdminPageProps) {
 
     return (
       <div className="max-w-5xl mx-auto p-4 space-y-4">
-        <h2 className="text-xl font-semibold">Member List</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">Member List</h2>
+          <button
+            onClick={() => redirect("/users")}
+            className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            {'Add Member'}
+          </button>
+      </div>
         <UserCard users={users || []} meta={meta || {}} />
       </div>
     );

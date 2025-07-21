@@ -7,9 +7,9 @@ import clsx from "clsx";
 import { useSession } from "next-auth/react";
 
 const tabs = [
-  { label: "Home", href: "/dashboard" },
+  { label: "Song List", href: "/dashboard" },
   { label: "Admin Panel", href: "/dashboard/admin" },
-  { label: "Song Details", href: "/dashboard/admin/songDetails" },
+  // { label: "Song Details", href: "/dashboard/admin/songDetails" },
   { label: "Members", href: "/dashboard/admin/members" },
   { label: "Performances", href: "/dashboard/admin/performances" },
   { label: "Rehearsals", href: "/dashboard/admin/reheasal" },

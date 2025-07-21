@@ -15,7 +15,7 @@ export default function CreateAnnouncement() {
   return (
     <div className="p-6">
       <h1 className="text-xl font-bold mb-4">Create Announcement</h1>
-      <AnnouncementForm onSubmit={handleCreate} />
+      <AnnouncementForm onSubmit={handleCreate} isEdit={false} />
     </div>
   );
 }

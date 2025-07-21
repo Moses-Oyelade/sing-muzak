@@ -1,3 +1,5 @@
+"use client";
+
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -55,7 +57,7 @@ export default function AnnouncementForm({ onSubmit, initialData, isEdit }: Prop
         </button>
         <button
           type="button"
-          onClick={() => router.push('/dashboard/admin')}
+          onClick={() => router.push('/dashboard/user/announcements')}
           className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700"
           disabled={loading}
         >

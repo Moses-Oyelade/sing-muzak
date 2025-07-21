@@ -6,6 +6,7 @@ import { useSocket } from "../app/hooks/useSocket";
 import axiosInstance from "src/utils/axios";
 import dayjs from "@/lib/dayjs";
 import FilterBar from "@/components/FilterBar";
+import { useRouter } from "next/navigation";
 
 interface Song {
   _id: string;
@@ -32,6 +33,9 @@ export default function DashboardContent() {
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+
+    
+  const router = useRouter();
 
   const { data: session, status } = useSession();
   const token = session?.user?.token;
@@ -111,7 +115,18 @@ export default function DashboardContent() {
         {isAdmin ? "All Songs (admin)" : "My Suggestions"}
       </h1>
 
-      {isAdmin && <FilterBar onFilter={handleFilter} />}
+      {isAdmin && 
+        <div >
+          <FilterBar onFilter={handleFilter} />
+          <button
+          onClick={() => router.push("/dashboard/admin/songDetails")}
+          className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          {'New Song'}
+        </button>
+
+        </div>
+      }
 
       {(isAdmin && songs.length === 0) || (!isAdmin && suggestions.length === 0) ? (
         <p className="text-center text-gray-500 mt-8">

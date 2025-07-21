@@ -3,7 +3,7 @@
 import axiosInstance from '@/utils/axios';
 import { useEffect, useState } from 'react';
 import { Toast } from 'react-hot-toast';
-import router from 'next/router';
+import { useRouter } from 'next/navigation';
 
 export default function UserForm() {
     const [formData, setFormData] = useState({
@@ -16,6 +16,8 @@ export default function UserForm() {
     });
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
+
+    const router = useRouter();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData(Prev => ({ ...Prev, 
@@ -31,7 +33,7 @@ export default function UserForm() {
         try{
             await axiosInstance.post('/users/createUser', formData);
             setMessage("User created successfully!");
-            router.push("/dashboard/admin")
+            router.push("/dashboard/admin/members")
         } catch (error: any) {
             console.error(error)
             setMessage(error.response?.data?.message || 'something went wrong');
@@ -102,13 +104,23 @@ export default function UserForm() {
                 <option value="member">Member</option>
                 <option value='admin'>Admin</option>
             </select>
-            <button
-                type="submit"
-                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-                disabled={loading}
-            >
-                {loading ? "Registering..." : "Register"}
-            </button>
+            <div className="flex justify-between items-center">
+                <button
+                    type="submit"
+                    className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+                    disabled={loading}
+                >
+                    {loading ? "Registering..." : "Register"}
+                </button>
+                <button
+                    type="button"
+                    onClick={() => router.push('/dashboard')}
+                    className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700"
+                    disabled={loading}
+                >
+                    Cancel
+                </button>
+            </div>
         </form>
         {message && <p 
             className='mt-4 text-center text-sm text-gray-600'
