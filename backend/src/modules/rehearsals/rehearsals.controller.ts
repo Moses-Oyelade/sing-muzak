@@ -99,4 +99,15 @@ export class RehearsalController {
   ) {
       return this.rehearsalService.getAttendanceTrends(startDate, endDate);
   }
+
+  @Get(':id')
+    getRehearsalById(@Param('id') id: string) {
+      return this.rehearsalService.getRehearsalById(id);
+  }
+  // Get attendance statistics for each rehearsal
+  @Get(':id/attendance/stats')
+    getAttendanceStats(@Param('id') id: string) {
+      return this.rehearsalService.getAttendanceStats(id);
+  }
+
 }

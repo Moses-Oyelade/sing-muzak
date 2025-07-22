@@ -32,19 +32,6 @@ export class RehearsalService {
     return await this.rehearsalModel.find().populate('attendees', 'name phone').sort({ createdAt: -1 }).exec();
   }
 
-  // Members mark attendance
-  // async markAttendance(rehearsalId: string, userId: string) {
-  //   const rehearsal = await this.rehearsalModel.findById(new Types.ObjectId(rehearsalId));
-  //   if (!rehearsal) throw new NotFoundException('Rehearsal not found');
-
-  //   if (rehearsal.attendees.some(attendee => attendee.equals(new Types.ObjectId(userId)))) {
-  //     throw new ForbiddenException('Attendance already marked');
-  //   }
-
-  //   rehearsal.attendees.push(new Types.ObjectId(userId));
-  //   return await rehearsal.save();
-  // }
-
   async markAttendance(rehearsalId: string, userId: string) {
     const rehearsal = await this.rehearsalModel.findById(new Types.ObjectId(rehearsalId));
     if (!rehearsal) throw new NotFoundException('Rehearsal not found');
@@ -191,5 +178,39 @@ export class RehearsalService {
     }));
 
     return trends;
+  }
+
+  // Get rehearsal by ID with optional attendee and creator details
+  async getRehearsalById(id: string) {
+    const rehearsal = await this.rehearsalModel
+      .findById(id)
+      .populate('attendees', 'name email voicePart') // You can adjust the fields
+      .populate('createdBy', 'name email')
+      .lean();
+
+    if (!rehearsal) {
+      throw new NotFoundException('Rehearsal not found');
+    }
+
+    return rehearsal;
+  }
+
+  // Get attendance statistics directly from the rehearsal document
+  async getAttendanceStats(rehearsalId: string) {
+    const rehearsal = await this.rehearsalModel.findById(rehearsalId).lean();
+    if (!rehearsal) {
+      throw new NotFoundException('Rehearsal not found');
+    }
+
+    const totalMembers = await this.userModel.countDocuments({ role: 'member' });
+    const present = rehearsal.attendees.length;
+    const absent = totalMembers - present;
+
+    return {
+      rehearsalId,
+      totalMembers,
+      present,
+      absent,
+    };
   }
 }
