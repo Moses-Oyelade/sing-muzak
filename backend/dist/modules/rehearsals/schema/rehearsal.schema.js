@@ -17,6 +17,10 @@ let Rehearsal = class Rehearsal {
 exports.Rehearsal = Rehearsal;
 __decorate([
     (0, mongoose_1.Prop)({ required: true }),
+    __metadata("design:type", String)
+], Rehearsal.prototype, "title", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", Date)
 ], Rehearsal.prototype, "date", void 0);
 __decorate([
@@ -27,10 +31,6 @@ __decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", String)
 ], Rehearsal.prototype, "location", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({ default: '' }),
-    __metadata("design:type", String)
-], Rehearsal.prototype, "agenda", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ type: [{ type: mongoose_2.Types.ObjectId, ref: 'User' }], default: [] }),
     __metadata("design:type", Array)

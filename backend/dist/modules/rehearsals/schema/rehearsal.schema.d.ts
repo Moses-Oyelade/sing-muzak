@@ -1,10 +1,10 @@
 import { Document, Types } from 'mongoose';
 export type RehearsalDocument = Rehearsal & Document;
 export declare class Rehearsal {
+    title: string;
     date: Date;
     time: string;
     location: string;
-    agenda: string;
     attendees: Types.ObjectId[];
     createdBy: Types.ObjectId;
     description?: string;

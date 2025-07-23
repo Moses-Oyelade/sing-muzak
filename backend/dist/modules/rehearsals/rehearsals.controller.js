@@ -18,12 +18,14 @@ const rehearsals_service_1 = require("./rehearsals.service");
 const jwt_guard_1 = require("../auth/jwt/jwt.guard");
 const roles_guard_1 = require("../auth/roles/roles.guard");
 const roles_decorator_1 = require("../auth/roles/roles.decorator");
+const update_rehearsal_dto_1 = require("./dto/update-rehearsal.dto");
+const create_rehearsal_dto_1 = require("./dto/create-rehearsal.dto");
 let RehearsalController = class RehearsalController {
     constructor(rehearsalService) {
         this.rehearsalService = rehearsalService;
     }
-    async scheduleRehearsal(body, req) {
-        return this.rehearsalService.scheduleRehearsal(body.date, body.time, body.location, body.agenda, req.user.userId);
+    async create(createRehearsalDto) {
+        return this.rehearsalService.scheduleRehearsal(createRehearsalDto);
     }
     async getRehearsals() {
         return this.rehearsalService.getRehearsals();
@@ -52,17 +54,29 @@ let RehearsalController = class RehearsalController {
     async getAttendanceTrends(startDate, endDate) {
         return this.rehearsalService.getAttendanceTrends(startDate, endDate);
     }
+    async getRehearsalById(id) {
+        const rehearsal = await this.rehearsalService.getRehearsalById(id);
+        return { data: rehearsal };
+    }
+    async getAttendanceStats(id) {
+        return this.rehearsalService.getAttendanceStats(id);
+    }
+    async deleteRehearsal(id) {
+        return this.rehearsalService.deleteRehearsal(id);
+    }
+    async update(id, updateRehearsalDto) {
+        return this.rehearsalService.updateRehearsal(id, updateRehearsalDto);
+    }
 };
 exports.RehearsalController = RehearsalController;
 __decorate([
     (0, roles_decorator_1.Roles)('admin'),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [create_rehearsal_dto_1.CreateRehearsalDto]),
     __metadata("design:returntype", Promise)
-], RehearsalController.prototype, "scheduleRehearsal", null);
+], RehearsalController.prototype, "create", null);
 __decorate([
     (0, roles_decorator_1.Roles)('admin', 'member'),
     (0, common_1.Get)(),
@@ -90,8 +104,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RehearsalController.prototype, "markAttendanceForMember", null);
 __decorate([
-    (0, roles_decorator_1.Roles)('admin'),
     (0, common_1.Patch)(':id/attendance/admin/remove'),
+    (0, roles_decorator_1.Roles)('admin'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)('memberId')),
     __param(2, (0, common_1.Req)()),
@@ -144,6 +158,37 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], RehearsalController.prototype, "getAttendanceTrends", null);
+__decorate([
+    (0, roles_decorator_1.Roles)('admin', 'member'),
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], RehearsalController.prototype, "getRehearsalById", null);
+__decorate([
+    (0, roles_decorator_1.Roles)('admin'),
+    (0, common_1.Get)(':id/attendance/stats'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], RehearsalController.prototype, "getAttendanceStats", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], RehearsalController.prototype, "deleteRehearsal", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, update_rehearsal_dto_1.UpdateRehearsalDto]),
+    __metadata("design:returntype", Promise)
+], RehearsalController.prototype, "update", null);
 exports.RehearsalController = RehearsalController = __decorate([
     (0, common_1.Controller)('rehearsals'),
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),

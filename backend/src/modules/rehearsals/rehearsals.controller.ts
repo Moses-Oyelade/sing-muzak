@@ -1,8 +1,10 @@
-import { Controller, Post, Get, Patch, Body, Param, UseGuards, Req, Query, Header } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Body, Param, UseGuards, Req, Query, Header, Delete } from '@nestjs/common';
 import { RehearsalService } from './rehearsals.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { RolesGuard } from '../auth/roles/roles.guard';
 import { Roles } from '../auth/roles/roles.decorator';
+import { UpdateRehearsalDto } from './dto/update-rehearsal.dto';
+import { CreateRehearsalDto } from './dto/create-rehearsal.dto';
 
 @Controller('rehearsals')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -12,8 +14,8 @@ export class RehearsalController {
   // Admin schedules a new rehearsal
   @Roles('admin')
   @Post()
-  async scheduleRehearsal(@Body() body: any, @Req() req: any) {
-    return this.rehearsalService.scheduleRehearsal(body.date, body.time, body.location, body.agenda, req.user.userId);
+  async create(@Body() createRehearsalDto: CreateRehearsalDto) {
+    return this.rehearsalService.scheduleRehearsal(createRehearsalDto);
   }
 
   // Get all rehearsals
@@ -45,15 +47,20 @@ export class RehearsalController {
   }
 
   // Admin remove member mistakenly marked in attendance
-  @Roles('admin')
   @Patch(':id/attendance/admin/remove')
+  @Roles('admin')
   async removeAttendanceForMember(
     @Param('id') rehearsalId: string,
     @Body('memberId') memberId: string,
     @Req() req: any,
   ) {
-      return this.rehearsalService.removeAttendanceForMember(rehearsalId, memberId, req.user.userId);
+    return this.rehearsalService.removeAttendanceForMember(
+      rehearsalId,
+      memberId,
+      req.user.userId,
+    );
   }
+
 
   // Admin gets attendance list
   @Roles('admin')
@@ -100,14 +107,31 @@ export class RehearsalController {
       return this.rehearsalService.getAttendanceTrends(startDate, endDate);
   }
 
+  @Roles('admin', 'member')
   @Get(':id')
-    getRehearsalById(@Param('id') id: string) {
-      return this.rehearsalService.getRehearsalById(id);
+  async getRehearsalById(@Param('id') id: string) {
+    const rehearsal = await this.rehearsalService.getRehearsalById(id);
+    return { data: rehearsal }; // must return data in this shape
   }
+
+
   // Get attendance statistics for each rehearsal
+  @Roles('admin')
   @Get(':id/attendance/stats')
-    getAttendanceStats(@Param('id') id: string) {
+  async getAttendanceStats(@Param('id') id: string) {
       return this.rehearsalService.getAttendanceStats(id);
+  }
+
+  // DELETE /rehearsals/:id
+  @Delete(':id')
+  async deleteRehearsal(@Param('id') id: string) {
+    return this.rehearsalService.deleteRehearsal(id);
+  }
+
+  // PATCH /rehearsals/:id
+  @Patch(':id')
+  async update(@Param('id') id: string, @Body() updateRehearsalDto: UpdateRehearsalDto) {
+    return this.rehearsalService.updateRehearsal(id, updateRehearsalDto);
   }
 
 }

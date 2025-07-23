@@ -1,12 +1,10 @@
 import { RehearsalService } from './rehearsals.service';
+import { UpdateRehearsalDto } from './dto/update-rehearsal.dto';
+import { CreateRehearsalDto } from './dto/create-rehearsal.dto';
 export declare class RehearsalController {
     private readonly rehearsalService;
     constructor(rehearsalService: RehearsalService);
-    scheduleRehearsal(body: any, req: any): Promise<import("mongoose").Document<unknown, {}, import("./schema/rehearsal.schema").RehearsalDocument, {}> & import("./schema/rehearsal.schema").Rehearsal & import("mongoose").Document<unknown, any, any, Record<string, any>> & Required<{
-        _id: unknown;
-    }> & {
-        __v: number;
-    }>;
+    create(createRehearsalDto: CreateRehearsalDto): Promise<import("./schema/rehearsal.schema").Rehearsal>;
     getRehearsals(): Promise<(import("mongoose").Document<unknown, {}, import("./schema/rehearsal.schema").RehearsalDocument, {}> & import("./schema/rehearsal.schema").Rehearsal & import("mongoose").Document<unknown, any, any, Record<string, any>> & Required<{
         _id: unknown;
     }> & {
@@ -51,4 +49,17 @@ export declare class RehearsalController {
         date: Date;
         totalAttendees: number;
     }[]>;
+    getRehearsalById(id: string): Promise<{
+        data: import("./schema/rehearsal.schema").Rehearsal;
+    }>;
+    getAttendanceStats(id: string): Promise<{
+        rehearsalId: string;
+        totalMembers: number;
+        present: number;
+        absent: number;
+    }>;
+    deleteRehearsal(id: string): Promise<{
+        deleted: boolean;
+    }>;
+    update(id: string, updateRehearsalDto: UpdateRehearsalDto): Promise<import("./schema/rehearsal.schema").Rehearsal>;
 }

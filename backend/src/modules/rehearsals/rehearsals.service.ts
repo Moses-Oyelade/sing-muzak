@@ -4,6 +4,8 @@ import { Model, Types } from 'mongoose';
 import { Rehearsal, RehearsalDocument } from './schema/rehearsal.schema';
 import { Parser } from 'json2csv';
 import { User } from '../users/schema/users.schema';
+import { CreateRehearsalDto } from './dto/create-rehearsal.dto';
+import { UpdateRehearsalDto } from './dto/update-rehearsal.dto';
 
 @Injectable()
 export class RehearsalService {
@@ -13,18 +15,9 @@ export class RehearsalService {
 ) {}
 
   // Admin schedules a new rehearsal
-  async scheduleRehearsal(date: Date, time: string, location: string, agenda: string, adminId: string) {
-    
-    const user = new this.userModel(adminId);
-    const newRehearsal = new this.rehearsalModel({
-      date,
-      time,
-      location,
-      agenda,
-      createdBy: user._id, // Convert adminId to ObjectId
-      attendees: [],
-    });
-    return await newRehearsal.save();
+  async scheduleRehearsal(createRehearsalDto: CreateRehearsalDto): Promise<Rehearsal> {
+    const rehearsal = new this.rehearsalModel(createRehearsalDto);
+    return await rehearsal.save();
   }
 
   // Get all rehearsals
@@ -33,15 +26,21 @@ export class RehearsalService {
   }
 
   async markAttendance(rehearsalId: string, userId: string) {
-    const rehearsal = await this.rehearsalModel.findById(new Types.ObjectId(rehearsalId));
-    if (!rehearsal) throw new NotFoundException('Rehearsal not found');
-  
+    const rehearsal = await this.rehearsalModel.findById(rehearsalId);
+    if (!rehearsal) {
+      throw new NotFoundException('Rehearsal not found');
+    }
+
     const userObjectId = new Types.ObjectId(userId);
-  
-    if (rehearsal.attendees.some(attendee => attendee.equals(userObjectId))) {
+
+    const alreadyMarked = rehearsal.attendees.some(attendee =>
+      attendee.equals(userObjectId),
+    );
+
+    if (alreadyMarked) {
       throw new ForbiddenException('Attendance already marked');
     }
-  
+
     rehearsal.attendees.push(userObjectId);
     await rehearsal.save();
 
@@ -52,9 +51,8 @@ export class RehearsalService {
     };
   }
   
-
   // Admin marks attendance for members
-  async markAttendanceForMember(rehearsalId: string, memberId: string, adminId: string) {
+  async markAttendanceForMember(rehearsalId: string, memberId: string, adminId) {
     const rehearsalObjectId = new Types.ObjectId(rehearsalId);
     const memberObjectId = new Types.ObjectId(memberId);
   
@@ -80,23 +78,28 @@ export class RehearsalService {
 
   // Admin removes attendance for members
   async removeAttendanceForMember(rehearsalId: string, memberId: string, adminId: string) {
-    const rehearsal = await this.rehearsalModel.findById(new Types.ObjectId(rehearsalId));
-    if (!rehearsal) throw new NotFoundException('Rehearsal not found');
+    const rehearsal = await this.rehearsalModel.findById(rehearsalId);
 
-    if (!rehearsal.attendees.some(attendee => attendee.equals(new Types.ObjectId(memberId)))) {
+    if (!rehearsal) {
+      throw new NotFoundException('Rehearsal not found');
+    }
+
+    const memberObjectId = new Types.ObjectId(memberId);
+
+    if (!rehearsal.attendees.some(att => att.equals(memberObjectId))) {
       throw new ForbiddenException('Member is not marked present');
     }
 
-    // Correctly remove the member from attendees
-    rehearsal.attendees = rehearsal.attendees.filter(attendee => !attendee.equals(new Types.ObjectId(memberId)));
+    rehearsal.attendees = rehearsal.attendees.filter(att => !att.equals(memberObjectId));
     await rehearsal.save();
 
     return {
-      message: 'Member Unmarked successfully',
+      message: 'Member unmarked successfully',
       rehearsalId: rehearsal._id,
       attendees: rehearsal.attendees,
     };
   }
+
 
   // Admin gets attendance list
   async getAttendance(rehearsalId: string) {
@@ -181,29 +184,29 @@ export class RehearsalService {
   }
 
   // Get rehearsal by ID with optional attendee and creator details
-  async getRehearsalById(id: string) {
-    const rehearsal = await this.rehearsalModel
-      .findById(id)
-      .populate('attendees', 'name email voicePart') // You can adjust the fields
-      .populate('createdBy', 'name email')
-      .lean();
-
+  async getRehearsalById(id: string): Promise<Rehearsal> {
+    const rehearsal = await this.rehearsalModel.findById(id).populate('attendees').populate('createdBy');
     if (!rehearsal) {
       throw new NotFoundException('Rehearsal not found');
     }
-
     return rehearsal;
   }
 
   // Get attendance statistics directly from the rehearsal document
   async getAttendanceStats(rehearsalId: string) {
-    const rehearsal = await this.rehearsalModel.findById(rehearsalId).lean();
-    if (!rehearsal) {
-      throw new NotFoundException('Rehearsal not found');
+    if (!Types.ObjectId.isValid(rehearsalId)) {
+      throw new BadRequestException("Invalid rehearsal ID");
     }
 
+    const rehearsalObjectId = new Types.ObjectId(rehearsalId);
+
+    const rehearsal = await this.rehearsalModel.findById(rehearsalObjectId).lean();
+      if (!rehearsal) {
+        throw new NotFoundException('Rehearsal not found');
+      }
+
     const totalMembers = await this.userModel.countDocuments({ role: 'member' });
-    const present = rehearsal.attendees.length;
+    const present = rehearsal.attendees?.length ?? 0;
     const absent = totalMembers - present;
 
     return {
@@ -213,4 +216,21 @@ export class RehearsalService {
       absent,
     };
   }
+
+  // DELETE
+  async deleteRehearsal(id: string): Promise<{ deleted: boolean }> {
+    const res = await this.rehearsalModel.deleteOne({ _id: id });
+    return { deleted: res.deletedCount > 0 };
+  }
+
+  // UPDATE
+  async updateRehearsal(id: string, updateRehearsalDto: UpdateRehearsalDto): Promise<Rehearsal> {
+    const updatedRehearsal = await this.rehearsalModel.findByIdAndUpdate(id, updateRehearsalDto, { new: true });
+    if (!updatedRehearsal) {
+        throw new NotFoundException('Rehearsal not found');
+      }
+    return updatedRehearsal;
+  }
+
+
 }

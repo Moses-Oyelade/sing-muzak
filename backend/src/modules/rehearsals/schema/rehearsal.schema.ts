@@ -6,6 +6,9 @@ export type RehearsalDocument = Rehearsal & Document;
 @Schema({ timestamps: true })
 export class Rehearsal {
   @Prop({ required: true })
+  title: string;
+
+  @Prop({ required: true })
   date: Date;
 
   @Prop({ required: true })
@@ -13,9 +16,6 @@ export class Rehearsal {
 
   @Prop({ required: true })
   location: string;
-
-  @Prop({ default: '' })
-  agenda: string;
 
   // @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }], default: [], autopopulate: true, required: true })  
   @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }], default: [] })  

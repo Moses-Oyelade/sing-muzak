@@ -38,8 +38,6 @@ export class UsersController {
     }
   };
 
-
-
   // Both Admins and Members can access
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'member')
