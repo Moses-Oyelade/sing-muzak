@@ -5,7 +5,7 @@ import { RolesGuard } from '../auth/roles/roles.guard';
 import { Roles } from '../auth/roles/roles.decorator';
 import { UpdateRehearsalDto } from './dto/update-rehearsal.dto';
 import { CreateRehearsalDto } from './dto/create-rehearsal.dto';
-import { ConfirmDeleteGuard } from 'modules/common/guards/confirm-delete.guard';
+import { ConfirmDeleteGuard } from '../common/guards/confirm-delete.guard';
 
 @Controller('rehearsals')
 @UseGuards(JwtAuthGuard, RolesGuard)

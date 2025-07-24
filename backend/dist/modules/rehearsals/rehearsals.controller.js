@@ -20,7 +20,7 @@ const roles_guard_1 = require("../auth/roles/roles.guard");
 const roles_decorator_1 = require("../auth/roles/roles.decorator");
 const update_rehearsal_dto_1 = require("./dto/update-rehearsal.dto");
 const create_rehearsal_dto_1 = require("./dto/create-rehearsal.dto");
-const confirm_delete_guard_1 = require("modules/common/guards/confirm-delete.guard");
+const confirm_delete_guard_1 = require("../common/guards/confirm-delete.guard");
 let RehearsalController = class RehearsalController {
     constructor(rehearsalService) {
         this.rehearsalService = rehearsalService;

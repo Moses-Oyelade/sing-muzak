@@ -5,7 +5,7 @@ import { UpdateAnnouncementDto } from './dto/update-announcement.dto';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { RolesGuard } from '../auth/roles/roles.guard';
 import { Roles } from '../auth/roles/roles.decorator';
-import { ConfirmDeleteGuard } from 'modules/common/guards/confirm-delete.guard';
+import { ConfirmDeleteGuard } from '../common/guards/confirm-delete.guard';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('announcements')

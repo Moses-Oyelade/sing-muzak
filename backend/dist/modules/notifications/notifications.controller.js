@@ -20,7 +20,7 @@ const create_notification_dto_1 = require("./dto/create-notification.dto");
 const update_notification_dto_1 = require("./dto/update-notification.dto");
 const roles_guard_1 = require("../auth/roles/roles.guard");
 const roles_decorator_1 = require("../auth/roles/roles.decorator");
-const confirm_delete_guard_1 = require("modules/common/guards/confirm-delete.guard");
+const confirm_delete_guard_1 = require("../common/guards/confirm-delete.guard");
 let NotificationsController = class NotificationsController {
     constructor(notificationsService) {
         this.notificationsService = notificationsService;

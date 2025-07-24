@@ -5,7 +5,7 @@ import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { RolesGuard } from '../auth/roles/roles.guard';
 import { Roles } from '../auth/roles/roles.decorator';
-import { ConfirmDeleteGuard } from 'modules/common/guards/confirm-delete.guard';
+import { ConfirmDeleteGuard } from '../common/guards/confirm-delete.guard';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('notifications')

@@ -20,7 +20,7 @@ const update_announcement_dto_1 = require("./dto/update-announcement.dto");
 const jwt_guard_1 = require("../auth/jwt/jwt.guard");
 const roles_guard_1 = require("../auth/roles/roles.guard");
 const roles_decorator_1 = require("../auth/roles/roles.decorator");
-const confirm_delete_guard_1 = require("modules/common/guards/confirm-delete.guard");
+const confirm_delete_guard_1 = require("../common/guards/confirm-delete.guard");
 let AnnouncementsController = class AnnouncementsController {
     constructor(announcementsService) {
         this.announcementsService = announcementsService;
