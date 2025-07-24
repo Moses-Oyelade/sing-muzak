@@ -63,6 +63,10 @@ let NotificationsService = class NotificationsService {
             throw new common_1.NotFoundException('Notification not found');
         return notification;
     }
+    async deleteAllNotifications() {
+        const result = await this.notificationModel.deleteMany({});
+        return { message: `${result.deletedCount} notifications deleted` };
+    }
 };
 exports.NotificationsService = NotificationsService;
 exports.NotificationsService = NotificationsService = __decorate([

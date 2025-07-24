@@ -47,4 +47,7 @@ export declare class NotificationsService {
     } & {
         __v: number;
     }>;
+    deleteAllNotifications(): Promise<{
+        message: string;
+    }>;
 }

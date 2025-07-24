@@ -20,6 +20,7 @@ const create_notification_dto_1 = require("./dto/create-notification.dto");
 const update_notification_dto_1 = require("./dto/update-notification.dto");
 const roles_guard_1 = require("../auth/roles/roles.guard");
 const roles_decorator_1 = require("../auth/roles/roles.decorator");
+const confirm_delete_guard_1 = require("modules/common/guards/confirm-delete.guard");
 let NotificationsController = class NotificationsController {
     constructor(notificationsService) {
         this.notificationsService = notificationsService;
@@ -44,6 +45,9 @@ let NotificationsController = class NotificationsController {
     }
     async deleteNotification(id) {
         return this.notificationsService.deleteNotification(id);
+    }
+    async deleteAllNotifications() {
+        return this.notificationsService.deleteAllNotifications();
     }
 };
 exports.NotificationsController = NotificationsController;
@@ -103,6 +107,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], NotificationsController.prototype, "deleteNotification", null);
+__decorate([
+    (0, common_1.Delete)("all"),
+    (0, roles_decorator_1.Roles)('admin'),
+    (0, common_1.UseGuards)(confirm_delete_guard_1.ConfirmDeleteGuard),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], NotificationsController.prototype, "deleteAllNotifications", null);
 exports.NotificationsController = NotificationsController = __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, common_1.Controller)('notifications'),

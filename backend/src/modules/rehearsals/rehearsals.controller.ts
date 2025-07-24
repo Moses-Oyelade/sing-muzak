@@ -1,10 +1,11 @@
-import { Controller, Post, Get, Patch, Body, Param, UseGuards, Req, Query, Header, Delete } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Body, Param, UseGuards, Req, Query, Header, Delete, UnauthorizedException, BadRequestException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { RehearsalService } from './rehearsals.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { RolesGuard } from '../auth/roles/roles.guard';
 import { Roles } from '../auth/roles/roles.decorator';
 import { UpdateRehearsalDto } from './dto/update-rehearsal.dto';
 import { CreateRehearsalDto } from './dto/create-rehearsal.dto';
+import { ConfirmDeleteGuard } from 'modules/common/guards/confirm-delete.guard';
 
 @Controller('rehearsals')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -14,9 +15,13 @@ export class RehearsalController {
   // Admin schedules a new rehearsal
   @Roles('admin')
   @Post()
-  async create(@Body() createRehearsalDto: CreateRehearsalDto) {
-    return this.rehearsalService.scheduleRehearsal(createRehearsalDto);
-  }
+  async scheduleRehearsal(
+    @Body() createRehearsalDto: CreateRehearsalDto,
+    @Req() req: any,
+    ) {
+      const adminId = req.user.id;
+      return this.rehearsalService.scheduleRehearsal(createRehearsalDto, adminId);
+    }
 
   // Get all rehearsals
   @Roles('admin', 'member')
@@ -26,39 +31,60 @@ export class RehearsalController {
   }
 
   // Member marks their own attendance
-  @Roles('member')
   @Patch(':rehearsalId/attendance')
+  @Roles('member')
   async markAttendance(
     @Param('rehearsalId') rehearsalId: string,
-    @Body('userId') userId: string,
+    @Req() req: any, // get user from session
   ) {
+    const userId = req.user?.sub;
+    if (!userId) {
+      throw new UnauthorizedException('User ID not found in request');
+    }
+
     return this.rehearsalService.markAttendance(rehearsalId, userId);
   }
 
-  // Admin marks attendance for a member
+
+  // Admin marks for members
+  @Patch(':id/attendance/admin')
   @Roles('admin')
-  @Patch(':rehearsalId/attendance/admin')
-  async markAttendanceForMember(
-    @Param('rehearsalId') rehearsalId: string,
-    @Body('adminId') adminId: string,
-    @Body('memberId') memberId: string,
+  async markAttendanceForMembers(
+  @Param('id') rehearsalId: string,
+  @Body('attendees') attendees: string | string[],
+  @Req() req: any,
   ) {
-    return this.rehearsalService.markAttendanceForMember(rehearsalId, memberId, adminId);
+    const adminId = req.user.sub;
+    if (!adminId) throw new UnauthorizedException('Admin ID is missing from request');
+
+    // Normalize attendees to array if a single string is provided
+    const attendeesArray = Array.isArray(attendees) ? attendees : [attendees];
+
+    return this.rehearsalService.markAttendanceForMembers(rehearsalId, attendeesArray, adminId);
   }
 
-  // Admin remove member mistakenly marked in attendance
+
+  // Admin updates attendance
   @Patch(':id/attendance/admin/remove')
   @Roles('admin')
-  async removeAttendanceForMember(
+  async removeAttendanceForMembers(
     @Param('id') rehearsalId: string,
-    @Body('memberId') memberId: string,
+    @Body('attendees') attendees: string[] | string, // accept string or array
     @Req() req: any,
   ) {
-    return this.rehearsalService.removeAttendanceForMember(
-      rehearsalId,
-      memberId,
-      req.user.userId,
-    );
+    const adminId = req.user?.sub;
+    if (!adminId) {
+      throw new UnauthorizedException('Admin ID is missing from request');
+    }
+
+    // Normalize to array
+    const memberIds = Array.isArray(attendees) ? attendees : [attendees];
+
+    if (memberIds.length === 0) {
+      throw new BadRequestException('attendees must be a non-empty array');
+    }
+
+    return this.rehearsalService.removeAttendanceForMembers(rehearsalId, memberIds);
   }
 
 
@@ -107,11 +133,18 @@ export class RehearsalController {
       return this.rehearsalService.getAttendanceTrends(startDate, endDate);
   }
 
+  // @Roles('admin', 'member')
+  // @Get(':id')
+  // async getRehearsalById(@Param('id') id: string) {
+  //   const rehearsal = await this.rehearsalService.getRehearsalById(id);
+  //   return { data: rehearsal }; // must return data in this shape
+  // }
+
   @Roles('admin', 'member')
   @Get(':id')
   async getRehearsalById(@Param('id') id: string) {
-    const rehearsal = await this.rehearsalService.getRehearsalById(id);
-    return { data: rehearsal }; // must return data in this shape
+    return  this.rehearsalService.findByIdWithAttendees(id);
+   
   }
 
 
@@ -129,9 +162,19 @@ export class RehearsalController {
   }
 
   // PATCH /rehearsals/:id
+  @Roles('admin')
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateRehearsalDto: UpdateRehearsalDto) {
+  async updateRehearsal(@Param('id') id: string, @Body() updateRehearsalDto: UpdateRehearsalDto) {
     return this.rehearsalService.updateRehearsal(id, updateRehearsalDto);
   }
+
+  // ***Delete All ***
+  @Delete("all")
+  @Roles('admin')
+  @UseGuards(ConfirmDeleteGuard)
+  async deleteAllRehearsals() {
+    return this.rehearsalService.deleteAllRehearsals();
+  }
+
 
 }

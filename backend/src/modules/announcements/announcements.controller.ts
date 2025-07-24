@@ -5,6 +5,7 @@ import { UpdateAnnouncementDto } from './dto/update-announcement.dto';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { RolesGuard } from '../auth/roles/roles.guard';
 import { Roles } from '../auth/roles/roles.decorator';
+import { ConfirmDeleteGuard } from 'modules/common/guards/confirm-delete.guard';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('announcements')
@@ -40,4 +41,13 @@ export class AnnouncementsController {
   async deleteAnnouncement(@Param('id') id: string) {
     return this.announcementsService.deleteAnnouncement(id);
   }
+
+  // *** Delete All ***
+  @Delete("all")
+  @Roles('admin')
+  @UseGuards(ConfirmDeleteGuard)
+  async deleteAllAnnouncements() {
+    return this.announcementsService.deleteAllAnnouncements();
+  }
+
 }

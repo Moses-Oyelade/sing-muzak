@@ -16,6 +16,10 @@ import { jwtConstants } from '../src/config/jwt.config';
 import { CategorySchema } from './modules/category/schema/category.schema';
 import { CategoriesModule } from './modules/category/categories.module';
 
+import { ConfirmDeleteGuard } from './modules/common/guards/confirm-delete.guard';
+
+
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -38,9 +42,9 @@ import { CategoriesModule } from './modules/category/categories.module';
     NotificationsModule, // Manages notifications
     GoogleDriveModule, // Manages files saving and retrieval
     AnnouncementsModule,
-    CategoriesModule
+    CategoriesModule,
   ],
   // providers: [JwtStrategy], // Global JWT strategy
-  providers: [AdminSeederService], // Global 
+  providers: [AdminSeederService, ConfirmDeleteGuard], // Global 
 })
 export class AppModule {}

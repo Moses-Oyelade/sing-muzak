@@ -24,6 +24,7 @@ const announcements_module_1 = require("./modules/announcements/announcements.mo
 const adminSeeder_service_1 = require("./Admin/adminSeeder.service");
 const jwt_1 = require("@nestjs/jwt");
 const categories_module_1 = require("./modules/category/categories.module");
+const confirm_delete_guard_1 = require("./modules/common/guards/confirm-delete.guard");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -50,9 +51,9 @@ exports.AppModule = AppModule = __decorate([
             notifications_module_1.NotificationsModule,
             google_drive_module_1.GoogleDriveModule,
             announcements_module_1.AnnouncementsModule,
-            categories_module_1.CategoriesModule
+            categories_module_1.CategoriesModule,
         ],
-        providers: [adminSeeder_service_1.AdminSeederService],
+        providers: [adminSeeder_service_1.AdminSeederService, confirm_delete_guard_1.ConfirmDeleteGuard],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

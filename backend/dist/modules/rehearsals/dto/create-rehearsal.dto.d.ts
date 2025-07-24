@@ -3,7 +3,6 @@ export declare class CreateRehearsalDto {
     date: string;
     time: string;
     location: string;
-    createdBy: string;
     attendees?: string[];
     description?: string;
 }

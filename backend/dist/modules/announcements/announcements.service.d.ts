@@ -26,4 +26,7 @@ export declare class AnnouncementsService {
         __v: number;
     }>;
     deleteAnnouncement(id: string): Promise<string>;
+    deleteAllAnnouncements(): Promise<{
+        message: string;
+    }>;
 }

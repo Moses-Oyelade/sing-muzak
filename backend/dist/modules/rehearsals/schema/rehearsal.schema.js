@@ -36,7 +36,7 @@ __decorate([
     __metadata("design:type", Array)
 ], Rehearsal.prototype, "attendees", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: 'User', required: true }),
+    (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: 'User' }),
     __metadata("design:type", mongoose_2.Types.ObjectId)
 ], Rehearsal.prototype, "createdBy", void 0);
 __decorate([
@@ -59,4 +59,6 @@ exports.RehearsalSchema.virtual('createdByDetails', {
     foreignField: '_id',
     justOne: true,
 });
+exports.RehearsalSchema.set('toObject', { virtuals: true });
+exports.RehearsalSchema.set('toJSON', { virtuals: true });
 //# sourceMappingURL=rehearsal.schema.js.map

@@ -5,6 +5,7 @@ import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { RolesGuard } from '../auth/roles/roles.guard';
 import { Roles } from '../auth/roles/roles.decorator';
+import { ConfirmDeleteGuard } from 'modules/common/guards/confirm-delete.guard';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('notifications')
@@ -51,5 +52,13 @@ export class NotificationsController {
   @Delete(':id')
   async deleteNotification(@Param('id') id: string) {
     return this.notificationsService.deleteNotification(id);
+  }
+
+  // ***Delete All***
+  @Delete("all")
+  @Roles('admin')
+  @UseGuards(ConfirmDeleteGuard)
+  async deleteAllNotifications() {
+    return this.notificationsService.deleteAllNotifications();
   }
 }

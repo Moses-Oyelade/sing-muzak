@@ -20,24 +20,42 @@ const roles_guard_1 = require("../auth/roles/roles.guard");
 const roles_decorator_1 = require("../auth/roles/roles.decorator");
 const update_rehearsal_dto_1 = require("./dto/update-rehearsal.dto");
 const create_rehearsal_dto_1 = require("./dto/create-rehearsal.dto");
+const confirm_delete_guard_1 = require("modules/common/guards/confirm-delete.guard");
 let RehearsalController = class RehearsalController {
     constructor(rehearsalService) {
         this.rehearsalService = rehearsalService;
     }
-    async create(createRehearsalDto) {
-        return this.rehearsalService.scheduleRehearsal(createRehearsalDto);
+    async scheduleRehearsal(createRehearsalDto, req) {
+        const adminId = req.user.id;
+        return this.rehearsalService.scheduleRehearsal(createRehearsalDto, adminId);
     }
     async getRehearsals() {
         return this.rehearsalService.getRehearsals();
     }
-    async markAttendance(rehearsalId, userId) {
+    async markAttendance(rehearsalId, req) {
+        const userId = req.user?.sub;
+        if (!userId) {
+            throw new common_1.UnauthorizedException('User ID not found in request');
+        }
         return this.rehearsalService.markAttendance(rehearsalId, userId);
     }
-    async markAttendanceForMember(rehearsalId, adminId, memberId) {
-        return this.rehearsalService.markAttendanceForMember(rehearsalId, memberId, adminId);
+    async markAttendanceForMembers(rehearsalId, attendees, req) {
+        const adminId = req.user.sub;
+        if (!adminId)
+            throw new common_1.UnauthorizedException('Admin ID is missing from request');
+        const attendeesArray = Array.isArray(attendees) ? attendees : [attendees];
+        return this.rehearsalService.markAttendanceForMembers(rehearsalId, attendeesArray, adminId);
     }
-    async removeAttendanceForMember(rehearsalId, memberId, req) {
-        return this.rehearsalService.removeAttendanceForMember(rehearsalId, memberId, req.user.userId);
+    async removeAttendanceForMembers(rehearsalId, attendees, req) {
+        const adminId = req.user?.sub;
+        if (!adminId) {
+            throw new common_1.UnauthorizedException('Admin ID is missing from request');
+        }
+        const memberIds = Array.isArray(attendees) ? attendees : [attendees];
+        if (memberIds.length === 0) {
+            throw new common_1.BadRequestException('attendees must be a non-empty array');
+        }
+        return this.rehearsalService.removeAttendanceForMembers(rehearsalId, memberIds);
     }
     async getAttendance(rehearsalId) {
         return this.rehearsalService.getAttendance(rehearsalId);
@@ -55,8 +73,7 @@ let RehearsalController = class RehearsalController {
         return this.rehearsalService.getAttendanceTrends(startDate, endDate);
     }
     async getRehearsalById(id) {
-        const rehearsal = await this.rehearsalService.getRehearsalById(id);
-        return { data: rehearsal };
+        return this.rehearsalService.findByIdWithAttendees(id);
     }
     async getAttendanceStats(id) {
         return this.rehearsalService.getAttendanceStats(id);
@@ -64,8 +81,11 @@ let RehearsalController = class RehearsalController {
     async deleteRehearsal(id) {
         return this.rehearsalService.deleteRehearsal(id);
     }
-    async update(id, updateRehearsalDto) {
+    async updateRehearsal(id, updateRehearsalDto) {
         return this.rehearsalService.updateRehearsal(id, updateRehearsalDto);
+    }
+    async deleteAllRehearsals() {
+        return this.rehearsalService.deleteAllRehearsals();
     }
 };
 exports.RehearsalController = RehearsalController;
@@ -73,10 +93,11 @@ __decorate([
     (0, roles_decorator_1.Roles)('admin'),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_rehearsal_dto_1.CreateRehearsalDto]),
+    __metadata("design:paramtypes", [create_rehearsal_dto_1.CreateRehearsalDto, Object]),
     __metadata("design:returntype", Promise)
-], RehearsalController.prototype, "create", null);
+], RehearsalController.prototype, "scheduleRehearsal", null);
 __decorate([
     (0, roles_decorator_1.Roles)('admin', 'member'),
     (0, common_1.Get)(),
@@ -85,34 +106,34 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RehearsalController.prototype, "getRehearsals", null);
 __decorate([
-    (0, roles_decorator_1.Roles)('member'),
     (0, common_1.Patch)(':rehearsalId/attendance'),
+    (0, roles_decorator_1.Roles)('member'),
     __param(0, (0, common_1.Param)('rehearsalId')),
-    __param(1, (0, common_1.Body)('userId')),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], RehearsalController.prototype, "markAttendance", null);
 __decorate([
+    (0, common_1.Patch)(':id/attendance/admin'),
     (0, roles_decorator_1.Roles)('admin'),
-    (0, common_1.Patch)(':rehearsalId/attendance/admin'),
-    __param(0, (0, common_1.Param)('rehearsalId')),
-    __param(1, (0, common_1.Body)('adminId')),
-    __param(2, (0, common_1.Body)('memberId')),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)('attendees')),
+    __param(2, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [String, Object, Object]),
     __metadata("design:returntype", Promise)
-], RehearsalController.prototype, "markAttendanceForMember", null);
+], RehearsalController.prototype, "markAttendanceForMembers", null);
 __decorate([
     (0, common_1.Patch)(':id/attendance/admin/remove'),
     (0, roles_decorator_1.Roles)('admin'),
     __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)('memberId')),
+    __param(1, (0, common_1.Body)('attendees')),
     __param(2, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:paramtypes", [String, Object, Object]),
     __metadata("design:returntype", Promise)
-], RehearsalController.prototype, "removeAttendanceForMember", null);
+], RehearsalController.prototype, "removeAttendanceForMembers", null);
 __decorate([
     (0, roles_decorator_1.Roles)('admin'),
     (0, common_1.Get)(':id/attendance'),
@@ -182,13 +203,22 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RehearsalController.prototype, "deleteRehearsal", null);
 __decorate([
+    (0, roles_decorator_1.Roles)('admin'),
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, update_rehearsal_dto_1.UpdateRehearsalDto]),
     __metadata("design:returntype", Promise)
-], RehearsalController.prototype, "update", null);
+], RehearsalController.prototype, "updateRehearsal", null);
+__decorate([
+    (0, common_1.Delete)("all"),
+    (0, roles_decorator_1.Roles)('admin'),
+    (0, common_1.UseGuards)(confirm_delete_guard_1.ConfirmDeleteGuard),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], RehearsalController.prototype, "deleteAllRehearsals", null);
 exports.RehearsalController = RehearsalController = __decorate([
     (0, common_1.Controller)('rehearsals'),
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),

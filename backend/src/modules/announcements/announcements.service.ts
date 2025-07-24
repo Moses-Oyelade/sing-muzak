@@ -47,4 +47,11 @@ export class AnnouncementsService {
     if (!deletedAnnouncement) throw new NotFoundException('Announcement not found');
     return `Announcement ${deletedAnnouncement} deleted successfully`;
   }
+
+  // *** Delete All ***
+  async deleteAllAnnouncements() {
+    const result = await this.announcementModel.deleteMany({});
+    return { message: `${result.deletedCount} announcements deleted` };
+  }
+
 }

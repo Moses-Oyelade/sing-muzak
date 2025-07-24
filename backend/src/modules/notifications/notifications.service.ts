@@ -60,4 +60,11 @@ export class NotificationsService {
     if (!notification) throw new NotFoundException('Notification not found');
     return notification;
   }
+
+  // *** Delete all notifications ***
+  async deleteAllNotifications() {
+    const result = await this.notificationModel.deleteMany({});
+    return { message: `${result.deletedCount} notifications deleted` };
+  }
+
 }

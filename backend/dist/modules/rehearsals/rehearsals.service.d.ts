@@ -7,7 +7,11 @@ export declare class RehearsalService {
     private readonly userModel;
     private readonly rehearsalModel;
     constructor(userModel: Model<User>, rehearsalModel: Model<RehearsalDocument>);
-    scheduleRehearsal(createRehearsalDto: CreateRehearsalDto): Promise<Rehearsal>;
+    scheduleRehearsal(dto: CreateRehearsalDto, adminId: string): Promise<Omit<import("mongoose").Document<unknown, {}, RehearsalDocument, {}> & Rehearsal & import("mongoose").Document<unknown, any, any, Record<string, any>> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }, never>>;
     getRehearsals(): Promise<(import("mongoose").Document<unknown, {}, RehearsalDocument, {}> & Rehearsal & import("mongoose").Document<unknown, any, any, Record<string, any>> & Required<{
         _id: unknown;
     }> & {
@@ -18,12 +22,13 @@ export declare class RehearsalService {
         rehearsalId: unknown;
         attendees: Types.ObjectId[];
     }>;
-    markAttendanceForMember(rehearsalId: string, memberId: string, adminId: any): Promise<{
+    markAttendanceForMembers(rehearsalId: string, attendees: string[], adminId: string): Promise<{
         message: string;
         rehearsalId: unknown;
         attendees: Types.ObjectId[];
+        createdBy: Types.ObjectId;
     }>;
-    removeAttendanceForMember(rehearsalId: string, memberId: string, adminId: string): Promise<{
+    removeAttendanceForMembers(rehearsalId: string, memberIds: string[]): Promise<{
         message: string;
         rehearsalId: unknown;
         attendees: Types.ObjectId[];
@@ -63,4 +68,8 @@ export declare class RehearsalService {
         deleted: boolean;
     }>;
     updateRehearsal(id: string, updateRehearsalDto: UpdateRehearsalDto): Promise<Rehearsal>;
+    deleteAllRehearsals(): Promise<{
+        message: string;
+    }>;
+    findByIdWithAttendees(id: string): Promise<Rehearsal | null>;
 }

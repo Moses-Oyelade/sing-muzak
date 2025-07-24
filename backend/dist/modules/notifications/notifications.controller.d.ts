@@ -39,4 +39,7 @@ export declare class NotificationsController {
     } & {
         __v: number;
     }>;
+    deleteAllNotifications(): Promise<{
+        message: string;
+    }>;
 }

@@ -1,6 +1,5 @@
 // src/modules/rehearsals/dto/create-rehearsal.dto.ts
 import { IsNotEmpty, IsString, IsDateString, IsMongoId, IsOptional, IsArray } from 'class-validator';
-import { Type } from 'class-transformer';
 
 export class CreateRehearsalDto {
   @IsNotEmpty()
@@ -18,10 +17,6 @@ export class CreateRehearsalDto {
   @IsNotEmpty()
   @IsString()
   location: string;
-
-  @IsNotEmpty()
-  @IsMongoId()
-  createdBy: string;
 
   @IsOptional()
   @IsArray()

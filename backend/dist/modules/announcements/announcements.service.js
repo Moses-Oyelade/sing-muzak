@@ -46,6 +46,10 @@ let AnnouncementsService = class AnnouncementsService {
             throw new common_1.NotFoundException('Announcement not found');
         return `Announcement ${deletedAnnouncement} deleted successfully`;
     }
+    async deleteAllAnnouncements() {
+        const result = await this.announcementModel.deleteMany({});
+        return { message: `${result.deletedCount} announcements deleted` };
+    }
 };
 exports.AnnouncementsService = AnnouncementsService;
 exports.AnnouncementsService = AnnouncementsService = __decorate([

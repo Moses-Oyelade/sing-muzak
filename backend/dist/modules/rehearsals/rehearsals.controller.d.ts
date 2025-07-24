@@ -4,23 +4,28 @@ import { CreateRehearsalDto } from './dto/create-rehearsal.dto';
 export declare class RehearsalController {
     private readonly rehearsalService;
     constructor(rehearsalService: RehearsalService);
-    create(createRehearsalDto: CreateRehearsalDto): Promise<import("./schema/rehearsal.schema").Rehearsal>;
+    scheduleRehearsal(createRehearsalDto: CreateRehearsalDto, req: any): Promise<Omit<import("mongoose").Document<unknown, {}, import("./schema/rehearsal.schema").RehearsalDocument, {}> & import("./schema/rehearsal.schema").Rehearsal & import("mongoose").Document<unknown, any, any, Record<string, any>> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }, never>>;
     getRehearsals(): Promise<(import("mongoose").Document<unknown, {}, import("./schema/rehearsal.schema").RehearsalDocument, {}> & import("./schema/rehearsal.schema").Rehearsal & import("mongoose").Document<unknown, any, any, Record<string, any>> & Required<{
         _id: unknown;
     }> & {
         __v: number;
     })[]>;
-    markAttendance(rehearsalId: string, userId: string): Promise<{
+    markAttendance(rehearsalId: string, req: any): Promise<{
         message: string;
         rehearsalId: unknown;
         attendees: import("mongoose").Types.ObjectId[];
     }>;
-    markAttendanceForMember(rehearsalId: string, adminId: string, memberId: string): Promise<{
+    markAttendanceForMembers(rehearsalId: string, attendees: string | string[], req: any): Promise<{
         message: string;
         rehearsalId: unknown;
         attendees: import("mongoose").Types.ObjectId[];
+        createdBy: import("mongoose").Types.ObjectId;
     }>;
-    removeAttendanceForMember(rehearsalId: string, memberId: string, req: any): Promise<{
+    removeAttendanceForMembers(rehearsalId: string, attendees: string[] | string, req: any): Promise<{
         message: string;
         rehearsalId: unknown;
         attendees: import("mongoose").Types.ObjectId[];
@@ -49,9 +54,7 @@ export declare class RehearsalController {
         date: Date;
         totalAttendees: number;
     }[]>;
-    getRehearsalById(id: string): Promise<{
-        data: import("./schema/rehearsal.schema").Rehearsal;
-    }>;
+    getRehearsalById(id: string): Promise<import("./schema/rehearsal.schema").Rehearsal | null>;
     getAttendanceStats(id: string): Promise<{
         rehearsalId: string;
         totalMembers: number;
@@ -61,5 +64,8 @@ export declare class RehearsalController {
     deleteRehearsal(id: string): Promise<{
         deleted: boolean;
     }>;
-    update(id: string, updateRehearsalDto: UpdateRehearsalDto): Promise<import("./schema/rehearsal.schema").Rehearsal>;
+    updateRehearsal(id: string, updateRehearsalDto: UpdateRehearsalDto): Promise<import("./schema/rehearsal.schema").Rehearsal>;
+    deleteAllRehearsals(): Promise<{
+        message: string;
+    }>;
 }

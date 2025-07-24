@@ -20,6 +20,7 @@ const update_announcement_dto_1 = require("./dto/update-announcement.dto");
 const jwt_guard_1 = require("../auth/jwt/jwt.guard");
 const roles_guard_1 = require("../auth/roles/roles.guard");
 const roles_decorator_1 = require("../auth/roles/roles.decorator");
+const confirm_delete_guard_1 = require("modules/common/guards/confirm-delete.guard");
 let AnnouncementsController = class AnnouncementsController {
     constructor(announcementsService) {
         this.announcementsService = announcementsService;
@@ -38,6 +39,9 @@ let AnnouncementsController = class AnnouncementsController {
     }
     async deleteAnnouncement(id) {
         return this.announcementsService.deleteAnnouncement(id);
+    }
+    async deleteAllAnnouncements() {
+        return this.announcementsService.deleteAllAnnouncements();
     }
 };
 exports.AnnouncementsController = AnnouncementsController;
@@ -81,6 +85,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], AnnouncementsController.prototype, "deleteAnnouncement", null);
+__decorate([
+    (0, common_1.Delete)("all"),
+    (0, roles_decorator_1.Roles)('admin'),
+    (0, common_1.UseGuards)(confirm_delete_guard_1.ConfirmDeleteGuard),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AnnouncementsController.prototype, "deleteAllAnnouncements", null);
 exports.AnnouncementsController = AnnouncementsController = __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, common_1.Controller)('announcements'),
