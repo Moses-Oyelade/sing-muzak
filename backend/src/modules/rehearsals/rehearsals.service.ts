@@ -182,7 +182,7 @@ export class RehearsalService {
   async getAttendanceReportByDateRange(startDate: string, endDate: string) {
     const rehearsals = await this.rehearsalModel
       .find({
-        createdBy: { $gte: new Date(startDate), $lte: new Date(endDate) }
+        createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) }
       })
       .populate('attendees', 'name voicePart').exec();
 
@@ -202,10 +202,21 @@ export class RehearsalService {
   async exportAttendanceReportToCSV(startDate: string, endDate: string) {
     const data = await this.getAttendanceReportByDateRange(startDate, endDate);
 
+    // Flatten: one row per attendee per rehearsal
+    const flattened = data.flatMap(rehearsal =>
+      rehearsal.attendees.map(attendee => ({
+        rehearsalId: rehearsal.rehearsalId,
+        date: rehearsal.date,
+        attendeeId: attendee.id,
+        name: attendee.name,
+        voicePart: attendee.voicePart
+      }))
+    );
+
     // Convert data to CSV format
-    const fields = ['rehearsalId', 'date', 'attendees.id', 'attendees.name', 'attendees.voicePart'];
+    const fields = ['rehearsalId', 'date', 'attendeesId', 'name', 'voicePart'];
     const json2csvParser = new Parser({ fields });
-    const csv = json2csvParser.parse(data);
+    const csv = json2csvParser.parse(flattened);
 
     return csv;
   }

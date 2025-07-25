@@ -143,7 +143,7 @@ let RehearsalService = class RehearsalService {
     async getAttendanceReportByDateRange(startDate, endDate) {
         const rehearsals = await this.rehearsalModel
             .find({
-            createdBy: { $gte: new Date(startDate), $lte: new Date(endDate) }
+            createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) }
         })
             .populate('attendees', 'name voicePart').exec();
         return rehearsals.map(rehearsal => ({
@@ -158,9 +158,16 @@ let RehearsalService = class RehearsalService {
     }
     async exportAttendanceReportToCSV(startDate, endDate) {
         const data = await this.getAttendanceReportByDateRange(startDate, endDate);
-        const fields = ['rehearsalId', 'date', 'attendees.id', 'attendees.name', 'attendees.voicePart'];
+        const flattened = data.flatMap(rehearsal => rehearsal.attendees.map(attendee => ({
+            rehearsalId: rehearsal.rehearsalId,
+            date: rehearsal.date,
+            attendeeId: attendee.id,
+            name: attendee.name,
+            voicePart: attendee.voicePart
+        })));
+        const fields = ['rehearsalId', 'date', 'attendeesId', 'name', 'voicePart'];
         const json2csvParser = new json2csv_1.Parser({ fields });
-        const csv = json2csvParser.parse(data);
+        const csv = json2csvParser.parse(flattened);
         return csv;
     }
     async getAttendanceTrends(startDate, endDate) {

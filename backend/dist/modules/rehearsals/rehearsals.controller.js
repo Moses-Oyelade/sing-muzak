@@ -64,12 +64,21 @@ let RehearsalController = class RehearsalController {
         return this.rehearsalService.getAttendanceReport(rehearsalId);
     }
     async getAttendanceReportByDateRange(startDate, endDate) {
+        if (!startDate || !endDate) {
+            throw new common_1.BadRequestException('Start and end dates are required');
+        }
         return this.rehearsalService.getAttendanceReportByDateRange(startDate, endDate);
     }
     async exportAttendanceReportToCSV(startDate, endDate) {
+        if (!startDate || !endDate) {
+            throw new common_1.BadRequestException('Start and end date are required');
+        }
         return this.rehearsalService.exportAttendanceReportToCSV(startDate, endDate);
     }
     async getAttendanceTrends(startDate, endDate) {
+        if (!startDate || !endDate) {
+            throw new common_1.BadRequestException('Start and end dates are required');
+        }
         return this.rehearsalService.getAttendanceTrends(startDate, endDate);
     }
     async getRehearsalById(id) {

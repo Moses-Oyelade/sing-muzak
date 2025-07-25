@@ -109,7 +109,11 @@ export class RehearsalController {
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string
   ) {
-      return this.rehearsalService.getAttendanceReportByDateRange(startDate, endDate);
+      if (!startDate || !endDate) {
+      throw new BadRequestException('Start and end dates are required');
+    }
+    
+    return this.rehearsalService.getAttendanceReportByDateRange(startDate, endDate);
   }
 
   @Roles('admin')
@@ -120,6 +124,9 @@ export class RehearsalController {
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string
   ) {
+    if (!startDate || !endDate) {
+      throw new BadRequestException('Start and end date are required');
+    }
       return this.rehearsalService.exportAttendanceReportToCSV(startDate, endDate);
   }
 
@@ -130,7 +137,11 @@ export class RehearsalController {
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string
   ) {
-      return this.rehearsalService.getAttendanceTrends(startDate, endDate);
+    if (!startDate || !endDate) {
+      throw new BadRequestException('Start and end dates are required');
+    }
+    
+    return this.rehearsalService.getAttendanceTrends(startDate, endDate);
   }
 
   // @Roles('admin', 'member')
