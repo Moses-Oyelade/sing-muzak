@@ -20,7 +20,6 @@ const roles_guard_1 = require("../auth/roles/roles.guard");
 const users_service_1 = require("./users.service");
 const create_user_dto_1 = require("./dto/create-user.dto");
 const update_user_dto_1 = require("./dto/update-user.dto");
-const users_schema_1 = require("./schema/users.schema");
 const get_user_decorator_1 = require("../auth/get-user.decorator");
 let UsersController = class UsersController {
     constructor(userService) {
@@ -36,8 +35,10 @@ let UsersController = class UsersController {
         }
     }
     ;
-    getProfile(user) {
-        return { message: 'Profile Data', user: user };
+    async getProfile(userPayload) {
+        const userId = userPayload.sub;
+        const user = await this.userService.findById(userId);
+        return { message: 'Profile Data', user };
     }
     async searchAll(voicePart, search, role, page = 1, limit = 10) {
         return this.userService.findAll({ voicePart, search, role, page, limit });
@@ -95,8 +96,8 @@ __decorate([
     (0, common_1.Get)('profile'),
     __param(0, (0, get_user_decorator_1.GetUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [users_schema_1.User]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
 ], UsersController.prototype, "getProfile", null);
 __decorate([
     (0, common_1.Get)("/filter"),

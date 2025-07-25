@@ -6,10 +6,10 @@ export declare class UsersController {
     private readonly userService;
     constructor(userService: UsersService);
     getAllUsers(): Promise<User[]>;
-    getProfile(user: User): {
+    getProfile(userPayload: any): Promise<{
         message: string;
-        user: User;
-    };
+        user: User | null;
+    }>;
     searchAll(voicePart?: string, search?: string, role?: string, page?: number, limit?: number): Promise<{
         data: (import("mongoose").Document<unknown, {}, User, {}> & User & Required<{
             _id: import("mongoose").Types.ObjectId;

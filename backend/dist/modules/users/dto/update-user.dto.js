@@ -27,7 +27,7 @@ __decorate([
 ], UpdateUserDto.prototype, "email", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsUrl)(),
     __metadata("design:type", String)
 ], UpdateUserDto.prototype, "profileImage", void 0);
 __decorate([

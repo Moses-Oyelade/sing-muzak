@@ -34,9 +34,12 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'member')
   @Get('profile')
-  getProfile(@GetUser() user: User) {
-    return { message: 'Profile Data', user: user };
+  async getProfile(@GetUser() userPayload: any) {
+    const userId = userPayload.sub;
+    const user = await this.userService.findById(userId); // Replace with your actual method
+    return { message: 'Profile Data', user };
   }
+
   
   // Filter to get voice-part, search and role
   @Get("/filter")
