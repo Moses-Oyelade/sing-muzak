@@ -55,8 +55,8 @@ export class NotificationsController {
   }
 
   // ***Delete All***
-  @Delete("all")
   @Roles('admin')
+  @Delete()
   @UseGuards(ConfirmDeleteGuard)
   async deleteAllNotifications() {
     return this.notificationsService.deleteAllNotifications();

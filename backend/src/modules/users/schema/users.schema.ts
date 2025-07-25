@@ -19,6 +19,15 @@ import { AbstractDocument } from '../../common/abstract.schema';
     password: string;
 
     @Prop({ type: String, required: false })
+    gender?: string;
+
+    @Prop({ type: String, required: false })
+    instrument?: string;
+
+    @Prop({ type: String, required: false })
+    profileImage?: string;
+
+    @Prop({ type: String, required: false })
     address: string;
 
     @Prop({ type: String, enum: UserRole, default: UserRole.MEMBER })

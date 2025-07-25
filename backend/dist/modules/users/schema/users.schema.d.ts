@@ -5,6 +5,9 @@ export declare class User extends AbstractDocument {
     email: string;
     phone: string;
     password: string;
+    gender?: string;
+    instrument?: string;
+    profileImage?: string;
     address: string;
     role: UserRole;
     voicePart: VoicePart;

@@ -221,8 +221,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RehearsalController.prototype, "updateRehearsal", null);
 __decorate([
-    (0, common_1.Delete)("all"),
     (0, roles_decorator_1.Roles)('admin'),
+    (0, common_1.Delete)(),
     (0, common_1.UseGuards)(confirm_delete_guard_1.ConfirmDeleteGuard),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),

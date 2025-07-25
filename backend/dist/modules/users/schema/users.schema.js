@@ -72,6 +72,18 @@ __decorate([
 __decorate([
     (0, mongoose_1.Prop)({ type: String, required: false }),
     __metadata("design:type", String)
+], User.prototype, "gender", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: String, required: false }),
+    __metadata("design:type", String)
+], User.prototype, "instrument", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: String, required: false }),
+    __metadata("design:type", String)
+], User.prototype, "profileImage", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: String, required: false }),
+    __metadata("design:type", String)
 ], User.prototype, "address", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ type: String, enum: user_interface_1.UserRole, default: user_interface_1.UserRole.MEMBER }),

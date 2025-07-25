@@ -17,14 +17,6 @@ export class UsersController {
   ) { }
   
   // Only Admins can access this route
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('Admin')
-  // @Get( )
-  // getAllUsers(@Request() req: any) {
-  //   return { message: 'Only admins can see this', user: req.user };
-  // }
-
-  // Only Admins can access this route
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Get( )
@@ -60,7 +52,6 @@ export class UsersController {
     return this.userService.findAll({ voicePart, search, role, page, limit });
   } 
 
-
   // Find by Phone No.
   @Get('all-phone')
   async getAllPhoneNumbers() {
@@ -74,6 +65,8 @@ export class UsersController {
     return this.userService.getAllPhoneNumbersOwners();
   }
   
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'member')
   @Get(':id')
   async getUser(@Param('id') id: string): Promise<User> {
     const user = await this.userService.findById(id);
@@ -102,6 +95,8 @@ export class UsersController {
     return await this.userService.createUser(createUserFromAdminDto);
   }
   
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'member')
   @Patch(':userId')
   async updateUser(
     @Param('userId') userId: string,
@@ -124,8 +119,6 @@ export class UsersController {
     return this.userService.deleteUser(userId);
   }
 
-   
-  
 }
 
 

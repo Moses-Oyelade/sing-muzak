@@ -43,8 +43,8 @@ export class AnnouncementsController {
   }
 
   // *** Delete All ***
-  @Delete("all")
   @Roles('admin')
+  @Delete()
   @UseGuards(ConfirmDeleteGuard)
   async deleteAllAnnouncements() {
     return this.announcementsService.deleteAllAnnouncements();

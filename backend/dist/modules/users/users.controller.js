@@ -124,6 +124,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "getAllPhoneNumbersOwners", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('admin', 'member'),
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -149,6 +151,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "createUserFromAdmin", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('admin', 'member'),
     (0, common_1.Patch)(':userId'),
     __param(0, (0, common_1.Param)('userId')),
     __param(1, (0, common_1.Body)()),

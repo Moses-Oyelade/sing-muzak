@@ -180,8 +180,8 @@ export class RehearsalController {
   }
 
   // ***Delete All ***
-  @Delete("all")
   @Roles('admin')
+  @Delete()
   @UseGuards(ConfirmDeleteGuard)
   async deleteAllRehearsals() {
     return this.rehearsalService.deleteAllRehearsals();
