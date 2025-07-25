@@ -22,7 +22,7 @@ const AdminCleanupPage = () => {
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedType, setSelectedType] = useState<"announcements" | "notifications" | "rehearsals" | null>(null);
 
-  const CLEANUP_SECRET = process.env.NEXT_PUBLIC_CLEANUP_SECRET_CODE ?? "";
+  const CLEANUP_SECRET = process.env.ADMIN_CLEANUP_SECURITY_CODE ?? "";
 
   const handleSecretSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
