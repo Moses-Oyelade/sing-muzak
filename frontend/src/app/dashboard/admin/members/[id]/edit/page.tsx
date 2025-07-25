@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import toast from "react-hot-toast";
 import axiosInstance from "@/utils/axios";
-import ConfirmModal from "@/components/ComfirmModal";
+import ConfirmModal from "@/components/common/ConfirmationModal";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
 interface User {
@@ -23,8 +23,11 @@ const voiceParts = ["soprano", "alto", "tenor", "bass"];
 const roles = ["admin", "member"];
 
 export default function EditUserPage() {
-  const { id } = useParams();
+  // const { id } = useParams();
+  const params = useParams();
   const router = useRouter();
+
+  const id = params?.id as string;
 
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -71,17 +74,17 @@ export default function EditUserPage() {
     try {
       await axiosInstance.delete(`/users/${id}`);
 
-      // Optionally log to audit trail
-      await axiosInstance.post(`/audit-log`, {
-        action: "delete_user",
-        userId: id,
-        performedBy: currentUserId,
-        timestamp: new Date().toISOString(),
-        details: {
-          name: user?.name,
-          email: user?.email,
-        },
-      });
+      // // Optionally log to audit trail
+      // await axiosInstance.post(`/audit-log`, {
+      //   action: "delete_user",
+      //   userId: id,
+      //   performedBy: currentUserId,
+      //   timestamp: new Date().toISOString(),
+      //   details: {
+      //     name: user?.name,
+      //     email: user?.email,
+      //   },
+      // });
 
       toast.success("🗑️ User deleted successfully.");
       router.push(`/dashboard/admin/members`);

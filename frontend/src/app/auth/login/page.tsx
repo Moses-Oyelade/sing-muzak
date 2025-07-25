@@ -42,9 +42,9 @@ const LoginPage = () => {
         </Link>
         <form
             onSubmit={handleLogin}
-            className="max-w-sm w-full bg-white p-8 rounded shadow-lg"
+            className="max-w-sm w-full bg-white p-6 rounded shadow-lg"
         >
-            <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
 
             {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
 
@@ -80,13 +80,13 @@ const LoginPage = () => {
 
             <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-3 rounded"
+            className="w-full bg-blue-500 text-white py-3 rounded hover:bg-blue-600"
             >
             Login
             </button>
         </form>
         <p className="text-center mt-4">
-            Register an account? <Link href="/auth/register" className="text-blue-600">Register Here!</Link>
+            Register an account? <Link href="/auth/register" className="text-blue-500 hover:text-blue-800 hover:underline">Register Here!</Link>
         </p>
 
 

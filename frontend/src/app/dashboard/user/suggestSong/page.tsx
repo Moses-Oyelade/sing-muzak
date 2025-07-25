@@ -92,9 +92,9 @@ export default function SuggestSongs() {
       {loading ? (
         <p className="text-center text-gray-500 mt-6">Loading songs...</p>
       ) : songs.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+        <div className="grid grid-cols-1  sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
           {songs.map((song: any) => (
-            <div key={song._id} className="border rounded p-4 shadow">
+            <div key={song._id} className="border rounded bg-slate-300 p-4 shadow">
               <SongCard song={song} />
               <button
                 disabled={!!song.suggestedBy}

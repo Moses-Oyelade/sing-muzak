@@ -1,5 +1,6 @@
 // app/dashboard/admin/members/page.tsx
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import AddMemberButton from "@/components/AddMemberButton";
 import UserCard from "@/components/UserCard";
 import createAxiosWithAuth from "@/utils/axiosServer";
 import { getServerSession } from "next-auth";
@@ -44,12 +45,7 @@ export default async function MembersPage({ searchParams }: AdminPageProps) {
       <div className="max-w-5xl mx-auto p-4 space-y-4">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">Member List</h2>
-          <button
-            onClick={() => redirect("/users")}
-            className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            {'Add Member'}
-          </button>
+          <AddMemberButton /> 
       </div>
         <UserCard users={users || []} meta={meta || {}} />
       </div>

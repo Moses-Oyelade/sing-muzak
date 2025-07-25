@@ -12,9 +12,10 @@ const tabs = [
   // { label: "Song Details", href: "/dashboard/admin/songDetails" },
   { label: "Members", href: "/dashboard/admin/members" },
   { label: "Performances", href: "/dashboard/admin/performances" },
-  { label: "Rehearsals", href: "/dashboard/admin/reheasal" },
+  { label: "Rehearsals", href: "/dashboard/admin/rehearsals" },
   { label: "Announcement", href: "/dashboard/user/announcements" },
-  { label: "Attendance", href: "/dashboard/admin/attendance" },
+  { label: "Attendance Report", href: "/dashboard/admin/rehearsals/trends" },
+  { label: "Clean UP", href: "/dashboard/admin/cleanup" },
 ];
 
 const userTabs = [
@@ -23,9 +24,9 @@ const userTabs = [
   { label: "Song List", href: "/dashboard/user/songs" },
   { label: "Vocal Members", href: "/dashboard/user" },
   { label: "Song Suggestion", href: "/dashboard/user/suggestSong" },
-  { label: "Rehearsals", href: "/dashboard/reheasal" },
+  { label: "Rehearsals", href: "/dashboard/user/rehearsals" },
   { label: "Announcement", href: "/dashboard/user/announcements" },
-  { label: "Attendance", href: "/dashboard/attendance" },
+  // { label: "Attendance", href: "/dashboard/attendance" },
 ];
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);

@@ -31,7 +31,7 @@ export default function UserDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Placeholder for auth role check — replace with your logic
+  // Placeholder for auth role check
   const userRole = "admin";
 
   useEffect(() => {
@@ -57,16 +57,15 @@ export default function UserDetailPage() {
       });
   }, [id]);
 
-    useAdminSocket({
+  useAdminSocket({
     setSongs: setUser,
     onUserUpdate: (updatedUser) => {
-        if (updatedUser.id === id) {
+      if (updatedUser.id === id) {
         setUser(updatedUser);
         toast.success("User data updated in real-time.");
-        }
-    }
-    });
-
+      }
+    },
+  });
 
   const backUrl =
     `/dashboard/admin/members?` +
@@ -96,32 +95,59 @@ export default function UserDetailPage() {
       />
     );
 
-  if (!user) return <p>User not found.</p>;
+  if (!user) return <p className="text-center mt-10">User not found.</p>;
 
   return (
-    <div className="p-6">
+    <div className="px-4 sm:px-6 lg:px-8 bg-slate-200 shadow-md py-6 max-w-2xl mx-auto">
       <button
-        className="mb-4 text-blue-600 hover:underline"
+        className="mb-6 text-blue-600 hover:underline text-sm"
         onClick={() => router.push(backUrl)}
       >
         ← Back to list
       </button>
 
-      <h1 className="text-2xl font-bold mb-2">{user.name}</h1>
-      <p>Email: {user.email}</p>
-      {user.phone && <p>Phone: {user.phone}</p>}
-      {user.address && <p>Address: {user.address}</p>}
-      {user.voicePart && <p>Voice Part: {user.voicePart}</p>}
-      <p>Role: {user.role}</p>
-      <p>Joined: {dayjs(user.createdAt).format("MMMM D, YYYY")}</p>
-      <p>Last Updated: {dayjs(user.updatedAt).format("MMMM D, YYYY h:mm A")}</p>
+      <h1 className="text-2xl font-bold mb-4 text-gray-800">{user.name}</h1>
 
-      <button
-        className="mt-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-        onClick={() => router.push(`/dashboard/admin/members/${id}/edit`)}
-      >
-        Edit User
-      </button>
+      <div className="space-y-2 text-sm sm:text-base text-gray-700">
+        <p>
+          <span className="font-medium">Email:</span> {user.email}
+        </p>
+        {user.phone && (
+          <p>
+            <span className="font-medium">Phone:</span> {user.phone}
+          </p>
+        )}
+        {user.address && (
+          <p>
+            <span className="font-medium">Address:</span> {user.address}
+          </p>
+        )}
+        {user.voicePart && (
+          <p>
+            <span className="font-medium">Voice Part:</span> {user.voicePart}
+          </p>
+        )}
+        <p>
+          <span className="font-medium">Role:</span> {user.role}
+        </p>
+        <p>
+          <span className="font-medium">Joined:</span>{" "}
+          {dayjs(user.createdAt).format("MMMM D, YYYY")}
+        </p>
+        <p>
+          <span className="font-medium">Last Updated:</span>{" "}
+          {dayjs(user.updatedAt).format("MMMM D, YYYY h:mm A")}
+        </p>
+      </div>
+
+      <div className="mt-8">
+        <button
+          className="w-full sm:w-auto px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+          onClick={() => router.push(`/dashboard/admin/members/${id}/edit`)}
+        >
+          Edit User
+        </button>
+      </div>
     </div>
   );
 }

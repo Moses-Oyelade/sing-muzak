@@ -6,8 +6,6 @@ import Link from "next/link";
 import axiosInstance from "@/utils/axios";
 import dayjs from "@/lib/dayjs";
 import { useRouter } from "next/navigation";
-import AnnouncementForm from "@/components/AnnouncementForm";
-import { useAnnouncementSocket } from "@/app/hooks/useAnnouncementSocket";
 
 interface Announcement {
   _id: string;
@@ -19,20 +17,11 @@ interface Announcement {
 
 export default function AnnouncementsPage() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [showAnouncementForm, setShowAnnouncementForm] = useState(false);
-
   const { data: session, status } = useSession();
   const router = useRouter();
 
   const role = session?.user?.role;
   const isAdmin = role === "admin";
-
-  // Real-time update
-  useAnnouncementSocket((newAnnouncement) => {
-    setAnnouncements((prev) => [newAnnouncement, ...prev]);
-  });
-
-
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -46,7 +35,7 @@ export default function AnnouncementsPage() {
         const sorted = res.data.sort((a: Announcement, b: Announcement) => {
           const dateA = new Date(a.updatedAt || a.publishedAt || "").getTime();
           const dateB = new Date(b.updatedAt || b.publishedAt || "").getTime();
-          return dateB - dateA;
+          return dateB - dateA; // Newest first
         });
         setAnnouncements(sorted);
       } catch (error) {
@@ -64,29 +53,20 @@ export default function AnnouncementsPage() {
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-bold mb-4">Announcements</h1>
-        <button
-          onClick={() => setShowAnnouncementForm((prev) => !prev)}
-          className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          {showAnouncementForm ? "Hide Suggest Form" : "Suggest a New Song"}
-        </button>
+      <h1 className="text-xl font-bold mb-4">Announcements</h1>
+        { isAdmin ? (
+          <button
+            onClick={() => router.push("/dashboard/admin/announcement")}
+            className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            { 'New Announcement'}
+          </button>
+          ) : ("")
+        }
       </div>
-
-      {showAnouncementForm && (
-        <div className="mb-6">
-          <AnnouncementForm
-            onSubmit={(data) => {
-              axiosInstance.post("/announcements", data);
-              setShowAnnouncementForm(false);
-            }}
-          />
-        </div>
-      )}
-
       <ul className="space-y-2">
         {announcements.map((a) => (
-          <li key={a._id} className="border p-4 rounded">
+          <li key={a._id} className="border bg-slate-200 p-4 rounded">
             {isAdmin ? (
               <div className="flex justify-between items-center">
                 <strong>{a.title}</strong>

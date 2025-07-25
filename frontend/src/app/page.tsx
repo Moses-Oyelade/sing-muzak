@@ -13,7 +13,7 @@ export default function Home() {
       </main>
         <h4>More update to come...</h4>
         <p className="text- mt-4">
-            Register an account? <a href="/auth/register" className="text-blue-600">Register Here!</a>
+            Register an account? <a href="/auth/register" className="text-blue-600 hover:text-blue-800 hover:underline">Register Here!</a>
         </p>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
           <Image
@@ -26,9 +26,9 @@ export default function Home() {
             <h4>
               ...get a sweet experience of an <b>e-choir</b> at your reach.
             </h4>
-          <a href="/auth/login" className=" m-8 bg-emerald-500 text-white py-3 rounded">
+          <a href="/auth/login" className=" m-8 bg-emerald-500 text-white py-3 rounded hover:bg-emerald-600">
             <button
-              className="w-40 bg-emerald-500"
+              className="w-40 "
               >
               Login
             </button>

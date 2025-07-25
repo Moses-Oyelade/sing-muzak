@@ -35,12 +35,12 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="flex flex-row justify-center items-center h-screen">
+    <div className="flex flex-col justify-center items-center h-screen">
         <form
             onSubmit={handleRegister}
-            className="max-w-sm w-full bg-white p-8 rounded shadow-lg"
+            className="max-w-sm w-full bg-white p-6 rounded shadow-lg"
         >
-            <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
+            <h2 className="text-2xl font-bold mb-2 text-center">Register</h2>
 
             {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
 
@@ -105,13 +105,13 @@ const RegisterPage = () => {
 
             <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-3 rounded"
+            className="w-full bg-blue-500 text-white py-3 rounded hover:bg-blue-600"
             >
             {loading ? 'Registering...' : 'Register'}
             </button>
         </form>
         <p className="text-center p-4 mt-4">
-            Already registered? <Link href="/auth/login" className="text-blue-600">Login</Link>
+            Already registered? <Link href="/auth/login" className="text-blue-600 hover:underline">Login</Link>
         </p>
 
     </div>

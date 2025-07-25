@@ -111,13 +111,13 @@ export default function UserCard({ users: initialUsers, meta: initialMeta }: Use
           {users.map((user) => (
             <div
               key={user._id}
-              className="p-4 border rounded shadow-sm cursor-pointer hover:bg-gray-50"
+              className="p-4 border rounded  bg-slate-100 shadow-sm cursor-pointer hover:bg-gray-300"
               onClick={() => router.push(`/dashboard/admin/members/${user._id}`)}
             >
               <h2 className="text-lg font-semibold">{user.name}</h2>
               <p className="text-base">
                 Voice-part:{" "}
-                <span className="uppercase text-base bg-gray-200 px-2 py-1 rounded">{user.voicePart}</span>
+                <span className="uppercase text-base text-white bg-gray-600 px-2 py-1 rounded">{user.voicePart}</span>
               </p>
               {user.phone && (
                 <p className="text-base text-gray-600">

@@ -1,9 +1,10 @@
-// app/announcements/[id]/page.tsx
+// Server Component: page.tsx
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import createAxiosWithAuth from "@/utils/axiosServer";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import AnnouncementActions from "@/components/AnnouncementActions";
+
+import ClientAnnouncementPage from "@/components/ClientAnnouncementPage";
 
 interface Announcement {
   _id: string;
@@ -12,7 +13,11 @@ interface Announcement {
   publishedAt?: string;
 }
 
-export default async function AnnouncementDetail({ params }: { params: { id: string } }) {
+export default async function AnnouncementDetail({
+  params,
+}: {
+  params: { id: string };
+}) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user?.token) redirect("/auth/login");
 
@@ -25,16 +30,10 @@ export default async function AnnouncementDetail({ params }: { params: { id: str
     const isAdmin = session.user.role === "admin";
 
     return (
-      <div className="p-6">
-        <h1 className="text-xl font-bold mb-4">{announcement.title}</h1>
-        <p className="mb-4">{announcement.content}</p>
-
-        {isAdmin && (
-          <AnnouncementActions
-            announcement={announcement}
-          />
-        )}
-      </div>
+      <ClientAnnouncementPage
+        announcement={announcement}
+        isAdmin={isAdmin}
+      />
     );
   } catch (error) {
     return (
