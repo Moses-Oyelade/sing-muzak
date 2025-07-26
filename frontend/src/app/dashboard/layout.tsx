@@ -38,7 +38,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const isAdmin = session.user?.role === "admin";
 
   const SidebarLinks = () => (
-    <ul className="space-y-2 font-bold border rounded px-4 py-2 mx-1 mb-4 bg-slate-300">
+    <ul className="space-y-2 font-bold border md:mt-0 rounded px-4 py-2 mx-1 mb-4 bg-slate-300">
       {isAdmin ? (
         <>
           {tabs.map((tab) => (

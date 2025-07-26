@@ -1,5 +1,6 @@
 
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -7,13 +8,13 @@ export default function Home() {
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start brightness-50 border-y-indigo-800 outline-dotted">
         <div>
           <h1 className="font-bold text-4xl m-4 text-blue-600">
-            Sing-MuzaK!
+            🎵 Sing-MuzaK!
           </h1>
         </div>
       </main>
         <h4>More update to come...</h4>
-        <p className="text- mt-4">
-            Register an account? <a href="/auth/register" className="text-blue-600 hover:text-blue-800 hover:underline">Register Here!</a>
+        <p className="text-center mt-4">
+            Register an account? <Link href="/auth/register" className="text-blue-500 hover:text-blue-800 hover:underline">Register Here!</Link>
         </p>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
           <Image

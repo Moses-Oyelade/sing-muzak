@@ -14,6 +14,7 @@ interface User {
   name: string;
   email: string;
   phone?: string;
+  gender?: string;
   address?: string;
   role: string;
   voicePart?: string;
@@ -105,7 +106,9 @@ export default function UserDetailPage() {
       >
         ← Back to list
       </button>
-
+      <div className="w-16 h-16 rounded-full bg-gray-300 mx-auto mb-2 flex items-center justify-center text-xl font-bold">
+              🎙{user.name.charAt(0).toUpperCase()}
+            </div>
       <h1 className="text-2xl font-bold mb-4 text-gray-800">{user.name}</h1>
 
       <div className="space-y-2 text-sm sm:text-base text-gray-700">
@@ -115,6 +118,11 @@ export default function UserDetailPage() {
         {user.phone && (
           <p>
             <span className="font-medium">Phone:</span> {user.phone}
+          </p>
+        )}
+        {user.gender && (
+          <p>
+            <span className="font-medium">Address:</span> {user.address}
           </p>
         )}
         {user.address && (

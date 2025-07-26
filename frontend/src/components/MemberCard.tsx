@@ -10,7 +10,7 @@ interface User {
   email?: string;
   phone?: string;
   voicePart?: string;
-  avatarUrl?: string;
+  profileImage?: string;
 }
 
 export default function MemberCard() {
@@ -61,11 +61,11 @@ export default function MemberCard() {
     <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 p-4">
       {users.map((user) => (
         <div key={user._id} className="border p-4 rounded shadow bg-white">
-          {user.avatarUrl ? (
-            <img src={user.avatarUrl} alt={user.name} className="w-16 h-16 rounded-full mx-auto mb-2" />
+          {user.profileImage ? (
+            <img src={user.profileImage} alt={user.name} className="w-16 h-16 rounded-full mx-auto mb-2" />
           ) : (
             <div className="w-16 h-16 rounded-full bg-gray-300 mx-auto mb-2 flex items-center justify-center text-xl font-bold">
-              {user.name.charAt(0).toUpperCase()}
+              🎙 {user.name.charAt(0).toUpperCase()}
             </div>
           )}
           <h3 className="text-lg font-semibold text-center">{user.name}</h3>
