@@ -1,6 +1,5 @@
 
 import Image from "next/image";
-import Link from "next/link";
 
 export default function Home() {
   return (
@@ -12,9 +11,11 @@ export default function Home() {
           </h1>
         </div>
       </main>
+      <div>
         <h4>More update to come...</h4>
-            <footer className="items-center justify-center">
-        <div className="flex flex-col items-center">
+      </div>
+      <footer className="mb-4 pb-8">
+        <div className="flex flex-col items-center justify-center">
           <div className="pb-10">
             <Image
               aria-hidden
@@ -42,6 +43,9 @@ export default function Home() {
             </p>
           </div>
         </div>
+        <span className="text-lime-700 text-sm bg-slate-100 rounded sm:bottom-1 sm:right-1 p-1 mb-4">
+          @Muzak 2024
+        </span>
       </footer>
     </div>
   );
