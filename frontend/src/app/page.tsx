@@ -4,13 +4,16 @@ import Image from "next/image";
 export default function Home() {
   return (
     <div className="grid grid-rows-[10px_1fr_40px] items-center justify-items-center min-h-screen max-h-screen p-4 py-20 gap-16 sm:pb-20 font-[family-name:var(--font-geist-sans)] overflow-hidden">
-      <main className="flex flex-col gap-[60px] row-start-2 items-center sm:items-start brightness-50">
-        <div className=" border-y-indigo-800 outline-dotted">
+      <main className="flex flex-col gap-[20px] row-start-2 items-center overflow-auto sm:items-start brightness-50">
+        <div className=" border-y-indigo-800 m-6 outline-dotted">
           <h1 className="font-bold text-4xl m-4 text-blue-600">
             🎵 Sing-MuzaK!
           </h1>
         </div>
-          <div className="">
+      </main>
+        <h4 className="text-center sm:text-left">More update to come...</h4>
+       <footer className="w-full flex flex-col items-center row-start-3 pb-2 mb-6 text-center sm:text-left">
+        <div className="">
           <Image
             aria-hidden
             src="/file.svg"
@@ -22,9 +25,6 @@ export default function Home() {
             ...get a sweet experience of an <b>e-choir</b> at your reach.
           </h4>
         </div>
-      </main>
-        <h4 className="text-center sm:text-left">More update to come...</h4>
-       <footer className="w-full flex flex-col items-center row-start-3 pb-6 text-center sm:text-left">
         <div>
           <a
             href="/auth/login"
