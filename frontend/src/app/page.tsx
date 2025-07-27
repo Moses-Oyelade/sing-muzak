@@ -13,27 +13,35 @@ export default function Home() {
         </div>
       </main>
         <h4>More update to come...</h4>
-        <p className="text-center mt-4">
-            Register an account? <Link href="/auth/register" className="text-blue-500 hover:text-blue-800 hover:underline">Register Here!</Link>
-        </p>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+            <footer className="items-center justify-center">
+        <div className="flex flex-col items-center">
+          <div className="pb-10">
+            <Image
+              aria-hidden
+              src="/file.svg"
+              alt="File icon"
+              width={16}
+              height={16}
             />
             <h4>
               ...get a sweet experience of an <b>e-choir</b> at your reach.
             </h4>
-          <a href="/auth/login" className=" m-8 bg-emerald-500 text-white py-3 rounded hover:bg-emerald-600">
-            <button
-              className="w-40 "
-              >
-              Login
-            </button>
-          </a>
+          </div>
+          <div>
+            <a href="/auth/login" className=" m-8 bg-emerald-500 text-white py-3 rounded hover:bg-emerald-600">
+              <button
+                className="w-40 "
+                >
+                Login
+              </button>
+            </a>
+          </div>
+          <div>
+            <p className="m-4 pb-8">
+              Register an account? <a href="/auth/register" className="text-blue-500 hover:text-blue-800 hover:underline hover:font-bold">Register Here!</a>
+            </p>
+          </div>
+        </div>
       </footer>
     </div>
   );
