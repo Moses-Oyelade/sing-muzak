@@ -70,7 +70,7 @@ const ProfilePage = () => {
       )}
 
       <div className="grid grid-cols-1 gap-4">
-        {["name", "email", "gender", "instrument", "address", "voicePart", "profileImage"].map((field) => (
+        {["name", "email", "gender", "instrument", "address", "voicePart"].map((field) => (
           <div key={field}>
             <label className="block text-sm font-medium capitalize">{field}</label>
             <input
