@@ -12,7 +12,7 @@ export default function Home() {
         </div>
       </main>
         <h4>More update to come...</h4>
-      <footer className="mb-4 pb-8 sm:pb-6">
+      <footer className="mb-4 pb-8 sm:pb-20">
         <div className="flex flex-col items-center justify-center">
           <div className="pb-10">
             <Image
