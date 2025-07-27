@@ -1,10 +1,9 @@
 
 import Image from "next/image";
-import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_40px] items-center justify-items-center min-h-screen max-h-screen p-4 py-20 gap-16 sm:pb-20 font-[family-name:var(--font-geist-sans)] overflow-hidden">
+    <div className="grid grid-rows-[10px_1fr_30px] items-center justify-items-center min-h-screen max-h-screen p-4 py-20 gap-16 sm:pb-20 font-[family-name:var(--font-geist-sans)] overflow-hidden">
       <main className="flex flex-col gap-[60px] row-start-2 items-center sm:items-start brightness-50">
         <div className=" border-y-indigo-800 outline-dotted">
           <h1 className="font-bold text-4xl m-4 text-blue-600">
