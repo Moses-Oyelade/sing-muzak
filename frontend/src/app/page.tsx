@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[4px_1fr_60px] items-center justify-items-center min-h-screen max-h-screen p-5 pb-20 gap-10 sm:pb-20 font-[family-name:var(--font-geist-sans)] overflow-hidden">
+    <div className="grid grid-rows-[4px_1fr_80px] items-center justify-items-center min-h-screen max-h-screen pt-8 pb-20 gap-16 sm:pb-20 font-[family-name:var(--font-geist-sans)] overflow-hidden">
       <main className="flex flex-col gap-[10px] row-start-2 items-center overflow-auto sm:items-start brightness-50">
         <div className=" border-y-indigo-800 m-4 outline-dotted">
           <h1 className="font-bold text-4xl m-4 text-blue-600">
@@ -12,7 +12,7 @@ export default function Home() {
         </div>
       </main>
         <h4 className="text-center sm:text-left">More update to come...</h4>
-       <footer className="w-full flex flex-col items-center row-start-3 text-center sm:text-left overflow-auto">
+       <footer className="w-full flex flex-col pb-5 items-center row-start-3 text-center sm:text-left overflow-auto">
         <div className="pb-2 mb-4">
           <Image
             aria-hidden
