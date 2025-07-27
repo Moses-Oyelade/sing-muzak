@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 py-20 gap-16 sm:py-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 py-20 gap-16 sm:py-20 sm:items-center font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start brightness-50 border-y-indigo-800 outline-dotted">
         <div>
           <h1 className="font-bold text-4xl m-4 text-blue-600">
@@ -12,7 +12,7 @@ export default function Home() {
         </div>
       </main>
         <h4>More update to come...</h4>
-      <footer className="mb-4 pb-8 sm:py-6">
+      <footer className="mb-4 pb-8 sm:pb-6">
         <div className="flex flex-col items-center justify-center">
           <div className="pb-10">
             <Image
