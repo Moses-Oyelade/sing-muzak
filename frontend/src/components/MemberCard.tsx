@@ -38,7 +38,7 @@ export default function MemberCard() {
         return;
       }
 
-      // Step 2: Fetch users with the same vocalPart
+      // Fetch users with the same vocalPart
       const res = await axiosInstance.get(`/users/filter?voicePart=${currentUser.voicePart}`);
       const data = res.data?.data || res.data;
       setUsers(data);

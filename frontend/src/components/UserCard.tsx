@@ -4,7 +4,6 @@ import axiosInstance from "@/utils/axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
-import dayjs from "@/lib/dayjs";
 import toast from "react-hot-toast";
 
 const VOCALPART = ["All", "soprano", "alto", "tenor", "bass", "pending"];
@@ -101,9 +100,40 @@ export default function UserCard({ users: initialUsers, meta: initialMeta }: Use
       `/dashboard/admin/members?search=${search}&voicePart=${voicePart}&role=${role}&page=${newPage}`
     );
   };
+  const handleVoicePartChange = (newVoicePart: string) => {
+    router.push(
+      `/dashboard/admin/members?search=${search}&voicePart=${newVoicePart}&role=${role}&page=${page}`
+    );
+  };
+
 
   return (
     <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+        <input
+          type="text"
+          placeholder="Search by title..."
+          defaultValue={search}
+          onChange={(e) =>
+            router.push(`/dashboard/admin/members?search=${e.target.value}&voicePart=${voicePart}&role=${role}&page=${page}`)
+          }
+          className="border px-3 py-2 rounded w-full sm:w-64"
+        />
+
+        <select
+          value={voicePart}
+          onChange={(e) => handleVoicePartChange(e.target.value)}
+          className="border px-3 py-2 rounded w-full sm:w-64"
+        >
+          <option value="">Voice-Part</option>
+          {VOCALPART.map((v: any) => (
+            <option key={v} value={v}>
+              {v}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {loading ? (
         <p className="text-gray-500">Loading...</p>
       ) : users.length > 0 ? (
@@ -124,14 +154,6 @@ export default function UserCard({ users: initialUsers, meta: initialMeta }: Use
                   Member phone: <span className="font-medium">{user.phone}</span>
                 </p>
               )}
-              {user.email && (
-                <p className="text-base text-gray-600">
-                  Member email: <span className="font-medium">{user.email}</span>
-                </p>
-              )}
-              <p className="text-sm text-gray-600">
-                Updated at: <span className="font-medium">{dayjs(user.updatedAt).fromNow()}</span>
-              </p>
             </div>
           ))}
         </div>

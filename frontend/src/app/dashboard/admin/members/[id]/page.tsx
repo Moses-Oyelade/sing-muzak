@@ -122,7 +122,7 @@ export default function UserDetailPage() {
         )}
         {user.gender && (
           <p>
-            <span className="font-medium">Address:</span> {user.address}
+            <span className="font-medium">Gender:</span> {user.gender}
           </p>
         )}
         {user.address && (
