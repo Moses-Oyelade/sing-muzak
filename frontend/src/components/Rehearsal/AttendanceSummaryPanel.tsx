@@ -10,6 +10,8 @@ const AttendanceSummaryPanel = ({ stats }: { stats: AttendanceStats }) => {
   const presentPercentage = ((present / totalMembers) * 100).toFixed(1);
   const absentPercentage = ((absent / totalMembers) * 100).toFixed(1);
 
+  const noAttendant = present === 0;
+
   return (
     <div className="bg-white shadow rounded-md p-6">
       <h2 className="text-lg font-semibold mb-4">Attendance Summary</h2>
@@ -21,8 +23,13 @@ const AttendanceSummaryPanel = ({ stats }: { stats: AttendanceStats }) => {
         </div>
         <div className="bg-red-100 text-red-800 rounded-md p-4">
           <p className="text-sm">Absent</p>
-          <p className="text-xl font-bold">{absent}</p>
-          <p className="text-xs">{absentPercentage}%</p>
+          {present > 0 && (
+            <>
+              <p className="text-xl font-bold">{absent}</p>
+              <p className="text-xs">{absentPercentage}%</p>
+            </>
+          )
+          }
         </div>
         <div className="bg-blue-100 text-blue-800 rounded-md p-4">
           <p className="text-sm">Total Members</p>

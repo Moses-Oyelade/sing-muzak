@@ -101,8 +101,7 @@ export default function AttendanceManagerPanel({
                 key={attendee._id}
                 className="flex items-center gap-2 py-1 border-b"
               >
-                {
-                  attendee.role === 'member' && (
+                {attendee.role === 'member' && (
                     <input
                       type="checkbox"
                       checked={marked.includes(attendee._id)}
