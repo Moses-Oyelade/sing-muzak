@@ -26,7 +26,7 @@ export default function AttendanceManagerPanel({
       try {
         const data = await getRehearsalById(rehearsalId);
       
-        setMarked(data?.attendees?.map((user: UserType) => user.role === 'member' ? user._id : '') || []);
+        setMarked(data?.attendees?.map((user: UserType) => user._id) || []);
       } catch (err) {
         console.error("Failed to fetch attendees:", err);
         toast.error("Could not load existing attendance.");
@@ -37,7 +37,7 @@ export default function AttendanceManagerPanel({
   }, [rehearsalId, attendees]);
 
   const toggleMarked = (id: string) => {
-    if (marked.includes(id)) {
+    if (marked.includes(id) || attendees.map((attendee)=> (attendee.role === 'admin'))) {
       setMarked((prev) => prev.filter((x) => x !== id));
     } else {
       setMarked((prev) => [...prev, id]);
