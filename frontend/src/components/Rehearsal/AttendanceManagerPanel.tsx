@@ -37,7 +37,7 @@ export default function AttendanceManagerPanel({
   }, [rehearsalId, attendees]);
 
   const toggleMarked = (id: string) => {
-    if (marked.includes(id) || attendees.map((attendee)=> (attendee.role === 'admin'))) {
+    if (marked.includes(id)) {
       setMarked((prev) => prev.filter((x) => x !== id));
     } else {
       setMarked((prev) => [...prev, id]);
@@ -101,12 +101,16 @@ export default function AttendanceManagerPanel({
                 key={attendee._id}
                 className="flex items-center gap-2 py-1 border-b"
               >
-                <input
-                  type="checkbox"
-                  checked={marked.includes(attendee._id)}
-                  onChange={() => toggleMarked(attendee._id)}
-                />
-                <span>{attendee.name} ({attendee.voicePart})</span>
+                {
+                  attendee.role === 'member' && (
+                    <input
+                      type="checkbox"
+                      checked={marked.includes(attendee._id)}
+                      onChange={() => toggleMarked(attendee._id)}
+                    />
+                  )
+                }
+                <span className={attendee.role ==='admin' ? 'font-bold text-green-600' : ''}>{attendee.name} ({attendee.voicePart})</span>
               </label>
             ))}
           </div>
